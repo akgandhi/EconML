@@ -1,0 +1,20 @@
+{
+  "articles": [
+    {
+      "path": "about.html",
+      "title": "About this blog",
+      "description": "This is a course blog for Econ 712 at the University of Pennsylvania, Spring 2021 (Covid edition!)",
+      "author": [],
+      "contents": "\nWe will maintain lecture notes and student presentations, as well as empirical experiments and projects, on this blog.\n\n\n\n",
+      "last_modified": "2021-02-02T14:49:43+00:00"
+    },
+    {
+      "path": "index.html",
+      "title": "Machine Learning and Structural Estimation",
+      "author": [],
+      "contents": "\n\n\n\n",
+      "last_modified": "2021-02-02T14:49:44+00:00"
+    }
+  ],
+  "collections": ["posts/posts.json"]
+}

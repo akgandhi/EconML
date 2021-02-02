@@ -1,0 +1,11 @@
+---
+title: "About this blog"
+description: |
+  This is a course blog for Econ 712 at the University of Pennsylvania, Spring 2021 (Covid edition!)
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+We will maintain lecture notes and student presentations, as well as empirical experiments and projects, on this blog. 
