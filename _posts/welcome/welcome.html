@@ -1549,12 +1549,15 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <li>Alternatives to misclassification error for classification trees are the Gini index or cross-entropy.</li>
 </ul></li>
 <li><p>At node <span class="math inline">\(t\)</span> we must determine the optimal split <span class="math inline">\((j,s)\)</span> where <span class="math inline">\(j\)</span> indexes the predictor variable <span class="math inline">\(X_{j}\)</span> we split and <span class="math inline">\(s\)</span> the split point. Let <span class="math inline">\(D_{left}\)</span> and <span class="math inline">\(D_{right}\)</span> be the induced data sets going to the left and right nodes from the split <span class="math inline">\((j,s)\)</span>, with number of observations <span class="math inline">\(N_{left}\)</span> and <span class="math inline">\(N_{right}\)</span> respectively.</p></li>
-<li><p>At each step of the CART algorithm we seek to maximize the <em>information gain</em> <span class="math inline">\(IG\)</span> of the split as measured by <span class="math display">\[IG(D,j, s) = Q(D) - \frac{N_{left}}{N} Q(D_{left}) - \frac{N_{left}}{N} Q(D_{right})\]</span> where <span class="math inline">\(D\)</span> is the dataset of the parent node.</p></li>
+<li><p>At each step of the CART algorithm we seek to maximize the <em>information gain</em> <span class="math inline">\(IG\)</span> of the split as measured by <span class="math display">\[IG(D,j, s) = Q(D) - \frac{N_{left}}{N} Q(D_{left}) - \frac{N_{right}}{N} Q(D_{right})\]</span> where <span class="math inline">\(D\)</span> is the dataset of the parent node.</p></li>
 <li><p>The CART algorithm greedily chooses the split to minimize <span class="math display">\[N_{left} Q(D_{left}) + N_{right} Q(D_{right})\]</span></p></li>
 <li><p>Having done this, we now recursively repeat the process for each new node arising from the split, treating <span class="math inline">\(D_{left}\)</span> and <span class="math inline">\(D_{right}\)</span> as parent data sets.</p></li>
 <li><p>How do we find the best split <span class="math inline">\(s\)</span>? Aren’t there <font color = "red"> infinitely many </font> to consider? No, to split at node <span class="math inline">\(t\)</span> on a variable <span class="math inline">\(j\)</span>, we really only need to consider <span class="math inline">\(N_t\)</span> splits (or <span class="math inline">\(N_t-1\)</span> splits)</p></li>
 </ul>
-<p><embed src="23-tree/split1.pdf" style="width:50.0%" height="400" /><embed src="23-tree/split2.pdf" style="width:50.0%" height="400" /></p>
+<div class="layout-chunk" data-layout="l-body">
+<embed src="23-tree/split2.pdf" width="300pt" height="320pt" style="display: block; margin: auto;" type="application/pdf" />
+</div>
+<p><br></p>
 <ul>
 <li>When does the process stop? stopping We stop only when each terminal node has fewer than some minimum number of observations (e.g., 10 observations).</li>
 </ul>
@@ -1565,10 +1568,13 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <li><p>We then <font color = "red"> prune </font> this tree, meaning that we collapse some of its leaves into the parent nodes.</p></li>
 <li><p>Notice that the total information gain from building the tree is <span class="math display">\[Q(D) - \sum_{t}^{T} \frac{N_{t}}{N}Q(D_t)\]</span> where <span class="math inline">\(D\)</span> is the data entering the root node (e.g., the full training sample)</p></li>
 <li><p>We seek to find the subtree <span class="math inline">\(T \subset T_{0}\)</span> to minimize the <em>cost complexity criterion</em> <span class="math display">\[C_{\alpha}(T) = \sum_{t=1}^{|T|} N_{t}Q_t + \alpha |T|\]</span></p></li>
-<li><p>What is the logic of this approach? That is, why grow a large tree and prune, instead of just stopping at some point when the information gain ? Because any stopping rule may be <font color = "red"> short-sighted </font>, in that a split may look bad but it may lead to a good split below it.</p>
-<center>
-<p><embed src="23-tree/stop.pdf" style="width:50.0%" height="400" /></p>
-</center></li>
+<li><p>What is the logic of this approach? That is, why grow a large tree and prune, instead of just stopping at some point when the information gain ? Because any stopping rule may be <font color = "red"> short-sighted </font>, in that a split may look bad but it may lead to a good split below it.</p></li>
+</ul>
+<div class="layout-chunk" data-layout="l-body">
+<embed src="23-tree/stop.pdf" width="300pt" height="320pt" style="display: block; margin: auto;" type="application/pdf" />
+</div>
+<p><br></p>
+<ul>
 <li><p>For any given <span class="math inline">\(\alpha\)</span>, the optimal pruned tree <span class="math inline">\(T(\alpha)\)</span> can be found via a convenient algorithm - <em>weakest link pruning</em>.</p></li>
 <li><p>When <span class="math inline">\(\alpha = 0,\)</span> then the subtree T will simply equal <span class="math inline">\(T_0\)</span>, because then the penalized objective just measures the training error.</p></li>
 <li><p>However, as <span class="math inline">\(\alpha = 0\)</span> increases, there is a price to pay for having a tree with many terminal nodes, and so the penalized objective will be minimized for a smaller sub-tree.</p></li>
@@ -1579,10 +1585,10 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <p><span class="math display">\[ N_{t} Q(D_{t}) + \alpha  &lt; \sum _{t^\prime = 1}^{|T_{t}|} N_{t^\prime}Q(D_{t^\prime}) + \alpha|T_{t}| \]</span></p>
 <ul>
 <li><p>It pays to prune at <span class="math inline">\(t\)</span> if <span class="math display">\[\alpha &gt; \frac{N_{t} Q(D_{t}) - \sum _{t^\prime = 1}^{|T_{t}|} N_{t^\prime}Q(D_{t^\prime})}{|T_{t}| - 1} = g_{0}(t)\]</span></p></li>
-<li><p>Observe that <span class="math display">\[\alpha\]</span> is always positive because the numerator of the RHS is a re-scaled version of the information gain from splitting at <span class="math inline">\(t\)</span>. this can be done by pruning the weakest leaf one at a time.</p></li>
+<li><p>Observe that <span class="math inline">\(\alpha\)</span> is always positive because the numerator of the RHS is a re-scaled version of the information gain from splitting at <span class="math inline">\(t\)</span>. this can be done by pruning the weakest leaf one at a time.</p></li>
 <li><p>Define the weakest link in <span class="math inline">\(T_{0}\)</span> as the internal node <span class="math inline">\(t_{0}\)</span> such that <span class="math inline">\(g_{0}(t_{0}) = \min g_{0}(t)\)</span>, and let <span class="math inline">\(\alpha_{1} = g_{0}(t_{0})\)</span></p></li>
 <li><p>Prune the tree <span class="math inline">\(T_{0} - T_{1}\)</span> and repeat the weakest link process.</p></li>
-<li><p>This gives us a decreasing sequence of trees <span class="math display">\[T_{0} \prec T_{1} \dots \prec t_{root}\]</span> all the way down to the root node <span class="math inline">\(t_{root}\)</span>, as well as an increasing sequence of <span class="math inline">\(\alpha\)</span> values $0 &lt; <em>{1} &lt; </em>{2} &lt; $</p></li>
+<li><p>This gives us a decreasing sequence of trees <span class="math display">\[T_{0} \prec T_{1} \dots \prec t_{root}\]</span> all the way down to the root node <span class="math inline">\(t_{root}\)</span>, as well as an increasing sequence of <span class="math inline">\(\alpha\)</span> values <span class="math display">\[0 &lt; \alpha_{1} &lt; \alpha_{2} &lt; \dots &lt; \alpha_{K}\]</span></p></li>
 <li><p>A key result in Breiman et al (1984) is that for <span class="math inline">\(\alpha\)</span> such that <span class="math inline">\(\alpha_{k} &lt; \alpha &lt; \alpha_{k+1}\)</span>, the optimum tree <span class="math inline">\(T(\alpha)\)</span> is <span class="math inline">\(T_{k}\)</span>.</p></li>
 <li><p><span class="math inline">\(\alpha\)</span> is a <font color = "red"> tuning parameter </font>, and a larger <span class="math inline">\(\alpha\)</span> yields a smaller tree.</p></li>
 <li><p>Thus as <span class="math inline">\(\alpha = 0\)</span> increases from 0, branches are pruned from the tree in a nested and predictable way (resulting in the whole sequence of subtrees as a function of <span class="math inline">\(\alpha\)</span>).</p></li>
@@ -1643,7 +1649,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <p>Lets skim the data.</p>
 <div class="layout-chunk" data-layout="l-body">
 <table>
-<caption><span id="tab:unnamed-chunk-8">Table 1: </span>Data summary</caption>
+<caption><span id="tab:unnamed-chunk-10">Table 1: </span>Data summary</caption>
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">Name</td>
@@ -2576,12 +2582,49 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   data    <span class='op'>=</span> <span class='va'>ames_train</span>,
   method  <span class='op'>=</span> <span class='st'>"anova"</span>
   <span class='op'>)</span>
+
+<span class='fu'><a href='https://rdrr.io/r/base/class.html'>class</a></span><span class='op'>(</span><span class='va'>m1</span><span class='op'>)</span>
 </code></pre>
 </div>
+<pre><code>[1] &quot;rpart&quot;</code></pre>
+<div class="sourceCode">
+<pre><code><span class='va'>m1</span>
+</code></pre>
+</div>
+<pre><code>n= 2051 
+
+node), split, n, deviance, yval
+      * denotes terminal node
+
+ 1) root 2051 1.273987e+13 180775.50  
+   2) Overall_Qual=Very_Poor,Poor,Fair,Below_Average,Average,Above_Average,Good 1703 4.032269e+12 156431.40  
+     4) Neighborhood=North_Ames,Old_Town,Edwards,Sawyer,Mitchell,Brookside,Iowa_DOT_and_Rail_Road,South_and_West_of_Iowa_State_University,Meadow_Village,Briardale,Northpark_Villa,Blueste 1015 1.360332e+12 131803.50  
+       8) First_Flr_SF&lt; 1048.5 611 4.924281e+11 118301.50  
+        16) Overall_Qual=Very_Poor,Poor,Fair,Below_Average 152 1.053743e+11  91652.57 *
+        17) Overall_Qual=Average,Above_Average,Good 459 2.433622e+11 127126.40 *
+       9) First_Flr_SF&gt;=1048.5 404 5.880574e+11 152223.50  
+        18) Gr_Liv_Area&lt; 2007.5 359 2.957141e+11 145749.50 *
+        19) Gr_Liv_Area&gt;=2007.5 45 1.572566e+11 203871.90 *
+     5) Neighborhood=College_Creek,Somerset,Northridge_Heights,Gilbert,Northwest_Ames,Sawyer_West,Crawford,Timberland,Northridge,Stone_Brook,Clear_Creek,Bloomington_Heights,Veenker,Green_Hills 688 1.148069e+12 192764.70  
+      10) Gr_Liv_Area&lt; 1725.5 482 5.162415e+11 178531.00  
+        20) Total_Bsmt_SF&lt; 1331 352 2.315412e+11 167759.00 *
+        21) Total_Bsmt_SF&gt;=1331 130 1.332603e+11 207698.30 *
+      11) Gr_Liv_Area&gt;=1725.5 206 3.056877e+11 226068.80 *
+   3) Overall_Qual=Very_Good,Excellent,Very_Excellent 348 2.759339e+12 299907.90  
+     6) Overall_Qual=Very_Good 249 9.159879e+11 268089.10  
+      12) Gr_Liv_Area&lt; 1592.5 78 1.339905e+11 220448.90 *
+      13) Gr_Liv_Area&gt;=1592.5 171 5.242201e+11 289819.70 *
+     7) Overall_Qual=Excellent,Very_Excellent 99 9.571896e+11 379937.20  
+      14) Gr_Liv_Area&lt; 1947 42 7.265064e+10 325865.10 *
+      15) Gr_Liv_Area&gt;=1947 57 6.712559e+11 419779.80  
+        30) Neighborhood=Old_Town,Edwards,Timberland 7 8.073100e+10 295300.00 *
+        31) Neighborhood=College_Creek,Somerset,Northridge_Heights,Northridge,Stone_Brook 50 4.668730e+11 437207.00  
+          62) Total_Bsmt_SF&lt; 2168.5 40 1.923959e+11 408996.90 *
+          63) Total_Bsmt_SF&gt;=2168.5 10 1.153154e+11 550047.30 *</code></pre>
 </div>
 <p>Plot the fitted tree</p>
 <div class="layout-chunk" data-layout="l-body">
-<p><img src="welcome_files/figure-html5/unnamed-chunk-11-1.png" width="624" /></p>
+<p><img src="welcome_files/figure-html5/unnamed-chunk-13-1.png" width="624" /></p>
 </div>
 <p>Visualize the cross validation experiment</p>
 <div class="layout-chunk" data-layout="l-body">
@@ -2589,7 +2632,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <pre><code><span class='fu'><a href='https://rdrr.io/pkg/rpart/man/plotcp.html'>plotcp</a></span><span class='op'>(</span><span class='va'>m1</span><span class='op'>)</span>
 </code></pre>
 </div>
-<p><img src="welcome_files/figure-html5/unnamed-chunk-12-1.png" width="624" /></p>
+<p><img src="welcome_files/figure-html5/unnamed-chunk-14-1.png" width="624" /></p>
 </div>
 <p>We can force a larger tree to be fit</p>
 <div class="layout-chunk" data-layout="l-body">
@@ -2604,7 +2647,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <span class='fu'><a href='https://rdrr.io/pkg/rpart/man/plotcp.html'>plotcp</a></span><span class='op'>(</span><span class='va'>m2</span><span class='op'>)</span>
 </code></pre>
 </div>
-<p><img src="welcome_files/figure-html5/unnamed-chunk-13-1.png" width="624" /></p>
+<p><img src="welcome_files/figure-html5/unnamed-chunk-15-1.png" width="624" /></p>
 </div>
 <p>The data underlying cross validation can be extracted</p>
 <div class="layout-chunk" data-layout="l-body">
@@ -2637,7 +2680,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <pre><code>[1] 39852.01</code></pre>
 </div>
 <p>e.g.,the average distance between predicted values and actuals is <code>39,852</code> dollars.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <section class="footnotes" role="doc-endnotes">
 <hr />
 <ol>

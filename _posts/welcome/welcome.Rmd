@@ -178,7 +178,7 @@ to at the root, then the variables at the second level, etc.
     
 - At node $t$ we must determine the optimal split $(j,s)$ where $j$ indexes the predictor variable $X_{j}$ we split and $s$ the split point. Let $D_{left}$ and $D_{right}$ be the induced data sets going to the left and right nodes from the split $(j,s)$, with number of observations $N_{left}$ and $N_{right}$ respectively. 
 
-- At each step of the CART algorithm we seek to maximize the *information gain* $IG$ of the split as measured by $$IG(D,j, s) = Q(D) - \frac{N_{left}}{N} Q(D_{left}) - \frac{N_{left}}{N} Q(D_{right})$$ where $D$ is the dataset of the parent node. 
+- At each step of the CART algorithm we seek to maximize the *information gain* $IG$ of the split as measured by $$IG(D,j, s) = Q(D) - \frac{N_{left}}{N} Q(D_{left}) - \frac{N_{right}}{N} Q(D_{right})$$ where $D$ is the dataset of the parent node. 
 
 - The CART algorithm greedily chooses the split to minimize $$N_{left} Q(D_{left}) + N_{right} Q(D_{right})$$
 
@@ -191,8 +191,11 @@ No, to split at node $t$ on a variable $j$, we really only need to consider $N_t
 splits (or $N_t-1$ splits)
 
 
-![](23-tree/split1.pdf){width=50% height=400}![](23-tree/split2.pdf){width=50% height=400}
+```{r, out.width='300pt', out.height='320pt', fig.align='center'}
+knitr::include_graphics("23-tree/split2.pdf")
+```
 
+<br>
 
 - When does the process stop? stopping We stop only when each terminal node has fewer than some minimum number of observations (e.g., 10 observations).
 
@@ -215,9 +218,12 @@ leaves into the parent nodes.
 - What is the logic of this approach? That is, why grow a large tree and prune, instead of just stopping at some point when the information gain ?
 Because any stopping rule may be <font color = "red"> short-sighted </font>, in that a split
 may look bad but it may lead to a good split below it.
-<center>
-![](23-tree/stop.pdf){width=50% height=400}
-</center>
+
+```{r, out.width='300pt', out.height='320pt', fig.align='center'}
+knitr::include_graphics("23-tree/stop.pdf")
+```
+
+<br>
 
 - For any given $\alpha$, the optimal pruned tree $T(\alpha)$ can be found via a convenient algorithm - *weakest link pruning*. 
 
@@ -234,16 +240,17 @@ $$ N_{t} Q(D_{t}) + \alpha  < \sum _{t^\prime = 1}^{|T_{t}|} N_{t^\prime}Q(D_{t^
 
 - It pays to prune at $t$ if $$\alpha > \frac{N_{t} Q(D_{t}) - \sum _{t^\prime = 1}^{|T_{t}|} N_{t^\prime}Q(D_{t^\prime})}{|T_{t}| - 1} = g_{0}(t)$$
 
-- Observe that $$\alpha$$ is always positive because the numerator of the RHS is a re-scaled version of the information gain from splitting at $t$. 
+- Observe that $\alpha$ is always positive because the numerator of the RHS is a re-scaled version of the information gain from splitting at $t$. 
 this can be done by pruning the weakest leaf one at a time. 
 
 - Define the weakest link in $T_{0}$ as the internal node $t_{0}$ such that $g_{0}(t_{0}) = \min g_{0}(t)$, and let $\alpha_{1} = g_{0}(t_{0})$
 
 - Prune the tree $T_{0} - T_{1}$ and repeat the weakest link process. 
 
-- This gives us a decreasing sequence of trees $$T_{0} \prec T_{1} \dots \prec t_{root}$$ all the way down to the root node $t_{root}$, as well as an increasing sequence of $\alpha$ values $0 < \alpha_{1} < \alpha_{2} < \dots $
+- This gives us a decreasing sequence of trees $$T_{0} \prec T_{1} \dots \prec t_{root}$$ all the way down to the root node $t_{root}$, as well as an increasing sequence of $\alpha$ values $$0 < \alpha_{1} < \alpha_{2} < \dots < \alpha_{K}$$
 
 - A key result in Breiman et al (1984) is that for $\alpha$ such that $\alpha_{k} < \alpha < \alpha_{k+1}$, the optimum tree $T(\alpha)$ is $T_{k}$. 
+
 - $\alpha$ is a <font color = "red"> tuning parameter </font>, and a larger $\alpha$ yields a smaller tree.
 
 - Thus as $\alpha = 0$ increases from 0, branches are pruned from the tree in a nested and predictable way (resulting in the whole sequence of subtrees as a function of  $\alpha$).
@@ -339,7 +346,13 @@ m1 <- rpart(
   data    = ames_train,
   method  = "anova"
   )
+
+class(m1)
+m1
 ```
+
+
+
 
 Plot the fitted tree
 
