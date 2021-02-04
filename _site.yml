@@ -1,0 +1,17 @@
+name: "Econ712"
+title: "Econ 712"
+description: |
+  Spring 2021
+output_dir: "_site"
+navbar:
+  logo: images/pennlogo.png
+  right:
+    - text: "Home"
+      href: index.html
+    - text: "About"
+      href: about.html
+    - icon: fa fa-twitter
+      href: https://twitter.com/AmitEcon
+    - icon: fa fa-envelope
+      href: mailto:akgandhi@upenn.edu
+output: distill::distill_article

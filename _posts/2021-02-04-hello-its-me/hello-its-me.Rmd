@@ -1,0 +1,23 @@
+---
+title: "Hello it's me"
+description: |
+  Cung's first Distill attempt.
+author:
+  - name: Cung Hoang
+    url: {}
+date: 02-04-2021
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+Distill is a publication format for scientific and technical writing, native to the web.
+
+Learn more about using Distill at <https://rstudio.github.io/distill>.
+
+
