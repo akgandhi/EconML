@@ -115,7 +115,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   <!--/radix_placeholder_rmarkdown_metadata-->
   
   <script type="text/json" id="radix-resource-manifest">
-  {"type":"character","attributes":{},"value":["23-tree/23-tree_v2.log","23-tree/23-tree_v2.nav","23-tree/23-tree_v2.pdf","23-tree/23-tree_v2.snm","23-tree/23-tree_v2.synctex.gz","23-tree/23-tree_v2.tex","23-tree/23-tree_v2.toc","23-tree/23-tree.log","23-tree/23-tree.nav","23-tree/23-tree.pdf","23-tree/23-tree.snm","23-tree/23-tree.synctex.gz","23-tree/23-tree.tex","23-tree/23-tree.toc","23-tree/actual.png","23-tree/bagging.png","23-tree/blank.png","23-tree/candidates.jpg","23-tree/db.png","23-tree/ex1-notpos.png","23-tree/ex1-regions.png","23-tree/ex1-tree.png","23-tree/flowchart.jpg","23-tree/foo.R","23-tree/gmail.png","23-tree/ideal.png","23-tree/index.html","23-tree/index.html?C=D;O=A","23-tree/index.html?C=D;O=D","23-tree/index.html?C=M;O=A","23-tree/index.html?C=M;O=D","23-tree/index.html?C=N;O=A","23-tree/index.html?C=N;O=D","23-tree/index.html?C=S;O=A","23-tree/index.html?C=S;O=D","23-tree/lda.pdf","23-tree/ldaex.png","23-tree/lin1.pdf","23-tree/lin2.pdf","23-tree/lin3.pdf","23-tree/logr.pdf","23-tree/regtree.png","23-tree/simpledata.pdf","23-tree/simpletree.pdf","23-tree/spamcv.png","23-tree/spamtree.png","23-tree/split1.pdf","23-tree/split2.pdf","23-tree/stop.pdf","23-tree/texput.log","23-tree/why.png","custom2.tex","reg-partition-hitters.png","reg-partition-tree.png","welcome_files/anchor-4.2.2/anchor.min.js","welcome_files/bowser-1.9.3/bowser.min.js","welcome_files/distill-2.2.21/template.v2.js","welcome_files/figure-html5/unnamed-chunk-10-1.png","welcome_files/figure-html5/unnamed-chunk-11-1.png","welcome_files/figure-html5/unnamed-chunk-12-1.png","welcome_files/figure-html5/unnamed-chunk-13-1.png","welcome_files/figure-html5/unnamed-chunk-14-1.png","welcome_files/figure-html5/unnamed-chunk-15-1.png","welcome_files/figure-html5/unnamed-chunk-16-1.png","welcome_files/figure-html5/unnamed-chunk-17-1.png","welcome_files/figure-html5/unnamed-chunk-18-1.png","welcome_files/figure-html5/unnamed-chunk-5-1.png","welcome_files/figure-html5/unnamed-chunk-6-1.png","welcome_files/figure-html5/unnamed-chunk-7-1.png","welcome_files/figure-html5/unnamed-chunk-8-1.png","welcome_files/header-attrs-2.5/header-attrs.js","welcome_files/jquery-1.11.3/jquery.min.js","welcome_files/webcomponents-2.0.0/webcomponents.js"]}
+  {"type":"character","attributes":{},"value":["custom2.tex","images/ex1-notpos.png","images/ex1-regions.png","images/ex1-tree.png","images/spamcv.png","images/spamtree.png","images/split2.pdf","images/splitgraph-1.png","images/stop-1.png","images/stop.pdf","reg-partition-hitters.png","reg-partition-tree.png","welcome_files/anchor-4.2.2/anchor.min.js","welcome_files/bowser-1.9.3/bowser.min.js","welcome_files/distill-2.2.21/template.v2.js","welcome_files/figure-html5/unnamed-chunk-10-1.png","welcome_files/figure-html5/unnamed-chunk-11-1.png","welcome_files/figure-html5/unnamed-chunk-12-1.png","welcome_files/figure-html5/unnamed-chunk-13-1.png","welcome_files/figure-html5/unnamed-chunk-14-1.png","welcome_files/figure-html5/unnamed-chunk-15-1.png","welcome_files/figure-html5/unnamed-chunk-16-1.png","welcome_files/figure-html5/unnamed-chunk-17-1.png","welcome_files/figure-html5/unnamed-chunk-18-1.png","welcome_files/figure-html5/unnamed-chunk-5-1.png","welcome_files/figure-html5/unnamed-chunk-6-1.png","welcome_files/figure-html5/unnamed-chunk-7-1.png","welcome_files/figure-html5/unnamed-chunk-8-1.png","welcome_files/header-attrs-2.5/header-attrs.js","welcome_files/jquery-1.11.3/jquery.min.js","welcome_files/webcomponents-2.0.0/webcomponents.js"]}
   </script>
   <!--radix_placeholder_navigation_in_header-->
   <!--/radix_placeholder_navigation_in_header-->
@@ -1462,14 +1462,14 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <strong>Constructing a partitioned space from a decision tree</strong>
 </center>
 <div class="layout-chunk" data-layout="l-body">
-<p><img src="23-tree/ex1-tree.png" width="50%" /><img src="23-tree/ex1-regions.png" width="50%" /></p>
+<p><img src="images/ex1-tree.png" width="50%" /><img src="images/ex1-regions.png" width="50%" /></p>
 </div>
 <ul>
 <li><p>These methods are both simple and useful for interpretation.</p></li>
 <li><p>Note however that not every partition of the predictor space can be represented as a tree</p></li>
 </ul>
 <div class="layout-chunk" data-layout="l-body">
-<p><img src="23-tree/ex1-notpos.png" width="75%" /></p>
+<p><img src="images/ex1-notpos.png" width="75%" /></p>
 </div>
 <h2 id="how-to-use-trees">How to use trees?</h2>
 <ul>
@@ -1555,7 +1555,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <li><p>How do we find the best split <span class="math inline">\(s\)</span>? Aren’t there <font color = "red"> infinitely many </font> to consider? No, to split at node <span class="math inline">\(t\)</span> on a variable <span class="math inline">\(j\)</span>, we really only need to consider <span class="math inline">\(N_t\)</span> splits (or <span class="math inline">\(N_t-1\)</span> splits)</p></li>
 </ul>
 <div class="layout-chunk" data-layout="l-body">
-<embed src="23-tree/split2.pdf" width="300pt" height="320pt" style="display: block; margin: auto;" type="application/pdf" />
+<p><img src="images/splitgraph-1.png" width="500" style="display: block; margin: auto;" /></p>
 </div>
 <p><br></p>
 <ul>
@@ -1571,7 +1571,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <li><p>What is the logic of this approach? That is, why grow a large tree and prune, instead of just stopping at some point when the information gain ? Because any stopping rule may be <font color = "red"> short-sighted </font>, in that a split may look bad but it may lead to a good split below it.</p></li>
 </ul>
 <div class="layout-chunk" data-layout="l-body">
-<embed src="23-tree/stop.pdf" width="300pt" height="320pt" style="display: block; margin: auto;" type="application/pdf" />
+<p><img src="images/stop-1.png" width="500" style="display: block; margin: auto;" /></p>
 </div>
 <p><br></p>
 <ul>
@@ -1624,14 +1624,14 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <li><p>Cross-validation error curve for the spam data (from ESL page 314):</p></li>
 </ul>
 <div class="layout-chunk" data-layout="l-body">
-<p><img src="23-tree/spamcv.png" width="411" /></p>
+<p><img src="images/spamcv.png" width="411" /></p>
 </div>
 <ul>
 <li><p>The blue curve is the 10-fold cross validation estimate of the mis-classification rate with SE bars. The orange curve is the test error, which tracks the CV error closely.</p></li>
 <li><p>The min occurs at a tree of size 17 (with one SE rule applied)</p></li>
 </ul>
 <div class="layout-chunk" data-layout="l-body">
-<p><img src="23-tree/spamtree.png" width="692" /></p>
+<p><img src="images/spamtree.png" width="692" /></p>
 </div>
 <h2 id="running-cart-in-r">Running CART in R</h2>
 <p>The package <code>rpart</code> provides a fast implementation and interface for the CART algorithm and decision trees in R. We consider an example here with the Ames, Iowa Housing Data (sometimes called the <em>new iris</em> data). For a description, see <a href="https://www.tmwr.org/ames.html">here</a></p>

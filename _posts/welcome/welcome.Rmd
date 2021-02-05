@@ -52,8 +52,8 @@ on each half
 </center>
 
 ```{r, out.width=c('50%', '50%'), fig.show='hold'}
-knitr::include_graphics("23-tree/ex1-tree.png")
-knitr::include_graphics("23-tree/ex1-regions.png")
+knitr::include_graphics("images/ex1-tree.png")
+knitr::include_graphics("images/ex1-regions.png")
 ```
 
 
@@ -62,7 +62,7 @@ knitr::include_graphics("23-tree/ex1-regions.png")
 - Note however that not every partition of the predictor space can be represented as a tree
 
 ```{r, out.width = '75%'}
-knitr::include_graphics("23-tree/ex1-notpos.png")
+knitr::include_graphics("images/ex1-notpos.png")
 ```
 
 ## How to use trees?
@@ -191,8 +191,8 @@ No, to split at node $t$ on a variable $j$, we really only need to consider $N_t
 splits (or $N_t-1$ splits)
 
 
-```{r, out.width='300pt', out.height='320pt', fig.align='center'}
-knitr::include_graphics("23-tree/split2.pdf")
+```{r, fig.align='center'}
+knitr::include_graphics("images/splitgraph-1.png")
 ```
 
 <br>
@@ -219,8 +219,8 @@ leaves into the parent nodes.
 Because any stopping rule may be <font color = "red"> short-sighted </font>, in that a split
 may look bad but it may lead to a good split below it.
 
-```{r, out.width='300pt', out.height='320pt', fig.align='center'}
-knitr::include_graphics("23-tree/stop.pdf")
+```{r, fig.align='center'}
+knitr::include_graphics("images/stop-1.png")
 ```
 
 <br>
@@ -293,7 +293,7 @@ or characters (e.g., "free", "need", "$"). The last 3 measure
 - Cross-validation error curve for the spam data (from ESL page 314):
 
 ```{r}
-knitr::include_graphics("23-tree/spamcv.png")
+knitr::include_graphics("images/spamcv.png")
 ```
 
 - The blue curve is the 10-fold cross validation estimate of the mis-classification rate with SE bars. The orange curve is the test error, which tracks the CV error closely. 
@@ -301,7 +301,7 @@ knitr::include_graphics("23-tree/spamcv.png")
 - The min occurs at a tree of size 17 (with one SE rule applied)
 
 ```{r}
-knitr::include_graphics("23-tree/spamtree.png")
+knitr::include_graphics("images/spamtree.png")
 ```
 
 
