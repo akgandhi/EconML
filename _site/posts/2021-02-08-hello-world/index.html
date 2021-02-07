@@ -20,27 +20,26 @@
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css" data-origin="pandoc">
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
 div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
 }
 @media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
 }
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(title);
     position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
+    border: none; pointer-events: all; display: inline-block;
     -webkit-touch-callout: none; -webkit-user-select: none;
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
@@ -49,9 +48,9 @@ pre.numberSource code > span > a:first-child::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {   }
+  {  }
 @media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+a.sourceLine::before { text-decoration: underline; }
 }
 code span.al { color: #ad0000; } /* Alert */
 code span.an { color: #5e5e5e; } /* Annotation */
@@ -85,38 +84,38 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 </style>
 
   <!--radix_placeholder_meta_tags-->
-<title>Econ 712: Predictive Accuracy: The What and the How</title>
+<title>Econ 712: Hello World</title>
 
-<meta property="description" itemprop="description" content="measuring and managing the performance of an algorithmic model"/>
+<meta property="description" itemprop="description" content="A short description of the post."/>
 
 
 <!--  https://schema.org/Article -->
-<meta property="article:published" itemprop="datePublished" content="2021-02-03"/>
-<meta property="article:created" itemprop="dateCreated" content="2021-02-03"/>
-<meta name="article:author" content="Amit Gandhi"/>
+<meta property="article:published" itemprop="datePublished" content="2021-02-08"/>
+<meta property="article:created" itemprop="dateCreated" content="2021-02-08"/>
+<meta name="article:author" content="Sheng Chao Ho"/>
 
 <!--  https://developers.facebook.com/docs/sharing/webmasters#markup -->
-<meta property="og:title" content="Econ 712: Predictive Accuracy: The What and the How"/>
+<meta property="og:title" content="Econ 712: Hello World"/>
 <meta property="og:type" content="article"/>
-<meta property="og:description" content="measuring and managing the performance of an algorithmic model"/>
+<meta property="og:description" content="A short description of the post."/>
 <meta property="og:locale" content="en_US"/>
 <meta property="og:site_name" content="Econ 712"/>
 
 <!--  https://dev.twitter.com/cards/types/summary -->
 <meta property="twitter:card" content="summary"/>
-<meta property="twitter:title" content="Econ 712: Predictive Accuracy: The What and the How"/>
-<meta property="twitter:description" content="measuring and managing the performance of an algorithmic model"/>
+<meta property="twitter:title" content="Econ 712: Hello World"/>
+<meta property="twitter:description" content="A short description of the post."/>
 
 <!--/radix_placeholder_meta_tags-->
   <!--radix_placeholder_rmarkdown_metadata-->
 
 <script type="text/json" id="radix-rmarkdown-metadata">
-{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","author","date","output","preview"]}},"value":[{"type":"character","attributes":{},"value":["Predictive Accuracy: The What and the How"]},{"type":"character","attributes":{},"value":["measuring and managing the performance of an algorithmic model"]},{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","url"]}},"value":[{"type":"character","attributes":{},"value":["Amit Gandhi"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":[]}},"value":[]}]}]},{"type":"character","attributes":{},"value":["02-03-2021"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["self_contained","css"]}},"value":[{"type":"logical","attributes":{},"value":[false]},{"type":"character","attributes":{},"value":["styles.css"]}]}]},{"type":"character","attributes":{},"value":["https://i0.wp.com/blog.rankone.io/wp-content/uploads/2018/11/accuracy1.png?fit=1801%2C901&ssl=1"]}]}
+{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","author","date","output"]}},"value":[{"type":"character","attributes":{},"value":["Hello World"]},{"type":"character","attributes":{},"value":["A short description of the post."]},{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","url"]}},"value":[{"type":"character","attributes":{},"value":["Sheng Chao Ho"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":[]}},"value":[]}]}]},{"type":"character","attributes":{},"value":["02-08-2021"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["self_contained"]}},"value":[{"type":"logical","attributes":{},"value":[false]}]}]}]}
 </script>
 <!--/radix_placeholder_rmarkdown_metadata-->
   
   <script type="text/json" id="radix-resource-manifest">
-  {"type":"character","attributes":{},"value":["images/3D-PCA.png","images/approx-shapley-idea.png","images/Autoencoder_structure.png","images/autoencoder-symmetry.png","images/basic-neural-net.png","images/boosted-trees-process.png","images/bootstrap-scheme.png","images/bv.png","images/confusion-matrix.png","images/confusion-matrix2.png","images/cv.png","images/data_split.png","images/decision-tree-terminology.png","images/deep_neural-net.png","images/dendrogram.png","images/dendrogram2.png","images/dendrogram3.png","images/digits.png","images/exemplar-decision-tree.png","images/glrm-example.png","images/minimize-leakage.png","images/mlp_network.png","images/modeling_process.png","images/ohe-vs-dummy.png","images/pcr-steps.png","images/pdp-illustration.png","images/perceptron_node.png","images/pls-vs-pcr.png","images/quadratic-huber-loss.png","images/validatetest.png","predictive-accuracy-the-what-and-the-how_files/anchor-4.2.2/anchor.min.js","predictive-accuracy-the-what-and-the-how_files/bowser-1.9.3/bowser.min.js","predictive-accuracy-the-what-and-the-how_files/distill-2.2.21/template.v2.js","predictive-accuracy-the-what-and-the-how_files/header-attrs-2.5/header-attrs.js","predictive-accuracy-the-what-and-the-how_files/jquery-1.11.3/jquery.min.js","predictive-accuracy-the-what-and-the-how_files/webcomponents-2.0.0/webcomponents.js","styles.css"]}
+  {"type":"NULL"}
   </script>
   <!--radix_placeholder_navigation_in_header-->
 <meta name="distill:offset" content="../.."/>
@@ -2040,8 +2039,11 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <!--/radix_placeholder_distill-->
-  <script src="../../site_libs/header-attrs-2.5/header-attrs.js"></script>
   <script src="../../site_libs/jquery-1.11.3/jquery.min.js"></script>
+  <script src="../../site_libs/popper-2.6.0/popper.min.js"></script>
+  <link href="../../site_libs/tippy-6.2.7/tippy.css" rel="stylesheet" />
+  <link href="../../site_libs/tippy-6.2.7/tippy-light-border.css" rel="stylesheet" />
+  <script src="../../site_libs/tippy-6.2.7/tippy.umd.min.js"></script>
   <script src="../../site_libs/anchor-4.2.2/anchor.min.js"></script>
   <script src="../../site_libs/bowser-1.9.3/bowser.min.js"></script>
   <script src="../../site_libs/webcomponents-2.0.0/webcomponents.js"></script>
@@ -2049,7 +2051,6 @@ document.addEventListener('DOMContentLoaded', function() {
   <!--radix_placeholder_site_in_header-->
 <!--/radix_placeholder_site_in_header-->
 
-  <link rel="stylesheet" href="styles.css" type="text/css"/>
 
 </head>
 
@@ -2058,7 +2059,7 @@ document.addEventListener('DOMContentLoaded', function() {
 <!--radix_placeholder_front_matter-->
 
 <script id="distill-front-matter" type="text/json">
-{"title":"Predictive Accuracy: The What and the How","description":"measuring and managing the performance of an algorithmic model","authors":[{"author":"Amit Gandhi","authorURL":{},"affiliation":"&nbsp;","affiliationURL":"#","orcidID":""}],"publishedDate":"2021-02-03T00:00:00.000+08:00","citationText":"Gandhi, 2021"}
+{"title":"Hello World","description":"A short description of the post.","authors":[{"author":"Sheng Chao Ho","authorURL":{},"affiliation":"&nbsp;","affiliationURL":"#","orcidID":""}],"publishedDate":"2021-02-08T00:00:00.000+08:00","citationText":"Ho, 2021"}
 </script>
 
 <!--/radix_placeholder_front_matter-->
@@ -2090,672 +2091,22 @@ document.addEventListener('DOMContentLoaded', function() {
 <!--/radix_placeholder_site_before_body-->
 
 <div class="d-title">
-<h1>Predictive Accuracy: The What and the How</h1>
+<h1>Hello World</h1>
 <!--radix_placeholder_categories-->
 <!--/radix_placeholder_categories-->
-<p><p>measuring and managing the performance of an algorithmic model</p></p>
+<p><p>A short description of the post.</p></p>
 </div>
 
 <div class="d-byline">
-  Amit Gandhi true 
+  Sheng Chao Ho true 
   
-<br/>02-03-2021
+<br/>02-08-2021
 </div>
 
 <div class="d-article">
-<h1 id="introduction">Introduction</h1>
-<p>In the last post, we examined decision tree as an algorithmic model to understand the behavior of data. As we saw, the optimal tree is one where we grew a large tree, and pruned it to avoid an “overfitting problem” as measured by the <em>cost complexity criterion</em>. But what is the over-fitting problem with algorithmic models, and why did the cost complexity criterion allow us to manage it?</p>
-<p>Trees are formed via an algorithm - <strong>CART</strong> - which is a predictive structure for predicting an outcome variable <span class="math inline">\(Y\)</span> from explanatory variables <span class="math inline">\(X\)</span>. The particular tree that was formed depended on two key inputs</p>
-<ol type="1">
-<li><p>The training sample <span class="math inline">\(D = \{(y_1, x_1),\dots, (y_n, x_n)\}\)</span></p></li>
-<li><p>The tuning parameters (also called <em>hyperparameters</em>) <span class="math inline">\(\eta\)</span> which governs the behavior of the algorithm.</p></li>
-</ol>
-<p>The predictive structure is connected to the conditional distribution of the outcome variable <span class="math inline">\(Y\)</span> given the explanatory variables <span class="math inline">\(X\)</span>, e.g., a feature <span class="math inline">\(F_{Y\mid X}(y \mid X = x)\)</span>.</p>
-<p>Given the training sample <span class="math inline">\(D\)</span> and hyperparameters, the CART algorithm generates a <em>fitted predictor</em> <span class="math inline">\(\hat{m}\)</span>. Although we do not have that much choice over the training sample <span class="math inline">\(D\)</span> (although as we will see below, we have some choice), we do have more discretion over the tuning parameters. Thus a very practical problem we face in algorithmic model is that we must se tthe value of <span class="math inline">\(\eta\)</span>, e.g., <span class="math inline">\(\hat{\eta}\)</span>. This process is called (rather simply) <strong>tuning</strong>. A more elaborate description would be <em>hyperparameter optimization</em></p>
-<p>In this post we examine the more general principles around tuning with an eye towards its practical implementation in the case of the CART algorithm.</p>
-<h1 id="the-tuning-problem">The tuning problem</h1>
-<p>What are the tuning parameters in CART? Lets take a look a look at the help file?</p>
-<div class="layout-chunk" data-layout="l-body">
-<table width="100%" summary="page for rpart">
-<tr>
-<td>
-rpart
-</td>
-<td style="text-align: right;">
-R Documentation
-</td>
-</tr>
-</table>
-<h2>
-Recursive Partitioning and Regression Trees
-</h2>
-<h3>
-Description
-</h3>
-<p>
-Fit a <code>rpart</code> model
-</p>
-<h3>
-Usage
-</h3>
-<pre>
-rpart(formula, data, weights, subset, na.action = na.rpart, method,
-      model = FALSE, x = FALSE, y = TRUE, parms, control, cost, ...)
-</pre>
-<h3>
-Arguments
-</h3>
-<table summary="R argblock">
-<tr valign="top">
-<td>
-<code>formula</code>
-</td>
-<td>
-<p>
-a formula, with a response but no interaction terms. If this a a data frame, that is taken as the model frame (see <code>model.frame).</code>
-</p>
-</td>
-</tr>
-<tr valign="top">
-<td>
-<code>data</code>
-</td>
-<td>
-<p>
-an optional data frame in which to interpret the variables named in the formula.
-</p>
-</td>
-</tr>
-<tr valign="top">
-<td>
-<code>weights</code>
-</td>
-<td>
-<p>
-optional case weights.
-</p>
-</td>
-</tr>
-<tr valign="top">
-<td>
-<code>subset</code>
-</td>
-<td>
-<p>
-optional expression saying that only a subset of the rows of the data should be used in the fit.
-</p>
-</td>
-</tr>
-<tr valign="top">
-<td>
-<code>na.action</code>
-</td>
-<td>
-<p>
-the default action deletes all observations for which <code>y</code> is missing, but keeps those in which one or more predictors are missing.
-</p>
-</td>
-</tr>
-<tr valign="top">
-<td>
-<code>method</code>
-</td>
-<td>
-<p>
-one of <code>“anova”</code>, <code>“poisson”</code>, <code>“class”</code> or <code>“exp”</code>. If <code>method</code> is missing then the routine tries to make an intelligent guess. If <code>y</code> is a survival object, then <code>method = “exp”</code> is assumed, if <code>y</code> has 2 columns then <code>method = “poisson”</code> is assumed, if <code>y</code> is a factor then <code>method = “class”</code> is assumed, otherwise <code>method = “anova”</code> is assumed. It is wisest to specify the method directly, especially as more criteria may added to the function in future.
-</p>
-<p>
-Alternatively, <code>method</code> can be a list of functions named <code>init</code>, <code>split</code> and <code>eval</code>. Examples are given in the file ‘<span class="file">tests/usersplits.R</span>’ in the sources, and in the vignettes ‘User Written Split Functions’.
-</p>
-</td>
-</tr>
-<tr valign="top">
-<td>
-<code>model</code>
-</td>
-<td>
-<p>
-if logical: keep a copy of the model frame in the result? If the input value for <code>model</code> is a model frame (likely from an earlier call to the <code>rpart</code> function), then this frame is used rather than constructing new data.
-</p>
-</td>
-</tr>
-<tr valign="top">
-<td>
-<code>x</code>
-</td>
-<td>
-<p>
-keep a copy of the <code>x</code> matrix in the result.
-</p>
-</td>
-</tr>
-<tr valign="top">
-<td>
-<code>y</code>
-</td>
-<td>
-<p>
-keep a copy of the dependent variable in the result. If missing and <code>model</code> is supplied this defaults to <code>FALSE</code>.
-</p>
-</td>
-</tr>
-<tr valign="top">
-<td>
-<code>parms</code>
-</td>
-<td>
-<p>
-optional parameters for the splitting function.<br /> Anova splitting has no parameters.<br /> Poisson splitting has a single parameter, the coefficient of variation of the prior distribution on the rates. The default value is 1.<br /> Exponential splitting has the same parameter as Poisson.<br /> For classification splitting, the list can contain any of: the vector of prior probabilities (component <code>prior</code>), the loss matrix (component <code>loss</code>) or the splitting index (component <code>split</code>). The priors must be positive and sum to 1. The loss matrix must have zeros on the diagonal and positive off-diagonal elements. The splitting index can be <code>gini</code> or <code>information</code>. The default priors are proportional to the data counts, the losses default to 1, and the split defaults to <code>gini</code>.
-</p>
-</td>
-</tr>
-<tr valign="top">
-<td>
-<code>control</code>
-</td>
-<td>
-<p>
-a list of options that control details of the <code>rpart</code> algorithm. See <code>rpart.control</code>.
-</p>
-</td>
-</tr>
-<tr valign="top">
-<td>
-<code>cost</code>
-</td>
-<td>
-<p>
-a vector of non-negative costs, one for each variable in the model. Defaults to one for all variables. These are scalings to be applied when considering splits, so the improvement on splitting on a variable is divided by its cost in deciding which split to choose.
-</p>
-</td>
-</tr>
-<tr valign="top">
-<td>
-<code>…</code>
-</td>
-<td>
-<p>
-arguments to <code>rpart.control</code> may also be specified in the call to <code>rpart</code>. They are checked against the list of valid arguments.
-</p>
-</td>
-</tr>
-</table>
-<h3>
-Details
-</h3>
-<p>
-This differs from the <code>tree</code> function in S mainly in its handling of surrogate variables. In most details it follows Breiman <em>et. al</em> (1984) quite closely. <span style="font-family: Courier New, Courier; color: #666666;"><b>R</b></span> package <span class="pkg">tree</span> provides a re-implementation of <code>tree</code>.
-</p>
-<h3>
-Value
-</h3>
-<p>
-An object of class <code>rpart</code>. See <code>rpart.object</code>.
-</p>
-<h3>
-References
-</h3>
-<p>
-Breiman L., Friedman J. H., Olshen R. A., and Stone, C. J. (1984) <em>Classification and Regression Trees.</em> Wadsworth.
-</p>
-<h3>
-See Also
-</h3>
-<p>
-<code>rpart.control</code>, <code>rpart.object</code>, <code>summary.rpart</code>, <code>print.rpart</code>
-</p>
-<h3>
-Examples
-</h3>
-<pre>
-fit &lt;- rpart(Kyphosis ~ Age + Number + Start, data = kyphosis)
-fit2 &lt;- rpart(Kyphosis ~ Age + Number + Start, data = kyphosis,
-              parms = list(prior = c(.65,.35), split = "information"))
-fit3 &lt;- rpart(Kyphosis ~ Age + Number + Start, data = kyphosis,
-              control = rpart.control(cp = 0.05))
-par(mfrow = c(1,2), xpd = NA) # otherwise on some devices the text is clipped
-plot(fit)
-text(fit, use.n = TRUE)
-plot(fit2)
-text(fit2, use.n = TRUE)
-</pre>
-</div>
-<p>The help file reveals several places where the algorithm can be tuned. Among them is a reference to an argument <code>control</code>, which is a list of options that control the detail of the algorithm. We can examine the parameters of the list:</p>
-<div class="layout-chunk" data-layout="l-body">
-<table width="100%" summary="page for rpart.control">
-<tr>
-<td>
-rpart.control
-</td>
-<td style="text-align: right;">
-R Documentation
-</td>
-</tr>
-</table>
-<h2>
-Control for Rpart Fits
-</h2>
-<h3>
-Description
-</h3>
-<p>
-Various parameters that control aspects of the <code>rpart</code> fit.
-</p>
-<h3>
-Usage
-</h3>
-<pre>
-rpart.control(minsplit = 20, minbucket = round(minsplit/3), cp = 0.01, 
-              maxcompete = 4, maxsurrogate = 5, usesurrogate = 2, xval = 10,
-              surrogatestyle = 0, maxdepth = 30, ...)
-</pre>
-<h3>
-Arguments
-</h3>
-<table summary="R argblock">
-<tr valign="top">
-<td>
-<code>minsplit</code>
-</td>
-<td>
-<p>
-the minimum number of observations that must exist in a node in order for a split to be attempted.
-</p>
-</td>
-</tr>
-<tr valign="top">
-<td>
-<code>minbucket</code>
-</td>
-<td>
-<p>
-the minimum number of observations in any terminal <code>&lt;leaf&gt;</code> node. If only one of <code>minbucket</code> or <code>minsplit</code> is specified, the code either sets <code>minsplit</code> to <code>minbucket*3</code> or <code>minbucket</code> to <code>minsplit/3</code>, as appropriate.
-</p>
-</td>
-</tr>
-<tr valign="top">
-<td>
-<code>cp</code>
-</td>
-<td>
-<p>
-complexity parameter. Any split that does not decrease the overall lack of fit by a factor of <code>cp</code> is not attempted. For instance, with <code>anova</code> splitting, this means that the overall R-squared must increase by <code>cp</code> at each step. The main role of this parameter is to save computing time by pruning off splits that are obviously not worthwhile. Essentially,the user informs the program that any split which does not improve the fit by <code>cp</code> will likely be pruned off by cross-validation, and that hence the program need not pursue it.
-</p>
-</td>
-</tr>
-<tr valign="top">
-<td>
-<code>maxcompete</code>
-</td>
-<td>
-<p>
-the number of competitor splits retained in the output. It is useful to know not just which split was chosen, but which variable came in second, third, etc.
-</p>
-</td>
-</tr>
-<tr valign="top">
-<td>
-<code>maxsurrogate</code>
-</td>
-<td>
-<p>
-the number of surrogate splits retained in the output. If this is set to zero the compute time will be reduced, since approximately half of the computational time (other than setup) is used in the search for surrogate splits.
-</p>
-</td>
-</tr>
-<tr valign="top">
-<td>
-<code>usesurrogate</code>
-</td>
-<td>
-<p>
-how to use surrogates in the splitting process. <code>0</code> means display only; an observation with a missing value for the primary split rule is not sent further down the tree. <code>1</code> means use surrogates, in order, to split subjects missing the primary variable; if all surrogates are missing the observation is not split. For value <code>2</code> ,if all surrogates are missing, then send the observation in the majority direction. A value of <code>0</code> corresponds to the action of <code>tree</code>, and <code>2</code> to the recommendations of Breiman <em>et.al</em> (1984).
-</p>
-</td>
-</tr>
-<tr valign="top">
-<td>
-<code>xval</code>
-</td>
-<td>
-<p>
-number of cross-validations.
-</p>
-</td>
-</tr>
-<tr valign="top">
-<td>
-<code>surrogatestyle</code>
-</td>
-<td>
-<p>
-controls the selection of a best surrogate. If set to <code>0</code> (default) the program uses the total number of correct classification for a potential surrogate variable, if set to <code>1</code> it uses the percent correct, calculated over the non-missing values of the surrogate. The first option more severely penalizes covariates with a large number of missing values.
-</p>
-</td>
-</tr>
-<tr valign="top">
-<td>
-<code>maxdepth</code>
-</td>
-<td>
-<p>
-Set the maximum depth of any node of the final tree, with the root node counted as depth 0. Values greater than 30 <code>rpart</code> will give nonsense results on 32-bit machines.
-</p>
-</td>
-</tr>
-<tr valign="top">
-<td>
-<code>…</code>
-</td>
-<td>
-<p>
-mop up other arguments.
-</p>
-</td>
-</tr>
-</table>
-<h3>
-Value
-</h3>
-<p>
-A list containing the options.
-</p>
-<h3>
-See Also
-</h3>
-<p>
-<code>rpart</code>
-</p>
-</div>
-<p>We can see a few tuning parameters that stand out - <code>minsplit</code>, <code>minbucket</code>, <code>cp</code>, and <code>xval</code>, which are initiatlized to specific values. The user has control of the algorithm by setting these values.</p>
-<h1 id="prediction-error">Prediction Error</h1>
-<p>The tuning parameters in general should be set to maximize the performance of the model. But what is performance?</p>
-<p>Suppose we make a prediction <span class="math inline">\(\hat{Y}\)</span> and the realized outcome is <span class="math inline">\(Y\)</span>, where in general we should not expect perfect prediction and hence <span class="math inline">\(\hat{Y} \neq Y\)</span>. There is a loss <span class="math inline">\(L(Y,\hat{Y})\)</span> incurred from missing the target. Common loss functions are</p>
-<p><span class="math display">\[
-L(\hat{Y}, Y) = 
-\begin{cases}
-(Y-\hat{Y})^2 \mbox{ for regression}\\
-\mathbf{1}(Y \neq \hat{Y}) \mbox{ for classification}
-\end{cases}
-\]</span></p>
-<p>Given the loss function, what is the predictive performance of the predictor <span class="math inline">\(\hat{m}\)</span>.</p>
-<p>If the goal is to use the predictor to predict in the population that has yet to be observed, then the natural performance criterion is the average loss in the population</p>
-<p><span class="math display">\[
-Err_{D} = E_{Y^{0}, X^{0}} \left[L(Y^{0}, \hat{m}(X^{0})) \mid D \right]
-\]</span> where the expectation is taken with respect to the randomness in <span class="math inline">\((Y^{0}, X^{0}) \sim F_{Y,X}\)</span>. This is the <em>test error</em> or <em>generalization error</em>, e.g., the average error we would expect in an independent test sample. Notice that the training sample <span class="math inline">\(D\)</span> is conditioned out in the assesment of performance under <span class="math inline">\(Err_{D}\)</span></p>
-<p>Although <span class="math inline">\(Err_{D}\)</span> is the ideal performance measure, it is challenging to analyze or forecast. However if we could measure it, then this provides a path to tuning. Notice that <span class="math inline">\(Err_{D} = Err_{D}(\eta)\)</span>, and hence optimal tuning would amount to</p>
-<p><span class="math display">\[
-\hat{\eta} = \arg \max_{\eta} Err_{D}(\eta)
-\]</span> Thus <span class="math inline">\(Err_{D}(\eta)\)</span> would serve two distinct purposes (ESL p 222)</p>
-<ol type="1">
-<li><p><font color = "blue"> Model tuning </font>: estimating the performance of different algorithmic models indexed by <span class="math inline">\(\eta\)</span> in order to choose the best one.</p></li>
-<li><p><font color = "blue"> Model assessment </font>: having chosen a final model, estimating its prediction error (generalization error) on new data.</p></li>
-</ol>
-<p>In an ideal circumstance to carry out these calculations we would have a sample of data broken into three parts.</p>
-<ol type="1">
-<li>Training Set</li>
-<li>Validation Set</li>
-<li>Test Set</li>
-</ol>
-<div class="layout-chunk" data-layout="l-body">
-<p><img src="images/validatetest.png" width="858" /></p>
-</div>
-<p>The training set would be used to fit the data <span class="math inline">\(\hat{f}(\eta)\)</span>. The validation set could be used to tune the algorithm’s <span class="math inline">\(\eta\)</span> based on average loss in the validation set. And then the test set would provide a clean assesment of the test error of the tuned model at $.</p>
-<p>We typically will not have enough data for this rather clean experiment without seriously compromising the size of the training sample (which detracts from the algorithm’s performance).</p>
-<p>Instead we will need to live in a <em>second best</em> world and consider a slightly augmented measure of performance, the <em>average test error</em>, where we also account for randomness in the training sample itself</p>
-<p><span class="math display">\[
-Err(\eta) = E_D\left[Err_{D}\right(\eta)]
-\]</span> If we imagine ordering <span class="math inline">\(\eta\)</span> such that lower values of <span class="math inline">\(eta\)</span> generate simpler fitted models, and higher values of <span class="math inline">\(\eta\)</span> generate more complex fitted models, then the behavior of <span class="math inline">\(Err(\eta)\)</span> creates the canonical picture of <em>Bias Variance Tradeoff</em> (ESL p. 220)</p>
-<div class="layout-chunk" data-layout="l-body">
-<p><img src="images/bv.png" width="730" /></p>
-</div>
-<h2 id="optimism">Optimism</h2>
-<ul>
-<li><p>Let the training sample be $ D = {(y_i,x_i)}_{i=1}^{n}$</p></li>
-<li><p>Consider a fitted model <span class="math inline">\(\hat{y}_{i}=\hat{m}\left(x_{i}\right)\)</span>, which can come from any algorithmic model <span class="math inline">\(m\)</span>, and implicitly depends on the tuning parameter <span class="math inline">\(\eta\)</span>.</p></li>
-<li><p>For simplicity consider a regression problem with squared error loss (the analysis below generalizes to many loss functions)</p></li>
-<li><p>The in-sample training error is <span class="math display">\[
-\overline{err}=\frac{1}{n}\sum\left(y_{i}-\hat{y}_{i}\right)^{2}
-\]</span></p></li>
-<li><p>We have a general understanding that the <span class="math inline">\(\overline{err}\)</span> is an optimistic assessment of the object of interest, namely the test error <span class="math inline">\(Err_{D}\)</span>. Can we formalize the relationship to gauge just how optimistic?</p></li>
-<li><p>One source of the discrepancy is that the test experiment is evaluated at potentially different points of the explanatory variables as compared to the training simple. To eliminate this additional variability, it is useful to consider the <em>in-sample</em> test error <span class="math display">\[
-Err_{\mbox{in}} = \frac{1}{n} \sum E_{Y^{0}}\left[L(Y_{i}^{0}, \hat{m}(x_{i}) \mid D \right]
-\]</span></p></li>
-<li><p>Optimism can be defined as</p></li>
-</ul>
-<p><span class="math display">\[
-\mbox{opp} \equiv Err_{\mbox{in}} - \overline{err}
-\]</span></p>
-<p>It turns out there is a natural characterization of the expected optimism, or <span class="math display">\[
-\omega = E_{\mathbf{y}}[\mbox{opp}]
-\]</span> Where the expectation is taken with respect to the training points <span class="math inline">\(\mathbf{y} = (y_i)_{i=1}^{n}\)</span></p>
-<div class="theorem" data-text="CLT">
-<p><span class="math inline">\(\omega = \frac{2}{n}\sum_{i}\mbox{Cov}(y_{i}, \hat{y}_i)\)</span></p>
-</div>
-<p><br></p>
-<p>The interpretation, to quote ESL</p>
-<blockquote>
-<p>Thus the amount by which <span class="math inline">\(\overline{err}\)</span> underestimates the true error depends on how strongly <span class="math inline">\(y_{i}\)</span> affects its own prediction. The harder we fit the data, the greater <span class="math inline">\(Cov(\hat{y}_i, y_i)\)</span> will be, thereby increasing the optimism.</p>
-</blockquote>
-<ul>
-<li><p>The proof of this result is remarkably straightforward.</p></li>
-<li><p>For ease of notation, let the new test data generated from the same points for the explanatory variables as the training set be denoted simply as <span class="math inline">\(y_{i}^{\prime} = Y_{i}^{0}\)</span></p></li>
-<li><p>The prediction error is then <span class="math display">\[
-\frac{1}{n}\sum\left(y_{i}^{\prime}-\hat{y}_{i}\right)^{2}
-\]</span></p></li>
-<li><p>Observe that the <span class="math inline">\(\hat{y}_{i}&#39;s\)</span> are functions of all the <span class="math inline">\(y_{i}&#39;s\)</span> and so are dependent random variables.</p></li>
-<li><p>However <span class="math inline">\(y_{i}^{\prime}\)</span> is independent of <span class="math inline">\(\hat{y}_{i}\)</span>.</p></li>
-<li><p>Recall the formula</p></li>
-</ul>
-<p><span class="math display">\[V\left(Z\right)=E\left[Z^{2}\right]-E\left[Z\right]^{2}\implies E\left[Z^{2}\right]=V\left[Z\right]+E\left[Z\right]^{2}\]</span></p>
-<ul>
-<li><p>Then <span class="math display">\[\begin{align*}
-E\left[\left(y_{i}-\hat{y}_{i}\right)^{2}\right] &amp; =V\left[y_{i}-\hat{y}_{i}\right]+E\left[y_{i}-\hat{y}_{i}\right]^{2}\\
- &amp; =V\left[y_{i}\right]+V\left[\hat{y}_{i}\right]-2Cov\left[y_{i},\hat{y}_{i}\right]+\left(E\left[y_{i}\right]-E\left[\hat{y}_{i}\right]\right)^{2}
-\end{align*}\]</span></p></li>
-<li><p>Observe on the other hand that using the fact <span class="math inline">\(E\left[y_{i}\right]=E\left[y_{i}^{\prime}\right]\)</span> and <span class="math inline">\(V\left[y_{i}^{\prime}\right]=V\left[y_{i}\right]\)</span></p></li>
-</ul>
-<p><span class="math display">\[\begin{align*}
-E\left[\left(y_{i}^{\prime}-\hat{y}_{i}\right)^{2}\right] &amp; =V\left[y_{i}^{\prime}\right]+V\left[\hat{y}_{i}\right]-2Cov\left[y_{i}^{\prime},\hat{y}_{i}\right]+\left(E\left[y_{i}^{\prime}\right]-E\left[\hat{y}_{i}\right]\right)^{2}\\
- &amp; =V\left[y_{i}\right]+V\left[\hat{y}_{i}\right]+\left(E\left[y_{i}\right]-E\left[\hat{y}_{i}\right]\right)^{2}
-\end{align*}\]</span></p>
-<ul>
-<li><p>Hence we have the relationship that <span class="math display">\[
-E\left[\left(y_{i}^{\prime}-\hat{y}_{i}\right)^{2}\right]=E\left[\left(y_{i}-\hat{y}_{i}\right)^{2}\right]+2Cov\left[y_{i},\hat{y}_{i}\right].
-\]</span></p></li>
-<li><p>Averaging over data points <span class="math display">\[
-E\left[\frac{1}{n}\sum_{i=1}^{n}\left(y_{i}^{\prime}-\hat{y}_{i}\right)^{2}\right]=E\left[\frac{1}{n}\sum_{i=1}^{n}\left(y_{i}-\hat{y}_{i}\right)^{2}\right]+\frac{2}{n}\sum_{i}Cov\left(y_{i},\hat{y}_{i}\right).
-\]</span></p></li>
-<li><p>We can frame the result in a slightly different way for the specialized case where the true DGP is</p></li>
-</ul>
-<p><span class="math display">\[
-y_{i} = m(x_i)+\epsilon_i
-\]</span> For a homoskedastic <span class="math inline">\(\epsilon_i\)</span> with variance <span class="math inline">\(\sigma^2\)</span>.</p>
-<ul>
-<li><p>Let us define the degrees of freedom <span class="math inline">\(df\left(\hat{y}\right)\)</span> of the fitted model <span class="math inline">\(\hat{y}\)</span> as <span class="math display">\[
-df\left(\hat{y}\right)=\frac{1}{\sigma^{2}}\sum Cov\left(y_{i},\hat{y}_{i}\right),
-\]</span></p></li>
-<li><p>Then the relationship becomes <span class="math display">\[
-E\left[\left(y_{i}^{\prime}-\hat{y}_{i}\right)^{2}\right]=E\left[\left(y_{i}-\hat{y}_{i}\right)^{2}\right]+\frac{2\sigma^{2}}{n}df\left(\hat{y}\right)
-\]</span> which is words says that the expected test error is exactly the expected training error plus a constant factor <span class="math inline">\(\left(\frac{2\sigma^{2}}{n}\right)\)</span> times the degree of freedom.</p></li>
-<li><p>This gives us an approach to model selection. Suppose we have a family of fitted values <span class="math inline">\(\hat{y}_{\eta}\)</span> which depends on a tuning parameter.</p></li>
-<li><p>Then we can estimate <span class="math display">\[
-Err_{\mbox{in}}(\eta) =\frac{1}{n}\sum_{i=1}^{n}\left(y_{i}-\left(\hat{y}_{\eta}\right)_{i}\right)^{2}+\frac{2\sigma^{2}}{n}df\left(\hat{y}_{\eta}\right)
-\]</span> replacing <span class="math inline">\(\sigma^{2}\)</span> and <span class="math inline">\(df\)</span> with estimates if needed.</p>
-<p>Then we can select <span class="math display">\[
-\hat{\eta}=\arg\min_{\eta\in\Theta}\frac{1}{n}\left(y_{i}-\left(\hat{y}_{\eta}\right)_{i}\right)^{2}+\frac{2\sigma^{2}}{n}df\left(\hat{y}_{\eta}\right)
-\]</span></p></li>
-<li><p>Observe that for a linear regression model this becomes <span class="math display">\[\begin{align*}
-df\left(\hat{y}^{linreg}\right) &amp; =\\
-\frac{1}{\sigma^{2}}Tr\left(Cov\left(X\left(X^{\prime}X\right)^{-1}X^{\prime}Y\right),Y\right) &amp; =\\
-\frac{1}{\sigma^{2}}Tr\left(X\left(X^{\prime}X\right)^{-1}X^{\prime}V\left[Y\right]\right) &amp; =\\
-Tr\left(X\left(X^{\prime}X\right)^{-1}X^{\prime}\right) &amp; =\\
-Tr\left(X^{\prime}X\left(X^{\prime}X\right)^{-1}\right) &amp; =p
-\end{align*}\]</span></p></li>
-<li><p>The optimism term <span class="math inline">\(\frac{2}{n}\sigma^{2}\left(p\right)\)</span> depends on 3 key factors</p>
-<ol type="1">
-<li><p>Grows with <span class="math inline">\(\sigma^{2}\)</span>: more noise gives the model more opportunities to seem to fit well by capitalizing on chance.</p></li>
-<li><p>Shrinks with <span class="math inline">\(n\)</span>: more data at any noise level makes it harder to pretend the fit is better than it is in reality.</p></li>
-<li><p>Grows with <span class="math inline">\(p\)</span>: every extra parameter is another control which can adjust to fit the noise.</p></li>
-</ol></li>
-<li><p>Hence model selection on the number of predictors becomes <span class="math display">\[
-\hat{k}=\arg\min_{k\in\left\{ 1,\dots,p\right\} }\frac{1}{n}\sum\left(y_{i}-\left(\hat{y}_{k}\right)_{i}\right)^{2}+\frac{2\sigma^{2}}{n}k
-\]</span> which gives Mallow’s <span class="math inline">\(C_{p}\)</span> criterion for choice among linear models.</p></li>
-</ul>
-<h2 id="cross-validation">Cross-Validation</h2>
-<ul>
-<li><p>An alternative approach to estimating the expected test error <span class="math inline">\(Err\)</span> associated with an ML technique <span class="math inline">\(\hat{m}\)</span> is cross validation.</p></li>
-<li><p>Let the fitted value under a given ML technique class be <span class="math inline">\(\hat{y}_{\eta}\)</span> for model tuning parameter <span class="math inline">\(\eta\in\Theta\)</span></p></li>
-<li><p>Generally <span class="math inline">\(\eta\)</span> is ordered such that larger or smaller values are associated with a higher degree of regularization in the method. We wish to select the value <span class="math inline">\(\eta^{\ast}\)</span> that minimizes <span class="math inline">\(Err\)</span>.</p></li>
-<li><p>Cross validation is a resampling technique that allows us to statistically approximate <span class="math inline">\(Err\)</span></p></li>
-<li><p>Split the training set randomly into <span class="math inline">\(K\)</span> divisions or <em>folds</em> for some number <span class="math inline">\(K\)</span>. Express the folds as <span class="math inline">\(F_{1},\dots,F_{K}\)</span> where <span class="math display">\[F_{1}\cup \dots \cup F_{K}= \{ 1,\dots,n\} \]</span> with <span class="math inline">\(n_{k}=\left|F_{k}\right|\)</span> points in fold <span class="math inline">\(k\)</span>.</p></li>
-<li><p>For each <span class="math inline">\(k=1,\dots,K\)</span>, we fit our model to all points besides the <span class="math inline">\(k^{th}\)</span> fold, and let the <span class="math inline">\(i^{th}\)</span> fitted values be denotes <span class="math inline">\(\hat{m}_{\eta}^{-k}\left(x_{i}\right)\)</span>.</p></li>
-<li><p>We then evaluate the error on the points in the <span class="math inline">\(k^{th}\)</span> fold <span class="math display">\[
-CV_{k}\left(\eta\right)=\frac{1}{n_{k}}\sum_{i\in F_{k}}\left(y_{i}-\hat{m}_{\eta}^{-k}\left(x_{i}\right)\right)^{2}
-\]</span></p></li>
-<li><p>We then average over the folds to estimate prediction error <span class="math display">\[
-CV\left(\eta\right)=\frac{1}{K}CV_{k}\left(\eta\right)
-\]</span></p></li>
-<li><p>The process can be depicted as</p></li>
-</ul>
-<div class="layout-chunk" data-layout="l-body">
-<p><img src="images/cv.png" width="716" /></p>
-</div>
-<ul>
-<li><p>This is <span class="math inline">\(K\)</span>-fold cross validation, and the tuning procedure becomes <span class="math display">\[
-\hat{\eta}=\arg\min_{\eta\in\left\{ \eta_{1},\dots,\eta_{m}\right\} }CV\left(\eta\right)
-\]</span></p></li>
-<li><p>This leaves open the choice of <span class="math inline">\(K\)</span>.</p></li>
-<li><p>For <span class="math inline">\(K=2\)</span> we have split sample cross-validation. The problem is that the CV error estimate will be biased upwards.</p></li>
-<li><p>For <span class="math inline">\(K=n\)</span> we have leave-one-out cross validation. The problem is that the CV error estimate will have high variance.</p></li>
-<li><p>A standard to balance this bias-variance tradeoff is setting <span class="math inline">\(K=5\)</span> or <span class="math inline">\(K=10\)</span>, where each iteration we train on a fraction of about <span class="math inline">\(\frac{K-1}{K}\)</span> of the total training set so we reduce bias, and there is less overlap among training set, thus reducing bias.</p></li>
-<li><p>Recognizing there is some variance in the CV error estimate, the one standard error rule is an alternative to choice of <span class="math inline">\(\eta\)</span>. Let <span class="math display">\[
-SD\left(\eta\right)=\sqrt{var\left(CV_{1}\left(\eta\right),\dots,CV_{K}\left(\eta\right)\right)}
-\]</span> and <span class="math display">\[
-SE\left(\eta\right)=\frac{SD\left(\eta\right)}{\sqrt{K}}
-\]</span> is standard error estimate of <span class="math inline">\(CV\left(\eta\right).\)</span></p></li>
-<li><p>The one standard error rule is to move <span class="math inline">\(\eta\)</span> in the direction of increasing regularization until it ceases to be true that <span class="math display">\[
-CV\left(\eta\right)\leq CV\left(\hat{\eta}\right)+SE\left(\hat{\eta}\right)
-\]</span> e.g., we take the most simplest model whose error is within one standard error of the minimal error.</p></li>
-<li><p>See the interesting discussion on the proper application of CV at the top of page 245.</p></li>
-<li><p>Let us now revisit the Ames, Iowa data to see if multidimensional tuning would play a role.</p></li>
-</ul>
-<div class="layout-chunk" data-layout="l-body">
-<div class="sourceCode">
-<pre><code><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://rsample.tidymodels.org'>rsample</a></span><span class='op'>)</span>     <span class='co'># data splitting </span>
-<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dplyr.tidyverse.org'>dplyr</a></span><span class='op'>)</span>       <span class='co'># data wrangling</span>
-<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://github.com/bethatkinson/rpart'>rpart</a></span><span class='op'>)</span>       <span class='co'># performing regression trees</span>
-<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='http://www.milbo.org/rpart-plot/index.html'>rpart.plot</a></span><span class='op'>)</span>  <span class='co'># plotting regression trees</span>
-</code></pre>
-</div>
-</div>
-<p>Create training and test samples.</p>
-<div class="layout-chunk" data-layout="l-body">
-<div class="sourceCode">
-<pre><code><span class='co'># Create training (70%) and test (30%) sets for the AmesHousing::make_ames() data.</span>
-<span class='co'># Use set.seed for reproducibility</span>
-
-<span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span><span class='op'>(</span><span class='fl'>123</span><span class='op'>)</span>
-<span class='va'>ames_split</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rsample.tidymodels.org/reference/initial_split.html'>initial_split</a></span><span class='op'>(</span><span class='fu'>AmesHousing</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/AmesHousing/man/make_ames.html'>make_ames</a></span><span class='op'>(</span><span class='op'>)</span>, prop <span class='op'>=</span> <span class='fl'>.7</span><span class='op'>)</span>
-<span class='va'>ames_train</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rsample.tidymodels.org/reference/initial_split.html'>training</a></span><span class='op'>(</span><span class='va'>ames_split</span><span class='op'>)</span>
-<span class='va'>ames_test</span>  <span class='op'>&lt;-</span> <span class='fu'><a href='https://rsample.tidymodels.org/reference/initial_split.html'>testing</a></span><span class='op'>(</span><span class='va'>ames_split</span><span class='op'>)</span>
-</code></pre>
-</div>
-</div>
-<p>Setup a grid for the tuning parameters</p>
-<div class="layout-chunk" data-layout="l-body">
-<div class="sourceCode">
-<pre><code><span class='va'>hyper_grid</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/expand.grid.html'>expand.grid</a></span><span class='op'>(</span>
-  minsplit <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='fl'>5</span>, <span class='fl'>20</span>, <span class='fl'>1</span><span class='op'>)</span>,
-  maxdepth <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='fl'>8</span>, <span class='fl'>15</span>, <span class='fl'>1</span><span class='op'>)</span>
-<span class='op'>)</span>
-
-<span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span><span class='op'>(</span><span class='va'>hyper_grid</span><span class='op'>)</span>
-</code></pre>
-</div>
-<pre><code>  minsplit maxdepth
-1        5        8
-2        6        8
-3        7        8
-4        8        8
-5        9        8
-6       10        8</code></pre>
-</div>
-<p>Use CART for each tuning parameter value in the grid.</p>
-<div class="layout-chunk" data-layout="l-body">
-<div class="sourceCode">
-<pre><code><span class='va'>models</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span><span class='op'>)</span>
-
-<span class='kw'>for</span> <span class='op'>(</span><span class='va'>i</span> <span class='kw'>in</span> <span class='fl'>1</span><span class='op'>:</span><span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span><span class='op'>(</span><span class='va'>hyper_grid</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>{</span>
-  
-  <span class='co'># get minsplit, maxdepth values at row i</span>
-  <span class='va'>minsplit</span> <span class='op'>&lt;-</span> <span class='va'>hyper_grid</span><span class='op'>$</span><span class='va'>minsplit</span><span class='op'>[</span><span class='va'>i</span><span class='op'>]</span>
-  <span class='va'>maxdepth</span> <span class='op'>&lt;-</span> <span class='va'>hyper_grid</span><span class='op'>$</span><span class='va'>maxdepth</span><span class='op'>[</span><span class='va'>i</span><span class='op'>]</span>
-
-  <span class='co'># train a model and store in the list</span>
-  <span class='va'>models</span><span class='op'>[[</span><span class='va'>i</span><span class='op'>]</span><span class='op'>]</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/rpart/man/rpart.html'>rpart</a></span><span class='op'>(</span>
-    formula <span class='op'>=</span> <span class='va'>Sale_Price</span> <span class='op'>~</span> <span class='va'>.</span>,
-    data    <span class='op'>=</span> <span class='va'>ames_train</span>,
-    method  <span class='op'>=</span> <span class='st'>"anova"</span>,
-    control <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>minsplit <span class='op'>=</span> <span class='va'>minsplit</span>, maxdepth <span class='op'>=</span> <span class='va'>maxdepth</span><span class='op'>)</span>
-    <span class='op'>)</span>
-<span class='op'>}</span>
-</code></pre>
-</div>
-</div>
-<div class="layout-chunk" data-layout="l-body">
-<div class="sourceCode">
-<pre><code><span class='co'># function to get optimal cp</span>
-<span class='va'>get_cp</span> <span class='op'>&lt;-</span> <span class='kw'>function</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span> <span class='op'>{</span>
-  <span class='va'>min</span>    <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/which.min.html'>which.min</a></span><span class='op'>(</span><span class='va'>x</span><span class='op'>$</span><span class='va'>cptable</span><span class='op'>[</span>, <span class='st'>"xerror"</span><span class='op'>]</span><span class='op'>)</span>
-  <span class='va'>cp</span> <span class='op'>&lt;-</span> <span class='va'>x</span><span class='op'>$</span><span class='va'>cptable</span><span class='op'>[</span><span class='va'>min</span>, <span class='st'>"CP"</span><span class='op'>]</span> 
-<span class='op'>}</span>
-
-<span class='co'># function to get minimum error</span>
-<span class='va'>get_min_error</span> <span class='op'>&lt;-</span> <span class='kw'>function</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span> <span class='op'>{</span>
-  <span class='va'>min</span>    <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/which.min.html'>which.min</a></span><span class='op'>(</span><span class='va'>x</span><span class='op'>$</span><span class='va'>cptable</span><span class='op'>[</span>, <span class='st'>"xerror"</span><span class='op'>]</span><span class='op'>)</span>
-  <span class='va'>xerror</span> <span class='op'>&lt;-</span> <span class='va'>x</span><span class='op'>$</span><span class='va'>cptable</span><span class='op'>[</span><span class='va'>min</span>, <span class='st'>"xerror"</span><span class='op'>]</span> 
-<span class='op'>}</span>
-
-<span class='va'>hyper_grid</span> <span class='op'>%&gt;%</span>
-  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>
-    cp    <span class='op'>=</span> <span class='fu'>purrr</span><span class='fu'>::</span><span class='fu'><a href='https://purrr.tidyverse.org/reference/map.html'>map_dbl</a></span><span class='op'>(</span><span class='va'>models</span>, <span class='va'>get_cp</span><span class='op'>)</span>,
-    error <span class='op'>=</span> <span class='fu'>purrr</span><span class='fu'>::</span><span class='fu'><a href='https://purrr.tidyverse.org/reference/map.html'>map_dbl</a></span><span class='op'>(</span><span class='va'>models</span>, <span class='va'>get_min_error</span><span class='op'>)</span>
-    <span class='op'>)</span> <span class='op'>%&gt;%</span>
-  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/arrange.html'>arrange</a></span><span class='op'>(</span><span class='va'>error</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
-  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/top_n.html'>top_n</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>5</span>, wt <span class='op'>=</span> <span class='va'>error</span><span class='op'>)</span>
-</code></pre>
-</div>
-<pre><code>  minsplit maxdepth         cp     error
-1       19       12 0.01060346 0.2628987
-2        5        8 0.01000000 0.2635207
-3        9       11 0.01000000 0.2645615
-4       14       11 0.01000000 0.2650862
-5       13       10 0.01000000 0.2655860</code></pre>
-</div>
-<p>Extract the tree for the optimal value of the tuning parameters.</p>
-<div class="layout-chunk" data-layout="l-body">
-<div class="sourceCode">
-<pre><code><span class='va'>optimal_tree</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/rpart/man/rpart.html'>rpart</a></span><span class='op'>(</span>
-    formula <span class='op'>=</span> <span class='va'>Sale_Price</span> <span class='op'>~</span> <span class='va'>.</span>,
-    data    <span class='op'>=</span> <span class='va'>ames_train</span>,
-    method  <span class='op'>=</span> <span class='st'>"anova"</span>,
-    control <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>minsplit <span class='op'>=</span> <span class='fl'>17</span>, maxdepth <span class='op'>=</span> <span class='fl'>12</span>, cp <span class='op'>=</span> <span class='fl'>0.01</span><span class='op'>)</span>
-    <span class='op'>)</span>
-</code></pre>
-</div>
-</div>
-<p>The new test error</p>
-<div class="layout-chunk" data-layout="l-body">
-<div class="sourceCode">
-<pre><code><span class='va'>pred</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/predict.html'>predict</a></span><span class='op'>(</span><span class='va'>optimal_tree</span>, newdata <span class='op'>=</span> <span class='va'>ames_test</span><span class='op'>)</span>
-<span class='va'>p_error</span> <span class='op'>&lt;-</span> <span class='fu'>Metrics</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/Metrics/man/rmse.html'>rmse</a></span><span class='op'>(</span>actual <span class='op'>=</span> <span class='va'>ames_test</span><span class='op'>$</span><span class='va'>Sale_Price</span>, predicted <span class='op'>=</span> <span class='va'>pred</span><span class='op'>)</span>
-<span class='va'>p_error</span>
-</code></pre>
-</div>
-<pre><code>[1] 39852.01</code></pre>
-</div>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<p>Distill is a publication format for scientific and technical writing, native to the web.</p>
+<p>Learn more about using Distill at <a href="https://rstudio.github.io/distill" class="uri">https://rstudio.github.io/distill</a>.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>
@@ -2763,15 +2114,6 @@ CV\left(\eta\right)\leq CV\left(\hat{\eta}\right)+SE\left(\hat{\eta}\right)
 <div class="d-appendix">
 </div>
 
-<!-- dynamically load mathjax for compatibility with self-contained -->
-<script>
-  (function () {
-    var script = document.createElement("script");
-    script.type = "text/javascript";
-    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
-    document.getElementsByTagName("head")[0].appendChild(script);
-  })();
-</script>
 
 <!--radix_placeholder_site_after_body-->
 <!--/radix_placeholder_site_after_body-->
