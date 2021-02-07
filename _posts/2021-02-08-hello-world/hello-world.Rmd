@@ -1,0 +1,25 @@
+---
+title: "Hello World"
+description: |
+  A short description of the post.
+Sheng Chao Ho
+date: 02-08-2021
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+Distill is a publication format for scientific and technical writing, native to the web.
+
+Learn more about using Distill at <https://rstudio.github.io/distill>.
+
+
+# Introduction
+
+In the last post,  we examined decision tree as an algorithmic model to understand the behavior of data. As we saw, the optimal tree is one where we grew a large tree, and pruned it to avoid an "overfitting problem" as measured by the *cost complexity criterion*. But what is the over-fitting problem with algorithmic models, and why did the cost complexity criterion allow us to manage it?
+
