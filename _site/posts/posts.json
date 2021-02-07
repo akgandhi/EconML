@@ -1,5 +1,22 @@
 [
   {
+    "path": "posts/2021-02-08-hello-world/",
+    "title": "Hello World",
+    "description": "A short description of the post.",
+    "author": [
+      {
+        "name": "Sheng Chao Ho",
+        "url": {}
+      }
+    ],
+    "date": "2021-02-08",
+    "categories": [],
+    "contents": "\r\nDistill is a publication format for scientific and technical writing, native to the web.\r\nLearn more about using Distill at https://rstudio.github.io/distill.\r\n\r\n\r\n\r\n",
+    "preview": {},
+    "last_modified": "2021-02-08T07:04:33+08:00",
+    "input_file": {}
+  },
+  {
     "path": "posts/2021-02-03-predictive-accuracy-the-what-and-the-how/",
     "title": "Predictive Accuracy: The What and the How",
     "description": "measuring and managing the performance of an algorithmic model",
