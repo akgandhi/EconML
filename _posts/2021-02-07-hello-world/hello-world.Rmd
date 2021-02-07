@@ -1,0 +1,21 @@
+---
+title: "Hello World"
+description: |
+  A short description of the post.
+author:
+  - name: Ornella Darova
+    url: {}
+date: 02-07-2021
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+This is my first post!
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+
+
