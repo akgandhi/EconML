@@ -1,0 +1,24 @@
+---
+title: "Hello"
+description: |
+  A test for ECON712-008
+author:
+  - name: Yihao Yuan
+    url: https://github.com/yihao-yuan
+    affiliation: Nowhere
+\date: "`r Sys.Date()`"
+output: distill::distill_article
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+Distill is a publication format for scientific and technical writing, native to the web. 
+
+Learn more about using Distill for R Markdown at <https://rstudio.github.io/distill>.
+
+
+
+
+
