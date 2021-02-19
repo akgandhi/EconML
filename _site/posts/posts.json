@@ -17,6 +17,27 @@
     "input_file": {}
   },
   {
+    "path": "posts/",
+    "title": "First Blog Post",
+    "description": "Examining Determinants of Post-High School Outcomes",
+    "author": [
+      {
+        "name": "Kristen Beamer",
+        "url": {}
+      },
+      {
+        "name": "Jordan Peeples",
+        "url": {}
+      }
+    ],
+    "date": "2021-02-18",
+    "categories": [],
+    "contents": "\r\nQuestion of Interest\r\nWe are interested in studying the determinants of students’ post high school outcomes. We will begin by asking questions about which factors lead a student to pursue post-secondary education. Subsequently, we would like to better understand determinants that influence a student to attend a 2-year or technical college versus a traditional 4-year school. Are these decisions more related to individual characteristics or school fixed effects, or is there another underlying factor? How do student expectations compare to their actual outcomes?\r\n\r\n\r\n\r\nConditional on attending a traditional 4-year school, we want to determine the factors that may prompt a student to pursue a STEM major.\r\nData\r\nIn order to analyze these questions, we utilize public-use data from the United States High School Longitudinal Study from 2009-2013 (HSLS:09). This is a rich data set comprised of parent, teacher, school counselor, and student surveys. HSLS:09 also holds information on schools included in the sample.\r\nHSLS:09 provides important variables that influence students post-high school trajectories. Some information contained include courses taken by the student and the frequency and subject matter of meetings with school counselors. In addition, the restricted-use version of HSLS:09 contains standardized testing scores by student, such as scores on the PSAT, SAT, or AP exams (if the student took the test). Even without testing, the rich nature of the public-use HSLS:09 should provide ample information to unpack determinants of educational attainment.\r\nAnother interesting lens of the HSLS:09 survey is that it tracks students’ educational goals over their high school career. Starting in 9th grade, the students are asked about their plans after high school, and this can be directly compared to their true post-high school outcomes. Since there is an abundance of information within HSLS:09, the work so far has been wrangling the 6,000+ different variables that exist within the data.\r\nSummary Statistics\r\n\r\n\r\n\r\nModels\r\nIn order to approach these questions, we will begin by growing trees for each of our questions. It will be important to utilize appropriate cross-validation and tuning in order to properly characterize the underlying mechanisms at play. We are currently determining which chunk of variables to focus on, as a classification tree is computationally heavier than a regression tree. We have already estimated an initial tree as practice on the student interview only. We want to clean the data in a way that avoids repetitive variables and includes possible important ones.\r\n\r\n\r\nReferences\r\nUnited States Department of Education. Institute of Education Sciences. National Center for Education Statistics. High School Longitudinal Study, 2009-2013 [United States]. Inter-university Consortium for Political and Social Research [distributor], 2016-05-12. https://doi.org/10.3886/ICPSR36423.v1\r\n\r\n\r\n\r\n",
+    "preview": {},
+    "last_modified": "2021-02-18T21:40:15-05:00",
+    "input_file": "KristenJordanBlogPost1.utf8.md"
+  },
+  {
     "path": "posts/2021-02-11-random-forests/",
     "title": "Random Forests",
     "description": "A short description of the post.",
