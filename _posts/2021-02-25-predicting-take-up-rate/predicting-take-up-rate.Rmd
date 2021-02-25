@@ -1,0 +1,14 @@
+---
+title: "Predicting Take-Up Rate"
+description: 
+author:
+  - name: Ornella Darova & Ozgur Seker
+    url: {}
+date: 02-25-2021
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+One of the central issues of policy design is targeting. Targeting may not be completely under the control of the policy maker, as the population actually participating to a public policy may self-select into it: in that case, we would have an endogenous take-up rate. Understanding what are the predicting factors of take-up rate, taken aside eligibility, is of fundamental importance to improve not only policy design but also policy evaluations, as the take-up rate and the characteristics of the self-selected population can heavily affect the impact and the success of policies themselves. We employ Current Population Survey (CPS) microdata harmonized by IPUMS that we are going to integrate with other datasets with pertinent variables. We are going to employ Machine Learning techniques to forecast our outcome of interest and compare different policies take-up, such as public housing, government subsidies for the rent payment, energy subsidies, food stamp recipiency, and government school lunch subsidies, reflecting on the differences and similarities between these policies and the most important predictors.  
+
