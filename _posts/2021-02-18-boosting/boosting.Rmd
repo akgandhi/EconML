@@ -10,6 +10,8 @@ output:
   distill::distill_article:
     self_contained: false
 preview: https://www.edureka.co/blog/wp-content/uploads/2019/06/What-Is-Ensemble-Learning-Boosting-Machine-Learning-Edureka.png
+categories: 
+  - lecture
 ---
 
 ```{r setup}
