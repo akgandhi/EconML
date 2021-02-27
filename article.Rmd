@@ -34,7 +34,7 @@ knitr::opts_chunk$set(echo = FALSE)
 * Existing theories that may explain:
   + Intertemporal price discrimination (Hendel and Nevo, 2006, 2013). However, it cannot explain why products are sold under cost because the stores can always earn profits from both searchers and non-searchers.
   + Loss leader strategy. Stores may want to offer deep promotions on some products to attract consumers to the store to shop for other products, and maximize the overall profit. We may need to investigate transaction data to confirm whether it is true.
-  + Inventory management. Some products are perishable, and stores may want to sell them before they perish. Inventory information is available 
+  + Inventory management. Some products are perishable, and stores may want to sell them before they perish. Inventory information is available, but more work is needed to investigate whether inventory management is a reason for deep discounts.
 
 ## Research Plan
 
