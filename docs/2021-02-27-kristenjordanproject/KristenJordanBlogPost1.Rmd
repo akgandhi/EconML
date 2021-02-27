@@ -1,0 +1,171 @@
+---
+title: "First Blog Post"
+description: |
+  Examining Determinants of Post-High School Outcomes
+author:
+  - name: Kristen Beamer
+  - name: Jordan Peeples
+date: "`r Sys.Date()`"
+output: distill::distill_article
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+#take these... you may need them
+library(jsonlite)
+library(tidyverse)
+library(tidyquant)
+library(lubridate)
+library(zoo)
+library(ggfortify)
+library(directlabels)
+library(gghighlight)
+library(plotly)
+library(stargazer)
+# a few more packages 
+library(rsample)
+library(rpart)
+library(rpart.plot)
+library(skimr)
+library(ranger)
+```
+
+
+#import the data
+```{r load}
+urlSchool <- url("https://www.dropbox.com/s/bzoyhrtj3gi4t1t/36423-0001-Data.rda?raw=1")
+urlStudent <- url("https://www.dropbox.com/s/x26tsp84rcn48gj/36423-0002-Data.rda?raw=1")
+load(urlSchool)
+load(urlStudent)
+```
+
+
+```{r clean1}
+#rename the data for easier interpretability 
+schoolData <- da36423.0001
+studentData <- da36423.0002
+
+#replace all -5's with NA (-5 represents suppressed data)
+schoolData[schoolData == -5] <- NA
+studentData[studentData == -5] <- NA
+
+#get rid of all columns that only have NA
+schoolData <- schoolData[, colSums(is.na(schoolData)) != nrow(schoolData)]
+studentData <- studentData[, colSums(is.na(studentData)) != nrow(studentData)]
+```
+
+```{r clean2}
+#drop IDs  - this is a bunch of student/school identifiers that shouldn't be important to fit a tree on
+studentData<-studentData[,-c(1:23)]
+
+#drop imputation/weight variables -- OK. 
+studentData <- studentData[, -c(2293:ncol(studentData))]
+
+#drop school counselor questions (tree takes forever to run and I don't think these are important) -- agreed.
+studentData <- studentData[, -c(1968:ncol(studentData))]
+
+#drop teacher variables entirely for now -- OK.
+studentData <- studentData[, -c(which(colnames(studentData)=="M1SEX"):which(colnames(studentData)=="N1TFAIL"))]
+
+#drop parent variables for now as well
+studentData <- studentData[, -c(which(colnames(studentData)=="P1RELSHP"):which(colnames(studentData)=="P2QHELP4"))]
+  # may be helpful to include some parent and/or teacher variables as these 
+  # will likely play a marginal role in students educational attainment
+  # (can do this later on in project)
+
+#drop variables that have a majority of missing values (-7, -8, or -9) - OK.
+studentData[studentData == -7] <- NA
+studentData[studentData == -8] <- NA
+studentData[studentData == -9] <- NA
+studentData[studentData == -4] <- NA
+studentData <- studentData[ , colSums(is.na(studentData)) < 12000]
+
+#drop the follow-up year variables for administrator and students - OK.
+studentData <- studentData[, -c(which(colnames(studentData)=="A2CHOICE"):which(colnames(studentData)=="A2TCHSUBJ"))]
+studentData <- studentData[, -c(which(colnames(studentData)=="S2ENROLLHS12"):which(colnames(studentData)=="S2HSJOBEVER"))]
+
+#drop more repetitive, unimportant variables from composite variables - OK.
+  # these are redundant from the S1's which is why we dropped, correct?
+studentData <- studentData[, -c(which(colnames(studentData)=="X1SEX"):which(colnames(studentData)=="X3TOUTCOME"))]
+
+#drop competitive S3 variables - OK.
+studentData <- studentData[, -c(which(colnames(studentData)=="S3CLGFT"):which(colnames(studentData)=="S3CLGOTHAID"))]
+studentData <- studentData[, -c(which(colnames(studentData)=="S3CNSLCLG"):which(colnames(studentData)=="S3FAMILY"))]
+
+
+#I think we should limit the variables we use because the biggest predictor from 
+#above is working for pay as of Nov 1, 2013 (S3WORK) which is just a part of the
+#question of S3FOCUS 
+  # totally agree - I was thinking that yesterday when I made the test tree. 
+  # We're on the same page.
+
+#maybe we should even just exclude the other S3 variables that relate to the one 
+#we're interested in
+  # Agreed - OK.
+
+studentDataS3 <- studentData[, !(names(studentData) %in% c("S3CLASSES", "S3WORK", "S3FAMILY", 
+                                                           "S3HS", "S3GEDCOURSE", "S3CLGFT", 
+                                                           "S3WORKFT", "S3MILBRANCH", "S3HSCRED", "S3HSCREDTYPE",
+                                                           "S3WHERELIVE", "S3CLGAPPNUM", "S3CLGAPPCNTRL1",
+                                                           "S3CURWORK", "S3MILITARY", "S3PROGLEVEL", "S3CLGSEL",
+                                                           "S3CHOICEAPP", "S3CHOICEAPPID", "S3CHOICEAPPLVL",
+                                                           "S3CHOICEAPPSEL", "S3CHOICEACC", "S3CHOICEACCID",
+                                                           "S3CHOICEACCCNTRL", "S3CHOICEACCLVL", "S3CHOICEACCSEL",
+                                                           "S3CHOICEACCSTATE"))]
+
+```
+
+
+
+
+### Question of Interest
+
+We are interested in studying the determinants of students' post high school outcomes. We will begin by asking questions about which factors lead a student to pursue post-secondary education. Subsequently, we would like to better understand determinants that influence a student to attend a 2-year or technical college versus a traditional 4-year school. Are these decisions more related to individual characteristics or school fixed effects, or is there another underlying factor? How do student expectations compare to their actual outcomes?
+
+<!-- Another question of interest pertains to major choices for students that opt to pursue post-secondary education. -->
+<!-- Line about why we are interested in STEM, what I was trying to say kept coming out awkward. -->
+
+
+<!-- Should we include STEM? It seems like we have a lot to work with above already. -->
+Conditional on attending a traditional 4-year school, we want to determine the factors that may prompt a student to pursue a STEM major.
+
+### Data
+In order to analyze these questions, we utilize public-use data from the United States High School Longitudinal Study from 2009-2013 (HSLS:09). This is a rich data set comprised of parent, teacher, school counselor, and student surveys. HSLS:09 also holds information on schools included in the sample.
+
+HSLS:09 provides important variables that influence students post-high school trajectories. Some information contained include courses taken by the student and the frequency and subject matter of meetings with school counselors. In addition, the restricted-use version of HSLS:09 contains standardized testing scores by student, such as scores on the PSAT, SAT, or AP exams (if the student took the test). Even without testing, the rich nature of the public-use HSLS:09 should provide ample information to unpack determinants of educational attainment. 
+
+Another interesting lens of the HSLS:09 survey is that it tracks students' educational goals over their high school career. Starting in 9th grade, the students are asked about their plans after high school, and this can be directly compared to their true post-high school outcomes. Since there is an abundance of information within HSLS:09, the work so far has been wrangling the 6,000+ different variables that exist within the data. 
+
+### Summary Statistics
+
+```{r, layout="l-body-outset", fig.width=9, fig.height=4}
+  #histogram -- I want to make this nicer before putting into the blog post
+  ggplot(data=studentDataS3, aes(x=S3FOCUS)) +geom_bar(color="darkblue", fill="lightblue") +
+    scale_x_discrete(labels=c("Post-Secondary", "Apprenticeship", 
+                                     "Working", "Military", "Childcare", 
+                                     "Continued School", "GED Prep",
+                                     "Multiple", "NA"))+
+    labs(title="Question: What is your main focus as of Nov. 1, 2013?",
+         x="Student Responses",
+         y="Frequency")
+```
+
+### Models
+In order to approach these questions, we will begin by growing trees for each of our questions. It will be important to utilize appropriate cross-validation and tuning in order to properly characterize the underlying mechanisms at play. We are currently determining which chunk of variables to focus on, as a classification tree is computationally heavier than a regression tree. We have already estimated an initial tree as practice on the student interview only. We want to clean the data in a way that avoids repetitive variables and includes possible important ones.
+
+<!-- Will likely need to expand upon this, but I'm getting tired -->
+
+<!-- ### Discussion
+Interpret the trees? 
+Predict with the trees? -->
+
+### References
+
+United States Department of Education. Institute of Education Sciences. National Center for Education Statistics. High School Longitudinal Study, 2009-2013 [United States]. Inter-university Consortium for Political and Social Research [distributor], 2016-05-12. https://doi.org/10.3886/ICPSR36423.v1
+
+
+
+
+
+
+
