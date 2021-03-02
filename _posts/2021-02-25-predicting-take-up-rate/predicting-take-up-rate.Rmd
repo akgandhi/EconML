@@ -1,18 +1,22 @@
 ---
 title: "Predicting Take-Up Rate"
-description: 
+description: "Understanding the predictors of social programs application"
+preview: https://dt2sdf0db8zob.cloudfront.net/wp-content/uploads/2020/02/form-builders-11-850x435.png
 author:
-  - name: Ornella Darova & Ozgur Seker
+  - name: Ornella Darova
+  - name: Ozgur Seker
     url: {}
 date: 02-25-2021
 output:
   distill::distill_article:
     self_contained: false
+categories: 
+  - post
 ---
 
 One of the central issues of policy design is <b>targeting</b>. Targeting may not be completely under the control of the policy maker, as the population actually participating to a public policy may self-select into it: in that case, we would have an <b> endogenous take-up rate</b>. Understanding what are the <b>predicting factors</b> of take-up rate, given eligibility, is of fundamental importance to improve not only <b>policy design</b> but also <b>policy evaluations</b>, as the take-up rate and the characteristics of the self-selected population can heavily affect the impact and the success of policies themselves. 
 
-We employ <a href="https://cps.ipums.org/cps/">Current Population Survey (CPS)</a>  microdata harmonized by IPUMS that we are going to integrate with other datasets with pertinent variables. CPS data sample we have has more than 3.5 million observation and 57 variables. You can see and download a sample data from this [link](https://docs.google.com/spreadsheets/d/1LqMcUJTLR95JHLbjKD3aGkYmtUFkBiyf1CqaVOJ74-k/edit?usp=sharing). We are going to employ <b>Machine Learning techniques</b> to forecast our outcome of interest and compare different policies take-up, such as public housing, government subsidies for the rent payment, energy subsidies, food stamp recipiency, and government school lunch subsidies, reflecting on the differences and similarities between these policies and the most important predictors.  
+We employ <a href="https://cps.ipums.org/cps/">Current Population Survey (CPS)</a>  microdata harmonized by IPUMS that we are going to integrate with other datasets with pertinent variables. The CPS data sample we have has more than 3.5 million observations and 57 variables. You can see and download a sample data from this [link](https://docs.google.com/spreadsheets/d/1LqMcUJTLR95JHLbjKD3aGkYmtUFkBiyf1CqaVOJ74-k/edit?usp=sharing). We are going to employ <b>Machine Learning techniques</b> to forecast our outcome of interest and compare different policies take-up, such as public housing, government subsidies for the rent payment, energy subsidies, food stamp recipiency, and government school lunch subsidies, reflecting on the differences and similarities between these policies and the most important predictors.  
 
 Possible outcomes to explore:
 
