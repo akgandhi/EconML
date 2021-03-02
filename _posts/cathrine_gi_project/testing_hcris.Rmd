@@ -69,7 +69,9 @@ library(gmodels)
 CrossTable(hcris$outcome)
 ```
 
-We observe ~6,300 hospitals over 2008-2017 (or as early as 1996, with some more work).
+We observe ~6,300 hospitals ov
+
+er 2008-2017 (or as early as 1996, with some more work).
 
 Our explanatory variables include hospital characteristics (e.g., non-profit, rural, # of beds) and financial data, along with market demand and competition factors. We have ~80 explanatory variables (~33 of which are categorical; the remainder are quantitative) before including lags.    
 

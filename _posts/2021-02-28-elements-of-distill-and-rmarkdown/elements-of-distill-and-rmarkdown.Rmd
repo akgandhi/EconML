@@ -1,0 +1,1156 @@
+---
+title: "Elements of Rmarkdown and R"
+description: |
+  A look at some of the elements of style for your blog posts.
+author:
+  - name: Amit Gandhi
+date: 02-28-2021
+output:
+  distill::distill_article:
+    self_contained: false
+css: styles.css
+params:
+  year:
+    value: 80
+preview: https://raw.githubusercontent.com/rstudio/hex-stickers/master/PNG/rmarkdown.png
+categories:
+   - lecture
+
+---
+
+```{r setup}
+library(ymlthis)
+library(glue)
+library(bakeoff)
+library(tidyverse)
+library(epoxy)
+
+
+help_console <- function(topic, package,
+                         format=c("text", "html", "latex", "Rd"),
+                         before=NULL, after=NULL) {
+  # topic - the command for which help is required
+  # package - the package name with the required topic
+  # format - output format
+  # before - place code before the output e.g. "<blockquote>"
+  # after - place code after the output e.g. "</blockquote>"
+
+  # based on code by Noam Ross
+  #  http://www.noamross.net/archives/2013-06-18-helpconsoleexample/
+  # Stéphane Laurent
+  #  https://stackoverflow.com/questions/60468080/
+  #   print-an-r-help-file-vignette-as-output-into-an-r-html-notebook
+  # and Michael Sumner (mdsumner)
+  #  https://stackoverflow.com/questions/7495685/
+  #   how-to-access-the-help-documentation-rd-source-files-in-r
+
+  format <- match.arg(format)
+  if (!is.character(topic)) topic <- deparse(substitute(topic))
+  db <- tools::Rd_db(package)
+  helpfile <- db[paste0(topic, ".Rd")][[1]]
+
+  hs <- capture.output(
+    switch(
+      format,
+      text = tools::Rd2txt(helpfile),
+      html = tools::Rd2HTML(
+        helpfile,
+        package = "",
+        stages = c("install", "render")
+      ),
+      latex = tools::Rd2latex(helpfile),
+      Rd = tools:::prepare_Rd(helpfile)
+    )
+  )
+  if (format == "html") {
+    i <- grep("<body>", hs)
+    j <- grep("</body>", hs)
+    hs <- hs[(i+1):(j-1)]
+  }
+  hs <- c(before, hs, after)
+  hs <- cat(hs, sep = "\n")
+  invisible(hs)
+}
+
+knitr::opts_chunk$set(echo=TRUE)
+
+```
+
+
+Topics:
+
+- bibliography (Jonathan)
+- Footnotes
+- Asides
+- Headers and levels
+- markdown tables
+- rendering R tables
+- inserting images, hyperlinks, boldface lettering, etc. 
+- understanding the structure of YAML metadata
+- code chunk options
+
+## What is YAML?
+
+The initial portion of your Rmarkdown document, fenced in between the 3 dashes `---` on the top and bottom, a represents the *YAML metadata* or *YAML frontmatter* of the document. It is named according to the fact the top section of the document is written in the YAML language syntax - YAML is an recursive acronym that stands for *YAML ain't markup language*. 
+
+The metadata defined by the code defines properties of the document that control aspects of its content, appearance, and formatting. Much of the ability to extend and customize the functionality of an Rmarkdown document arises from a suitable specification of the YAML metadata, and hence it is worth some investment of effort to learn the fundamentals. 
+
+The general [language guide](https://yaml.org/) is a useful reference, and the connection between R and YAML is best appreciated from the [vignette](https://cran.r-project.org/web/packages/ymlthis/vignettes/yaml-overview.html) associated with the `ymlthis` package. 
+
+The basic idea of YAML is to collect as data a set of key value pairs `key: value`, e.g., 
+
+```
+---
+author: Amit Gandhi
+---
+```
+
+The structure of metadata is isomorphic to a named list in R. In particular we can convert from a list to a YAML specification.
+
+```{r}
+metaDat <- list(author = "Amit Gandhi")
+yml(metaDat)
+draw_yml_tree(metaDat)
+```
+
+Or vice-versa, the metadata of a document can be retreived as a named list in R
+
+```{r}
+docDat <- rmarkdown::metadata
+str(docDat)
+```
+
+
+The other key idea is that of nesting - a field in the YAML frontmatter can have other key-value pairs as its value. The nesting is indicated by an indented space
+
+```
+---
+author: Amit Gandhi
+output: distill::article:
+          self_contained: true
+
+---          
+```
+
+The analogous data structure in R is a nested list
+
+```{r, echo = TRUE}
+metaDat <- list(author = "Amit Gandhi", output = list(`distill::article` = list(self_contained = "TRUE" ) ) )
+yml(metaDat)
+```
+
+The hierarchical structure can be visualized as
+
+```{r}
+draw_yml_tree(metaDat)
+```
+
+To understand the functionality the YAML nested syntax is achieving, observe that the value of the field `outpt` in the frontmatter indicates the function used to render the Rmarkdown file. The function in this case is `distill::article`. If we examine the options to this function, we can see many potential arguments. 
+
+```{r, results='asis'}
+help_console("distill_article", "distill", format = "html")
+```
+
+We can see many options associated with the function. If we want to use the default values we can simply associate the value `default` with the field `distill::article`. 
+
+```
+---
+<yaml>
+output:
+  distill::distill_article: default
+<yaml>
+---
+```
+
+But if we wish to set any of the arguments, we must engage another nest of key value pairs, e.g., 
+
+```{r}
+metaDat <- list(author = "Amit Gandhi", output = list(`distill::article` = list(self_contained = "TRUE", toc = "TRUE" ) ) )
+yml(metaDat)
+draw_yml_tree(metaDat)
+```
+
+Instead of nested data capturing key-value pairs (which are named lists), the value of a field if its more complex than a simple value can be an unnamed vector, such as
+
+```{r}
+metaDat <- list(author = c("Amit Gandhi", "coauthor"), output = list(`distill::article` = list(self_contained = "TRUE", toc = "TRUE" ) ) )
+yml(metaDat)
+```
+
+Observe this is captured in YAML code as
+
+```
+---
+author:
+- A
+- B
+- C
+---
+```
+
+where each element of the vector is entered with a new line along with a `-` without a need for indentation. 
+
+A slight elaboration of this pattern is grouped data, as arises with the `params` field in the frontmatter
+
+```
+---
+params:
+- a: 1.0
+  input: numeric
+- data: data.csv
+  input: text
+---
+```
+
+which is useful to group related data. The corresponding R data structure is an unnamed list, e.g., 
+
+```{r}
+list(params = list( list(a = 1.0, input = "numeric"), list(data = "data.csv", input = "text") ) ) %>% yml()
+```
+
+There are a few differences with R and YAML that should be recognized from our exercise. The first is that string values do not have to be quoted, unless they contain special characters, e.g., 
+
+```
+---
+title: 'R Markdown: An Introduction'
+---
+```
+
+The string value is quoted because of the presence of the special character (a colon).
+
+Also observe that whereas the logical values in R are TRUE/FALSE, in YAML they can be yes/no, true/false, or on/off. 
+
+
+## On the usefulness of parameterized documents
+
+THe parameter field in the YAML front matter as it allows for the creation of parameterized reports. Such report generation is especially powerful when used in conjunction with the `glue` and `epoxy` packages, which we explore below.
+
+Lets use the BLP data (borrowing from Jonathan and Sheng's project.)
+
+First import the data
+
+```{r}
+carDat = read_csv("../jonathan-sheng-algorithmic-demand-estimation/blp.csv")
+```
+
+Lets use a dplyr verb to count the number of observations by model_year
+
+```{r}
+carDat %>%
+  count(model_year)
+```
+
+
+Contrast it with the so called `market` variable
+
+```{r}
+carDat %>%
+  count(market)
+```
+
+We can use the [glue](https://glue.tidyverse.org/index.html) package to weave the data together with text. Effectively we can 
+Lets foreshadow the application.
+
+The simplest application of glue is 
+```{r}
+a <- "Amit"
+glue("My name is {a}")
+```
+we can paste together distinct strings
+
+```{r}
+a <- "Amit"
+b <- 712
+glue("My name is {a}", "I teach Econ {b}")
+```
+It is useful to add a separator
+
+```{r}
+a <- "Amit"
+b <- 712
+glue("My name is {a}", "I teach Econ {b}", .sep = ", ")
+```
+The function naturally vectorizes
+
+```{r}
+a <- c("Amit", "Amit")
+b <- c(712, 712)
+glue("My name is {a}", "I teach Econ {b}", .sep = ", ") 
+```
+which is a character vector of length `r length(glue("My name is {a}", "I teach Econ {b}", .sep = ", ") )`
+
+If we want to collapse the vector into text that can be rendered in markdown we must use the `results = asis` chunk option and collapse the resulting vector. 
+
+```{r, results='asis'}
+glue("My name is {a}", "I teach Econ {b}", .sep = ", ") %>%
+  glue_collapse("\n")
+```
+If we want to use data masking and reference variables directly we can via `glue_data()`
+
+```{r}
+demoDat <- tribble(
+  ~name, ~course,
+  "Amit", 712,
+  "Amit", 712
+)
+
+demoDat %>% 
+  glue_data("My name is {name}, and I teach Econ {course}")
+```
+We can use the `epoxy` package to seamlessly blend text and code with a new engine for `knitr`.
+
+```{glue, data = demoDat}
+- My name is {name} and the course I teach is Econ {course}
+```
+
+The combination of `epoxy` and `glue` are powerful when connected to parameter meta data. We can thus write
+
+```{glue, data = carDat %>% count(model_year)}
+- In the year **19{model_year}** there were *{n}* car models.
+```
+
+
+## Building YAML objects from a pipeline
+
+One of the powerful features of the Tidyverse is its natural ability to express data pipelines. 
+
+I look at data pipelines rather broadly as the encapsulation of most computations. 
+
+It is helpful to recall/recognize the two fundamental rules of R:
+
+1. Everything that exists in R is an object
+2. Everything that happens in R is a function call
+
+Thus a natural way to builld or develop a thought process is to start with a simple object and layer complexity by transforming the object via function calls.
+
+Objects in R are data structures. The interpretation of the data structure is given by the `class()` of the object. Applying a function to an object to yield another object can thus be seen as a manipulation of a data structure. In this fashion, general programming in R becomes a form of data analysis!
+
+An important construct to aid this form of analysis is the pipe operator `%>%`. It passes an object into a function (in its first argument) and the object resulting from the function call can be passed to another function, and so on, resulting in a data pipeline!
+
+Lets examine this process with the `ymlthis` package. We have already seen that YAML metadata maps to an R data structure (effectively a named list with nested lists/vectors).
+
+How can we conceptually develop the data. Lets start with the creation of a `yml` object
+
+```{r}
+ymlDat <-
+  yml()
+```
+
+Observe the class and underlying base type.
+
+```{r}
+class(ymlDat)
+typeof(ymlDat)
+```
+We can see the data structure named `ymlDat` is of class `r class(ymlDat)` which is underneath the hood a list of data that can be interpreted as YAML metadata by appropriate functions. In particular functions that start with `yml_*()` take and return `yml` objects,
+
+```{r}
+yml() %>% 
+  yml_title("Economics and ML") %>%
+  yml_output(rmarkdown::html_document(toc = TRUE))
+```
+```{r}
+yml_empty() %>%
+  yml_author(c("Amit GAndhi", "coauthor"), affiliation = "University of Pennsylvania", url = "www.upenn.edu") %>%
+  yml_title("A discussion of Rmarkdown") %>%
+  yml_description("A deeper look into pipelines") %>%
+  yml_distill_opts(
+    twitter_site = "xxx",
+    collection = distill_collection(
+      share = c("twitter", "linkedin")
+    )
+  )
+
+```
+
+
+We can add parameters
+
+```{r}
+yml() %>% 
+  yml_params(country = "Turkey")
+```
+
+We can also add a bibliography
+
+```{r}
+yml() %>% 
+  yml_citations(bibliography = "refs.bib")
+```
+
+We can instead add references manually instead of throught a .bib file
+
+```{r}
+ref <- reference(
+  id = "fenner2012a",
+  title = "One-click science marketing",
+  author = list(
+    family = "Fenner",
+    given = "Martin"
+  ),
+  `container-title` = "Nature Materials",
+  volume = 11L,
+  URL = "https://doi.org/10.1038/nmat3283",
+  DOI = "10.1038/nmat3283",
+  issue = 4L,
+  publisher = "Nature Publishing Group",
+  page = "261-263",
+  type = "article-journal",
+  issued = list(
+    year = 2012,
+    month = 3
+  )
+)
+
+yml() %>%
+  yml_reference(ref)
+```
+
+We can then reference the entry using `@id` in Rmarkdown. 
+
+Finally we can create the markdown text that produces the YAML frontmatter via 
+
+```{r, echo = FALSE}
+yml() %>%
+  asis_yaml_output()
+```
+
+
+## Data Frame pipelines
+
+
+Lets imitate the workflow, but for a data set. A tibble is a class of an object. We act on the tibble with verbs. The major verbs are given by the `dplyr` package. 
+
+
+```{r, include=FALSE, message=FALSE}
+library(tidyverse)
+library(ggrepel)
+library(smodels)
+theme_set(theme_minimal())
+food <- read_csv("food.csv") %>% as_tibble()
+food_prices <- read_csv("food_prices.csv") %>% as_tibble()
+```
+
+### Verbs
+
+We are going to cover a set of functions that take
+a data frame as an input and return a new version of the data frame. 
+
+These
+functions are called *verbs* and come from the **dplyr** package. If you are
+familiar with running database queries, note that all of these verbs
+map onto SQL commands. In fact, R can be set up so that
+**dplyr** is called over a database rather than a local
+data frame in memory.
+
+There are over 40 verbs in the **dplyr** package, though most are
+a minor variant or specific application of another verb. We start with
+four of them, all of which are related to selecting and
+arranging rows and columns:
+
+- select a subset of rows from the original data set (`filter`)
+- select a subset of columns from the original data set (`select`)
+- sort the rows of a data set (`arrange`)
+
+In all verb functions, the first argument is the original data frame and the
+output is a new data frame. Here, we will also see the functions `between` and
+`%in%` to assist with the filtering command and `desc` to assist with arranging
+the rows of a data set.
+
+Note that **verbs do not modify the original data**; they operate on a copy of
+the original data. We have to make an explicit name for the new data set if we
+want to save it for use elsewhere.
+
+### Choosing rows
+
+It is often useful to take a subset of the rows of an existing data set, for
+example if you want to build a model on a certain subpopulation or highlight a
+particular part of the data in a plot. 
+
+A standard way to take a subset of our data is to select rows based on conditions
+about the variables in the data set. To do this we use the `filter` function,
+which accepts a statement about variable in the data set. Only rows where the
+statements are true will be returned. For example, here is how we use the
+`filter` command to select the foods that have more than 150 calories grams of
+sugar in each serving:
+
+```{r}
+food %>%
+  filter(calories > 150)
+```
+
+The output data set has only 20 rows, compared to the 62 in the original data.
+Other comparisons can be done with `<`, `>=` and `<=`. There is also a special
+function called `between` that is often useful. For example, here are the rows
+that have between 2 and 3 grams of total fat:
+
+```{r}
+food %>%
+  filter(between(total_fat, 2, 3))
+```
+
+If you want to filter on a categorical variable, you can use the `%in%`
+operator to select specific categories. Here is the code to filter only the
+fish and vegetable variables:
+
+```{r}
+food %>%
+  filter(food_group %in% c("fish", "vegetable"))
+```
+
+As with the other verbs, we can chain together multiple calls to produce more
+complex logic. For example, this code selects fruits that have more than 150
+calories per serving:
+
+```{r}
+food %>%
+  filter(calories > 150) %>%
+  filter(food_group %in% c("fruit"))
+```
+
+
+Which results in a reduced data set with only 1 row (avocados). You can also
+use `==` to test equality (`food_group == "fruit"`) or `!=` to test whether a
+variable is *not* equal to a specific value.
+
+It is also possible to create a chain of calls that then get piped into a call
+to the `ggplot` function. 
+
+For example, here is a plot of the fruits and
+vegetables with the Avocado outlier removed (by limiting the maximum available
+total fat).
+
+```{r}
+food %>%
+  filter(food_group %in% c("vegetable", "fruit")) %>%
+  filter(total_fat < 10) %>%
+  ggplot() +
+    geom_point(aes(x = calories, y = total_fat, color = food_group)) +
+    geom_text_repel(aes(x = calories, y = total_fat, label = item)) +
+    scale_color_viridis_d()
+```
+
+The pattern of a starting with a data set, applying a number of
+transformations, and then creating a visualization of the data
+will become a common pattern.
+
+
+### Data and Layers
+
+Now that we know how to create a subset of our data, let's use this new
+knowledge to build some interesting data visualizations. To start, create a
+data set that just consists of the food types that are in the meat food group:
+
+```{r}
+food_meat <- filter(food, food_group %in% c("meat"))
+food_meat
+```
+
+One of the core ideas behind the Grammar of Graphics is that complex
+visualizations can be constructed by layering relatively simply elements on top
+of one another. 
+
+What if we wanted to put together two layers where one layer
+uses the `food` data set and the other uses `food_meat`? To do this, we can
+*override* the default data set in a layer with the option `data =`. This will
+use a different data set within a particular layer. For example, here is how we
+can layer the meat data set on top of the rest of the food items.
+
+```{r}
+food %>%
+  ggplot() +
+    geom_point(aes(x = calories, y = total_fat)) +
+    geom_point(aes(x = calories, y = total_fat), data = food_meat)
+```
+
+This plot, however, does not look any different than it would if we were just
+to plot all of the food together. The second layer of points just sits
+unassumingly on top of the rest of the data. To rectify this, we can color each
+layer a different color in order to distinguish them from one another. Let's
+try to highlight the meat food group in a navy blue, while making the rest of
+the points a light grey:
+
+```{r}
+food %>%
+  ggplot() +
+    geom_point(aes(x = calories, y = total_fat), color = "grey85") +
+    geom_point(aes(x = calories, y = total_fat), color = "navy", data = food_meat)
+```
+
+We now have a plot that shows exactly where the meats are relative to the other
+food items. We can further build up the plot by showing the names of just these
+rows of the dataset as well:
+
+```{r}
+food %>%
+  ggplot() +
+    geom_point(aes(x = calories, y = total_fat), color = "grey85") +
+    geom_point(aes(x = calories, y = total_fat), color = "navy", data = food_meat) +
+    geom_text_repel(
+      aes(x = calories, y = total_fat, label = item),
+      color = "navy",
+      data = food_meat
+    )
+```
+
+Notice that the code is starting to get a bit more complicated and some of the
+graphic layers are becoming a bit long. This is a good place to use the
+shorthand notation to inherit aesthetics across layers, like this:
+
+```{r}
+food %>%
+  ggplot(aes(calories, total_fat)) +
+    geom_point(color = "grey85") +
+    geom_point(color = "navy", data = food_meat) +
+    geom_text_repel(aes(label = item), color = "navy", data = food_meat)
+```
+
+Notice how a relatively small set of commands can be put together in different
+ways to build a variety of plots. Already, we are making further progress
+towards building informative and beautiful graphics in R!
+
+### Selecting Columns
+
+It is also possible to take a subset of the columns in a data set. To do this,
+we make use of the verb `select`. We pass it the names of the variables we want
+to keep in the output data set, in the (possibly new) order that we want the
+columns to be arranged in. Here, for example, is a new version of the foods
+data set containing only the food item name followed by the amount of Vitamin A
+and Vitamin C:
+
+```{r}
+food %>%
+  select(item, vitamin_a, vitamin_c)
+```
+
+We will not need to use the `select` verb as often as `filter` because for the
+most part having extra variables around does not effect data visualizations or
+data models. However, it can be useful to displaying results and building tables. 
+
+As we saw above,
+the Vitamin A and Vitamin C columns were cut-off in the original output but are
+not visible in the selected data set version. Removing and reordering unneeded
+columns are important applied operations. 
+
+### Arranging Rows
+
+The verb  `filter` determined a subset of rows to keep from the
+original data set. The `arrange` verb, in contrast, keeps all of the original
+data but re-orders its rows. 
+
+Specifically, we give it one or more variable
+names and it sorts the data by the first variable from smallest to largest
+(or alphabetically for character variables). In the case of ties, the second
+variable is used if given. More variables can be given to further break
+additional ties. Here is an example where we order the data set first by
+`food_group` and then by `calories`:
+
+```{r}
+food %>%
+  arrange(food_group, calories)
+```
+
+In the new data set all of the dairy products come up first followed by the
+fish products. Within each group, the items are sorted from the lowest to
+highest number of calories.
+
+The ordering can be reversed (i.e., from the highest to the lowest value) be
+wrapping a variable in the function `desc()`, such as this ordering from the
+most saturated fat to the least:
+
+```{r}
+food %>%
+  arrange(desc(sat_fat))
+```
+
+In the result here, "Cheese" has been placed at the top of the data set,
+followed by "Sour Cream" and "Lamb".
+
+### Grouping and Summarizing
+
+A rather important verb is `summarize` that collapses a data frame by using summary functions. Using this
+verb requires that we explain exactly how the data
+should be summarized. We will introduce several helper functions to make this
+process slightly easier.
+
+Let's start with an
+example. Here, we summarize our food data set by indicating the mean (average)
+value of the sugar variable across the entire data set:
+
+```{r}
+food %>%
+  summarize(mean(sugar))
+```
+
+A helper function will format the column a little differently that is more usable for data analysis. 
+
+```{r}
+food %>%
+  summarize(sm_mean(sugar))
+```
+
+
+Here we used the function `sm_mean` inside of the function `summarize` to
+produce the output. We specified which variable to compute the mean of by
+giving its name inside of the `sm_mean` function. The results shows us that the
+average amount of sugar in a 100g portion of all of the foods is 3.419g.
+
+In order to compute multiple summaries at once, we can pass multiple functions
+together are once. For example, here we compute the mean value of three
+nutritional measurements:
+
+```{r}
+food %>%
+  summarize(sm_mean(sugar), sm_mean(calories), sm_mean(vitamin_a))
+```
+
+Notice that R creates a new data set and intelligently chooses the variable
+names. There are a number of other useful summary functions that work similarly,
+such as `sm_min`, `sm_max`, `sm_sum`, and `sm_sd` (standard deviation).
+
+## Multiple output values
+
+Some summary functions return multiple columns for a given variable. For
+example, `sm_quartiles` gives the *five-number summary* of a variable: its
+minimum value, the first quartile (25th percentile), the median (50th
+percentile), the third quartile (75th percentile), and the maximum value. As
+with the other summary functions, smart variable names are automatically
+created in R:
+
+```{r, message=FALSE}
+food %>%
+  summarize(sm_quartiles(calories))
+```
+
+Functions such as `sm_deciles` and `sm_percentiles` give a similar output, but
+with additional cutoff values. These can be useful in trying to describe the
+distribution of numeric variables in large data sets.
+
+
+Summarizing the data set to a single row can be useful for understanding the
+general trends in a data set or highlighting outliers. However, the real power
+of the summary function comes when we pair it with grouped manipulations. This
+will allow us to produce summaries *within* one or more grouping variables in
+our data set.
+
+When we use the `group_by` function, subsequent uses of the `summarize` function
+will produce a summary that describes the properties of variables within the
+variable used for grouping. The variable name(s) placed inside of the
+`group_by` function indicate which variable(s) should be used for the groups.
+For example, here we compute the mean number of calories of each food group:
+
+```{r}
+food %>%
+  group_by(food_group) %>%
+  summarize(sm_mean(calories))
+```
+
+Notice that the output data set contains a column for the grouping variable
+(`food_group`) and the summarized variable (`calories_mean`). The summarized
+variable name is exactly the same as the non-grouped version and the final line
+of code looks exactly the same as before. However, the output data set now
+contains six rows, one for each food group.
+
+**Any summarization function that can be used for an ungrouped data set can also
+be used for a grouped data set.** Also, as before, we can put multiple summary
+functions together to obtain different measurements of each group.
+
+```{r}
+food %>%
+  group_by(food_group) %>%
+  summarize(sm_mean(calories), sm_mean(total_fat))
+```
+
+Notice that the automatically produced variable names should make it clear
+which column corresponds to each summary function.
+
+
+There are several additional summary functions that will be useful for
+analyzing data. The function `sm_count` takes no arguments and returns a
+variable called `count` that counts the total number of rows in the data set:
+
+```{r}
+food %>%
+  group_by(food_group) %>%
+  summarize(sm_count())
+```
+
+This tells us how many times each type of food group occurs in the data set.
+Similarly, the function `sm_na_count` tells us how many values of a variable
+are missing:
+
+```{r}
+food %>%
+  group_by(food_group) %>%
+  summarize(sm_count(), sm_na_count(calories))
+```
+
+In this case there are no missing values for the `calories` variable.
+
+The summary function `sm_paste` collapses all of the values in a character
+variable. For example, applying this summary it to the `item` category after
+grouping by color, we can see all of the foods in the data set associated with
+a specific color:
+
+```{r}
+food %>%
+  group_by(color) %>%
+  summarize(sm_paste(item))
+```
+
+
+
+Finally, note that it is possible to define your own summary functions using
+other R functions. To do this, we have to specify the name of the new variable
+explicitly. For example, here is an alternative way of computing the mean of
+the amount of Vitamin A within each food color:  
+
+```{r}
+food %>%
+  group_by(color) %>%
+  summarize(avg_vitamin_a = mean(vitamin_a)) %>%
+  arrange(desc(avg_vitamin_a))
+```
+
+
+
+### Geometries for summaries
+
+We can use summarized data sets to produce new data visualizations. For
+example, consider summarizing the average number of calories, average total fat,
+and number of items in each food groups. We can take this data and construct a
+scatter plot that shows the average fat and calories of each food group, along
+with informative labels. Here's the code to make this visualization:
+
+```{r}
+food %>%
+  group_by(food_group) %>%
+  summarize(sm_mean(calories), sm_mean(total_fat), sm_count()) %>%
+  ggplot(aes(calories_mean, total_fat_mean)) +
+    geom_point(aes(size = count), color = "grey85") +
+    geom_text_repel(aes(label = food_group))
+```
+
+
+Scatterplots are often useful for displaying summarized information. There are
+two additional `geom` types that often are useful specifically for the case of
+summarized data sets.
+
+If we want to create a bar plot, where the heights of the bars as given by a
+column in the data set, we can use the `geom_col` layer type. For this, assign a
+categorical variable to the `x`-aesthetic and the count variable to the
+`y`-aesthetic. For example, here is a bar plot showing the number of items in
+each food group:
+
+```{r}
+food %>%
+  group_by(food_group) %>%
+  summarize(sm_count()) %>%
+  ggplot() +
+    geom_col(aes(x = food_group, y = count))
+```
+
+There are two specific things to keep in mind with the `geom_col` layer. First,
+there are two color-related `aes` categories: the border of the bars (`color`)
+and the color used to shade the inside of the bars (`fill`). We can change
+these exactly as we did with the single color value used with scatter plots.
+Also, if we want to produce a bar plot with horizontal bars, this can be done
+by adding the special layer `coord_flip()` at the end of the plotting command.
+
+```{r}
+food %>%
+  group_by(food_group) %>%
+  summarize(sm_count()) %>%
+  ggplot(aes(x = food_group, y = count)) +
+    geom_col(color = "black", fill = "white") +
+    coord_flip()
+```
+
+I find that using a white fill color and a black border is often a good-looking
+starting point. Also, you will notice that making the bars horizontal will make
+it easier to read the category names when there are a larger number of
+categories.
+
+
+
+It is possible to group a data set by multiple variables.
+To do this, we can provide additional variables to the `group_by` function
+separated by commas. For example, we could group the food data set into food
+group and color, and summarize each combination of the two:
+
+```{r}
+food %>%
+  group_by(food_group, color) %>%
+  summarize(sm_count(), sm_mean(calories))
+```
+
+Notice that now there is one row for each combination of the two groups.
+However, there is no row for combinations that do not exist. So, there is no
+row for pink dairy products nor for white fruit. Examples of several common
+uses for multiple groups are given in the exercises.
+
+### Mutate verb
+
+The final core **dplyr** verb that we will look at is used to create a new
+variable in our data set based on other variables that are already present.
+This verb is called `mutate`, and works by giving it the name of the variable
+you want to create followed by the code that describes how to construct the
+variable in terms of the rest of the data.
+
+As an example, consider computing the number of calories in an 200g portion of
+each food. All of the variables in the data set are currently given as 100g
+portions, so to compute this we need to multiply the `calories` variables by 2.
+To do this, we use the `mutate` verb to name and describe a new variable
+`calories_200g`.
+
+```{r}
+food %>%
+  mutate(calories_200g = calories * 2)
+```
+
+Notice that there is a new variable named `calories_200g` that has been added
+as the last column in the data set. Because it is added at the end of the
+data set, it gets hidden in the output shown above. Making use of `select`
+allows us to see the new values:
+
+```{r}
+food %>%
+  mutate(calories_200g = calories * 2) %>%
+  select(item, food_group, calories, calories_200g)
+```
+
+And now we can see that the new column has been created by doubling the number
+given the `calories` column.
+
+Note that `mutate` can also be used to modify any existing column in the
+data set by using the name of an extant variable. In this case the position of
+the variable within the tables does not change.
+
+The mutate verb itself has a relatively straightforward syntax. The main
+challenge is knowing how to apply and chain together the various
+transformations that are useful within an analysis. In the next few sections,
+we highlight several common types of operations that we will be useful in
+subsequent applications.
+
+## Conditional values
+
+Many of the uses for the mutate verb involve assigning one value when a set of
+conditions is true and another if the conditions are false. For example,
+consider creating a new variable called `sugar_level` based on the relative
+amount of sugar in each food item. We might classify a food has having a "high"
+sugar level if has more than 10g of sugar per 100g serving, and a "normal"
+amount otherwise. In order to create this variable, we need the function
+`if_else`.
+
+The `if_else` function has three parts: a TRUE/FALSE statement, the value to
+use when the statement is true, and the value to use when it is false. Here is
+an example to create our new variable:
+
+```{r}
+food %>%
+  mutate(sugar_level = if_else(sugar > 10, "high", "normal")) %>%
+  select(item, food_group, sugar, sugar_level)
+```
+
+Looking at the first rows of data, we see that apples and bananas are classified
+as high sugar foods, whereas the other sugar levels are given the sugar level
+category of "normal".
+
+The `if_else` function can be used to produce any number of categories by using
+it multiple times. Let's modify our sugar level variable to now have three
+categories: "high" (over 10g), "low" (less than 1g), and "normal" (between 1g
+and 10g). There are several different ways to get to the same result, but I
+find the easiest is to start by assigning a default value and then changing the
+value of the new variable in sequence. For example, here some code that produces
+our new categories:
+
+```{r}
+food %>%
+  mutate(sugar_level = "default") %>%
+  mutate(sugar_level = if_else(sugar < 1, "low", sugar_level)) %>%
+  mutate(sugar_level = if_else(sugar > 10, "high", sugar_level)) %>%
+  mutate(sugar_level = if_else(between(sugar, 1, 10), "normal", sugar_level)) %>%
+  select(item, food_group, sugar, sugar_level)
+```
+
+In each `if_else` step we are telling the mutate function that if the condition
+is false set `sugar_level` equal to itself. In other words, if the condition
+does not hold, do not change the value of the variable.
+
+In may wonder why we created a "default" value for the variable `sugar_level`.
+It would have been one less line of code to set the default value to "normal"
+and remove the final mutate function. The reason for the approach above is
+three-fold. First, it's easier to understand what the code is doing in it's
+current format because each condition ("high", "normal", and "low") is
+explicitly coded. Secondly, it creates a nice check on our code and data. If we
+find a row of the output that still has the value "default" we will know that
+there is a problem somewhere. Finally, the code above will more safely handle
+the issues with missing values, and issue that we will return to shortly.
+
+
+
+
+## Factors
+
+R has a special data type called a "factor" (abbreviated "fct") that is
+specifically designed to handle categorical variables. It is typically not a
+good idea to store data as a factor because the resulting variables have some
+odd, error-producing, behaviors. However, it can be useful to create a factor
+as part of a mutate function just prior to creating a data visualizations.
+
+For us, biggest difference between factors and character vectors is that a
+factor vector has a default ordered of its unique values, called the factor's
+"levels". Creating and understanding factors is useful because it allows us to
+change the ordering of categories within visualizations and models (which by
+default is done alphabetically).
+
+One of the easiest ways to produce a factor variable with a given order is
+through the function `fct_inorder`. It will order the categories in the same
+order that they (first) appear in the data set. Combining this with the
+`arrange` function provides a lot of control over how categories become ordered.
+For example, the following code produces a bar plot of the food groups in our
+data set arranged from the largest category to the smallest category:
+
+```{r}
+food %>%
+  group_by(food_group) %>%
+  summarize(sm_count()) %>%
+  arrange(desc(count)) %>%
+  mutate(food_group = fct_inorder(food_group)) %>%
+  ggplot() +
+    geom_col(aes(food_group, count))
+```
+
+Other useful functions for manipulating categories include `fct_relevel` for
+manually putting one category first and `fct_lump_n` for combining together
+the smallest categories into a collective "Other" category.
+
+### Mutate summaries
+
+All of summary functions that were introduced in the previous notebook can also
+be applied within the mutate version. Instead of reducing the data to a single
+summary row, summarizing within the mutate verb duplicates the summary statistic
+in each row of the data set. Here is an example of including the average number
+of calories across all rows of the data set:
+
+```{r}
+food %>%
+  mutate(sm_mean(calories))
+```
+
+As with any call to mutate, all of the original variables are kept in the output
+and the new variable is added at the end. Using `select` we can verify that the
+average calories has in fact been added to each row of the table.
+
+```{r}
+food %>%
+  mutate(sm_mean(calories)) %>%
+  select(item, food_group, calories, calories_mean)
+```
+
+The power of mutate summaries becomes particularly clear when grouping the
+data. If we group the data set by one or more variables and apply a summary
+function within a mutation, the repeated summaries will be done within
+each group. Here is an example of adding the average calories of each food
+group to the data set:
+
+```{r}
+food %>%
+  group_by(food_group) %>%
+  mutate(sm_mean(calories)) %>%
+  select(item, food_group, calories, calories_mean)
+```
+
+Following this with a filter, for example, would allow us to select all of the
+foods that have a less than average number of calories within their food group.
+We will see many examples of grouped mutate summaries throughout our
+applications.
+
+## Labels and themes
+
+We have seen a number of ways to create and modify data visualizations. One
+thing that we did not cover was how to label our axes. 
+
+
+While many data
+visualization guides like to stress the importance of labelling axes, while in
+the exploratory phase of analysis it is often best to simply use the default
+labels provided by R. These are useful for a number of reasons. First, they
+require minimal effort and make it easy to tweak axes, variables, and other
+settings without spending time tweaking with the labels. Secondly, the default
+labels use the variable names in our dataset. When writing code this is
+*exactly* what we need to know about a variable to use it in additional plots,
+models, and data manipulation tasks. 
+
+
+Of course, once we want to present our
+results to others, it is essential to provide more detailed descriptions
+of the axes and legends in our plot. Fortunately, this is relatively easy using
+the grammar of graphics.
+
+In order to change the labels in a plot, we can use the `labs` function as an
+extra part of our plot. Inside the function, we assign labels to the names of
+aes values that you want to describe. Leaving a value unspecified
+will keep the default value in place. Labels for the x-axis and y-axis will be
+go on the sides of the plot. Labels for other aesthetics such as size and color
+will be placed in the legend. Here is an example of a scatterplot with labels
+for the three aesthetics:
+
+```{r, message=FALSE}
+food %>%
+  ggplot() +
+    geom_point(aes(x = calories, y = sat_fat, color = food_group)) +
+    labs(
+      x = "Calories per 100g",
+      y = "Saturated Fat (grams per 100g)",
+      color = "Food Group"
+    )
+```
+
+Notice that the descriptions inside of the `labs` function is fairly long. The
+code here breaks it up by putting each argument on its own line (indented a
+further two spaces). This is good practice when using functions with a lot of
+arguments.
+
+We can also had a title (and optional subtitle and caption) to the plot by
+adding these as named arguments to the `labs` function.
+
+```{r}
+food %>%
+  ggplot() +
+    geom_point(aes(x = calories, y = sat_fat, color = food_group)) +
+    labs(
+      title = "Main title",
+      subtitle = "A little more detail",
+      caption = "Perhaps the source of the data?"
+    )
+```
+
+Another way to prepare our graphics for publication is to modify the *theme* of
+a plot. One useful option is to set the
+default plot to `theme_minimal`. As the name implies, it removes most of the clutter
+of other choices while keeping grid lines and other visual cues to help
+interpret a dataset. 
+
+When presenting information for external publication, I
+prefer to use the theme called `theme_sm` based on the work of Edward Tufte.
+To set the theme, just call the following line of code sometime before making
+your plot:
+
+```{r}
+theme_set(theme_sm())
+```
+
+Now, when we construct a plot it will use the newly assigned theme:
+
+```{r}
+food %>%
+  ggplot() +
+    geom_point(aes(x = sugar, y = total_fat))
+```
+
+The Tufte theme is designed to use as little "ink" as possible, thus focusing
+the reader on the data. It can be a bit too minimal when first exploring the
+dataset, but is a great tool for presenting your results.
+
+
