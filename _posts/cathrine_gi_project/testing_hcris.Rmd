@@ -1,15 +1,17 @@
 ---
-title: "Data Project: Predicting Hospital Exit"
+title: "Predicting Hospital Exit"
 description: |
-  Initial ideas 
+  Project introduction 
 author:
-  - name: Catherine Ishitani & Gi Kim
+  - name: Catherine Ishitani
+  - name: Gi Kim
     affiliation: Wharton
 date: "`r Sys.Date()`"
 output:
   distill::distill_article:
     self_contained: true
 toc: false
+categories: Catherine and Gi's project
 ---
 
 
@@ -26,6 +28,10 @@ Can we predict whether a hospital will exit from a market?
 -	*Feature selection*: given many potentially relevant variables, which are most important for prediction? 
 
 -	*Non-linearity*: is a hospital's underlying exit decision making process well captured by a non-linear model? 
+
+```{r,echo=FALSE, fig.cap="Hospital closures, 2003-2011 (Source: Harvard School of Public Health)"}
+knitr::include_graphics("map-hospital-closures-050115.jpg")
+```
 
 ## Motivation 
 
@@ -69,15 +75,13 @@ library(gmodels)
 CrossTable(hcris$outcome)
 ```
 
-We observe ~6,300 hospitals ov
-
-er 2008-2017 (or as early as 1996, with some more work).
+We observe ~6,300 hospitals over 2008-2017 (or as early as 1996, with some more work).
 
 Our explanatory variables include hospital characteristics (e.g., non-profit, rural, # of beds) and financial data, along with market demand and competition factors. We have ~80 explanatory variables (~33 of which are categorical; the remainder are quantitative) before including lags.    
 
 If we skim the data, it looks like this:
 
-```{r}
+```{r,echo=TRUE}
 skim(hcris)
 ```
 
