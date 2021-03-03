@@ -54,6 +54,8 @@ schoolData <- schoolData[, colSums(is.na(schoolData)) != nrow(schoolData)]
 studentData <- studentData[, colSums(is.na(studentData)) != nrow(studentData)]
 ```
 
+
+
 ```{r clean2}
 #drop IDs  - this is a bunch of student/school identifiers that shouldn't be important to fit a tree on
 studentData<-studentData[,-c(1:23)]
