@@ -76,19 +76,25 @@
   {
     "path": "posts/2021-02-25-predicting-take-up-rate/",
     "title": "Predicting Take-Up Rate",
-    "description": {},
+    "description": "Understanding the predictors of social programs application",
     "author": [
       {
-        "name": "Ornella Darova & Ozgur Seker",
+        "name": "Ornella Darova",
+        "url": {}
+      },
+      {
+        "name": "Ozgur Seker",
         "url": {}
       }
     ],
     "date": "2021-02-25",
-    "categories": [],
-    "contents": "\nOne of the central issues of policy design is targeting. Targeting may not be completely under the control of the policy maker, as the population actually participating to a public policy may self-select into it: in that case, we would have an  endogenous take-up rate. Understanding what are the predicting factors of take-up rate, given eligibility, is of fundamental importance to improve not only policy design but also policy evaluations, as the take-up rate and the characteristics of the self-selected population can heavily affect the impact and the success of policies themselves.\nWe employ Current Population Survey (CPS) microdata harmonized by IPUMS that we are going to integrate with other datasets with pertinent variables. We are going to employ Machine Learning techniques to forecast our outcome of interest and compare different policies take-up, such as public housing, government subsidies for the rent payment, energy subsidies, food stamp recipiency, and government school lunch subsidies, reflecting on the differences and similarities between these policies and the most important predictors.\nPossible outcomes to explore:\n\nVariable name\n\n\nExplanation\n\n\nOutcomes\n\n\nEligibility\n\n\nPubhous\n\n\nLiving in public housing\n\n\n1-No; 2-Yes\n\n\nIncome standards. A public housing unit can be occupied by a family of 2+ or 1 handicapped, elderly, or displaced by urban renewal or natural disaster\n\nRentsub\n\n\nPaying lower rent due to government subsidy\n\n\n1-No; 2-Yes\n\n\nCombined income 80% of the local area median income. Family of 2+ or 1 handicapped, elderly, or displaced by urban renewal or natural disaster\n\n\nHeatsub\n\n\nReceived energy subsidy\n\n\n1-No; 2-Yes\n\n\nIncome standards. Automatically eligible: recipients of Aid to Families with Dependent Children, Food Stamps, Supplemental Security Income or certain Veterans’ benefits.\n\n\nFoodstmp\n\n\nFood stamp recipiency\n\n\n1-No; 2-Yes\n\n\nAll low-income and low-resource households, regardless of the person’s characteristics (e.g., sex, age, disability, etc.)\n\n\nLunchsub\n\n\nGovernment school lunch food subsidy\n\n\n1-No; 2-Yes\n\n\nFree: students living in households with incomes <125% of the poverty level; Reduced: in households with incomes between 125% and 195%\n\n\n\n\n",
-    "preview": {},
-    "last_modified": "2021-02-27T17:05:29+00:00",
-    "input_file": {}
+    "categories": [
+      "post"
+    ],
+    "contents": "\nOne of the central issues of policy design is targeting. Targeting may not be completely under the control of the policy maker, as the population actually participating to a public policy may self-select into it: in that case, we would have an  endogenous take-up rate. Understanding what are the predicting factors of take-up rate, given eligibility, is of fundamental importance to improve not only policy design but also policy evaluations, as the take-up rate and the characteristics of the self-selected population can heavily affect the impact and the success of policies themselves.\nWe employ Current Population Survey (CPS) microdata harmonized by IPUMS that we are going to integrate with other datasets with pertinent variables. The CPS data sample we have has more than 3.5 million observations and 57 variables. You can see and download a sample data from this link. We are going to employ Machine Learning techniques to forecast our outcome of interest and compare different policies take-up, such as public housing, government subsidies for the rent payment, energy subsidies, food stamp recipiency, and government school lunch subsidies, reflecting on the differences and similarities between these policies and the most important predictors.\nPossible outcomes to explore:\n\nVariable name\n\n\nExplanation\n\n\nOutcomes\n\n\nEligibility\n\n\nPubhous\n\n\nLiving in public housing\n\n\n1-No; 2-Yes\n\n\nIncome standards. A public housing unit can be occupied by a family of 2+ or 1 handicapped, elderly, or displaced by urban renewal or natural disaster\n\nRentsub\n\n\nPaying lower rent due to government subsidy\n\n\n1-No; 2-Yes\n\n\nCombined income 80% of the local area median income. Family of 2+ or 1 handicapped, elderly, or displaced by urban renewal or natural disaster\n\n\nHeatsub\n\n\nReceived energy subsidy\n\n\n1-No; 2-Yes\n\n\nIncome standards. Automatically eligible: recipients of Aid to Families with Dependent Children, Food Stamps, Supplemental Security Income or certain Veterans’ benefits.\n\n\nFoodstmp\n\n\nFood stamp recipiency\n\n\n1-No; 2-Yes\n\n\nAll low-income and low-resource households, regardless of the person’s characteristics (e.g., sex, age, disability, etc.)\n\n\nLunchsub\n\n\nGovernment school lunch food subsidy\n\n\n1-No; 2-Yes\n\n\nFree: students living in households with incomes <125% of the poverty level; Reduced: in households with incomes between 125% and 195%\n\n\n\n\n",
+    "preview": "https://dt2sdf0db8zob.cloudfront.net/wp-content/uploads/2020/02/form-builders-11-850x435.png",
+    "last_modified": "2021-03-02T16:25:59+01:00",
+    "input_file": "predicting-take-up-rate.utf8.md"
   },
   {
     "path": "posts/2021-02-18-boosting/",
