@@ -3,12 +3,15 @@ title: "An Algorithmic Perspective on BLP-Style Demand Estimation"
 description: |
   Project Introduction
 author:
-  - name: Jonathan Arnold & Sheng Chao Ho
+  - name: Jonathan Arnold
+  - name: Sheng Chao Ho
     url: {}
 date: 02-26-2021
 output:
   distill::distill_article:
     self_contained: false
+categories: "Jonathan and Sheng"
+bibliography: refs.bib
 ---
 
 ```{r setup, echo=FALSE,message=FALSE}
@@ -29,7 +32,7 @@ knitr::include_graphics("demand_example.png")
 
 Demand estimation is a central problem in applied economics, and one to which considerable econometric effort has been dedicated. Indeed, it is one of the most common examples of simultaneity bias, leading to the widespread use of instrumental variables techniques to overcome this issue. Discrete choice techniques, on the other hand, attempt to avoid this issue entirely by looking at the behavior of individual consumers, who face an essentially flat supply curve assuming no buyer-side market power.
 
-In 1995, Berry, Levinsohn, and Pakes introduced a new method to estimate demand in differentiated products markets using this type of discrete choice method, but on a relatively aggregated dataset. It was remarkable for a number of reasons, not least for its use of discrete choice techniques on a dataset which contained no data at the individual consumer level. Their structural approach became quite popular for its usefulness in a wide variety of IO settings, but it came at the cost of considerable computational effort and relatively restrictive functional form assumptions.
+@blp_1995 introduced a new method to estimate demand in differentiated products markets using this type of discrete choice method, but on a relatively aggregated dataset. It was remarkable for a number of reasons, not least for its use of discrete choice techniques on a dataset which contained no data at the individual consumer level. Their structural approach became quite popular for its usefulness in a wide variety of IO settings, but it came at the cost of considerable computational effort and relatively restrictive functional form assumptions.
 
 On the other hand, relatively little attention has been dedicated to solving the demand estimation problem from an algorithmic modeling standpoint. But how could machine learning and algorithmic modeling help with a problem so centered around inference, resolving endogeneity problems, and estimating structural parameters? At first glance, it isn't quite clear. However, we believe algorithmic modeling does in fact have a place in this data-model-dominated setting, mainly because of counterfactual prediction. 
 
@@ -45,7 +48,7 @@ In this project, we will attempt to answer the following questions:
 
 ### Data
 
-We will be working with the dataset of Berry, Levinsohn and Pakes (ECTA, 1995). It is a panel data set of car models containing their yearly sales quantities and product characteristics such as prices, miles per gallon etc. In total, there are 2000+ observations with 10 variables, observed over 20 years. Out of the 10, 3 variables are binary, with the remaining 7 being continuous. The dataset also contains identifiers for the year of the observation, the producing firm, and the model name and year. Prices are in thousands of 1983 dollars, so no inflation adjustment is required.
+We will be working with the dataset of @blp_1995. It is a panel data set of car models containing their yearly sales quantities and product characteristics such as prices, miles per gallon etc. In total, there are 2000+ observations with 10 variables, observed over 20 years. Out of the 10, 3 variables are binary, with the remaining 7 being continuous. The dataset also contains identifiers for the year of the observation, the producing firm, and the model name and year. Prices are in thousands of 1983 dollars, so no inflation adjustment is required.
 
 Below we provide a summary table of mean values for each variable during the first 10 years of the panel. 
 
@@ -86,4 +89,3 @@ Methods we may use on the structural side include:
 Question 2 may require a more creative approach. Some algorithmic models, like CART, are fairly interpretable, and we may be able to compare their results with those of structural models. Others, like random forest, may not be so interpretable. A first approach will be to use variable importance plots to get an idea of what's happening inside the algorithmic black box, and compare these results to those of the structural models. 
 
 Another, more ambitious, approach is to look for specific automobile models which appear multiple times in the dataset with different prices. Train the models on some observations and then predict the market shares after a price change. We would then scale these predicted demand changes appropriately to compare with the estimated BLP own-price elasticities. We're not sure yet whether such a comparison is possible or valid, but it is something we would like to examine. 
-
