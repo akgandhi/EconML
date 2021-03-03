@@ -15,7 +15,7 @@ params:
 preview: https://raw.githubusercontent.com/rstudio/hex-stickers/master/PNG/rmarkdown.png
 categories:
    - lecture
-bibliogrpahy: bib.bib
+
 
 ---
 
