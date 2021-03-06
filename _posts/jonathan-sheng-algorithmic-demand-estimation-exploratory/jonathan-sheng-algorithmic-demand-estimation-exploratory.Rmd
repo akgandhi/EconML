@@ -3,15 +3,13 @@ title: "An Algorithmic Perspective on BLP-Style Demand Estimation"
 description: |
   Exploratory Analysis
 author:
-  - name: Jonathan Arnold
-  - name: Sheng Chao Ho
-date: 03-04-2021
+  - Jonathan Arnold 
+  - Sheng Chao Ho
+date: 02-26-2021
 output:
   distill::distill_article:
     self_contained: false
-    fig_caption: yes
-categories:
-  - Jonathan and Sheng  
+categories: "Jonathan and Sheng"
 ---
 
 
