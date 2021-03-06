@@ -1,0 +1,373 @@
+---
+title: "An Algorithmic Perspective on BLP-Style Demand Estimation"
+description: |
+  Predictive Performance 
+author:
+  - Jonathan Arnold 
+  - Sheng Chao Ho
+date: 03-02-2021
+output:
+  distill::distill_article:
+    self_contained: false
+categories:
+  - Jonathan and Sheng  
+---
+
+
+<!-- Load some general packages, plus load and process data -->
+```{r Load_and_process, include=FALSE}
+
+knitr::opts_chunk$set(echo = FALSE)
+
+library(tidyverse)
+library(magrittr)
+
+df <- read_csv("blp.csv") %>% 
+  as_tibble %>% 
+  mutate(origin = case_when(japan==1 ~ "Japan", 
+                            euro==1 ~ "Europe", 
+                            TRUE ~ "Domestic")) %>% 
+  select(-c(japan,euro,prodvec,modelvec,newmodv,market,quantity)) %>% 
+  rename(miles_per_gallon = mpg,
+         miles_per_dollar = mpd,
+         air_conditioning = air,
+         horsepower_weight = hpwt,
+         outside_share = share_out,
+         year = model_year,
+         car_model = id,
+         firm_id = firmid) %>% 
+  #mutate(share = log(share)-log(outside_share)) %>% 
+  group_by(year) %>% 
+  #mean price of all cars in market except own firm's
+  mutate(comp_avg_price = map_dbl(firm_id, ~mean(price[-.x]))) %>% 
+  ungroup %>% 
+  group_by(year,firm_id) %>% 
+  #mean price of own firm's cars in market (excluding current obs)
+  mutate(own_avg_price = map_dbl(car_model, ~mean(price[-.x]))) %>% 
+  ungroup %>% 
+  mutate(across(c(origin,year,firm_id,car_model,air_conditioning),factor)) %>% 
+  select(-car_model) 
+  #ultimately removed car model because tuning for the more sophisticated models takes    way too long with a factor variable with so many categories 
+
+```
+
+<!-- Data Splitting -->
+```{r Data_splitting, include=FALSE}
+set.seed(123)
+
+library(tidymodels)
+library(usemodels)
+library(doParallel)
+
+df_split <- initial_split(df, strata = price)
+
+df_train <- training(df_split)
+df_test <- testing(df_split)
+
+df_folds <- bootstraps(df_train, strata = price)
+
+doParallel::registerDoParallel()
+
+```
+
+<!-- Tune? -->
+```{r To_tune_or_not_to_tune}
+tune <- FALSE
+```
+
+<!-- LASSO -->
+```{r LASSO_workflow}
+#use_glmnet()
+
+glmnet_recipe <- 
+  recipe(formula = share ~ ., data = df_train) %>% 
+  step_novel(all_nominal(), -all_outcomes()) %>% 
+  step_dummy(all_nominal(), -all_outcomes()) %>% 
+  step_zv(all_predictors()) %>% 
+  step_normalize(all_predictors(), -all_nominal()) 
+
+glmnet_spec <- 
+  linear_reg(penalty = tune(), mixture = 1) %>% 
+  set_mode("regression") %>% 
+  set_engine("glmnet") 
+
+glmnet_workflow <- 
+  workflow() %>% 
+  add_recipe(glmnet_recipe) %>% 
+  add_model(glmnet_spec) 
+
+
+```
+
+```{r LASSO_tune_fit_pred, eval = tune}
+
+set.seed(63663)
+
+glmnet_tune <- 
+  tune_grid(glmnet_workflow, 
+            resamples = df_folds, 
+            grid = 10) 
+
+show_best(glmnet_tune, metric = "rmse")
+#Best model is penalty = 6.158482e-06
+
+
+final_glmnet <- 
+  glmnet_workflow %>%
+  finalize_workflow(select_best(glmnet_tune, metric = "rmse"))
+  
+glmnet_fit <- last_fit(final_glmnet, df_split)
+
+```
+
+```{r LASSO_custom_fit_pred, eval = 1-tune}
+
+final_glmnet <- 
+  workflow() %>% 
+  add_recipe(glmnet_recipe) %>% 
+  add_model(update(glmnet_spec,
+                   penalty=6.158482e-06)
+            ) 
+
+glmnet_fit <- last_fit(final_glmnet, df_split)
+
+```
+
+```{r LASSO_plot_pred_and_vip}
+
+glmnet_plot <- #Plot of predictions vs truth
+  collect_predictions(glmnet_fit) %>%
+  ggplot(aes(share, .pred)) +
+  geom_abline(lty = 2, color = "gray50") +
+  geom_point(alpha = 0.5, color = "midnightblue") +
+  coord_fixed()
+
+glmnet_vip <- 
+  glmnet_fit %>% 
+   pluck(".workflow", 1) %>%   
+   pull_workflow_fit() %>% 
+   vip::vip(num_features = 10)
+```
+
+<!-- CART -->
+```{r CART_workflow}
+#Preparing workflow
+cart_recipe <- 
+  recipe(formula = share ~ ., data = df_train) %>% 
+  step_dummy(all_nominal())
+
+cart_spec <- 
+  decision_tree(cost_complexity = tune(), tree_depth=tune(), min_n = tune()) %>% 
+  set_mode("regression") %>% 
+  set_engine("rpart") 
+
+cart_workflow <- 
+  workflow() %>% 
+  add_recipe(cart_recipe) %>% 
+  add_model(cart_spec) 
+
+```
+
+```{r CART_tune_fit_pred, eval = tune}
+
+set.seed(63663)
+
+cart_tune <-
+  tune_grid(cart_workflow, 
+            resamples = df_folds, 
+            grid = 30,
+            control = control_grid(verbose = TRUE))
+
+show_best(cart_tune, metric = "rmse")
+#Best model is cost_complexity = 3.162278e-06, tree_depth = 8, min_n = 40
+
+
+final_cart <- cart_workflow %>%
+  finalize_workflow(select_best(cart_tune, metric = "rmse"))
+
+cart_fit <- last_fit(final_cart, df_split)
+
+```
+
+```{r CART_custom_fit_pred, eval = 1-tune}
+
+final_cart <- 
+  workflow() %>% 
+  add_recipe(glmnet_recipe) %>% 
+  add_model(update(cart_spec,
+                   cost_complexity = 3.16227766016838e-06, tree_depth = 8, min_n = 40)
+            ) 
+
+cart_fit <- last_fit(final_cart, df_split)
+
+```
+
+```{r CART_plot_pred_and_vip}
+
+cart_plot <- #Plot of predictions vs truth
+  collect_predictions(cart_fit) %>%
+  ggplot(aes(share, .pred)) +
+  geom_abline(lty = 2, color = "gray50") +
+  geom_point(alpha = 0.5, color = "midnightblue") +
+  coord_fixed()
+
+cart_vip <- 
+  cart_fit %>% 
+  pluck(".workflow", 1) %>%   
+  pull_workflow_fit() %>% 
+  vip::vip(num_features = 10)
+```
+
+<!-- Random Forest -->
+```{r RF_workflow}
+#Preparing workflow
+#use_ranger(share ~ ., data = df_train)
+rf_recipe <- 
+  recipe(formula = share ~ ., data = df_train) %>% 
+  step_dummy(all_nominal())
+
+rf_spec <- 
+  rand_forest(mtry = tune(), min_n = tune(), trees = 1000) %>% 
+  set_mode("regression") %>% 
+  set_engine("ranger") 
+
+rf_workflow <- 
+  workflow() %>% 
+  add_recipe(rf_recipe) %>% 
+  add_model(rf_spec) 
+```
+
+```{r RF_tune_fit_pred, eval = tune}
+
+set.seed(63663)
+
+rf_tune <- tune_grid(rf_workflow, 
+                     resamples = df_folds, 
+                     grid = 20)
+
+show_best(rf_tune, metric = "rmse")
+#Best model is mtry = 10, min_n = 4
+
+
+final_rf <- rf_workflow %>%
+  finalize_workflow(select_best(rf_tune, metric = "rmse"))
+
+rf_fit <- last_fit(final_rf, df_split)
+
+```
+
+```{r RF_custom_fit_pred, eval = 1-tune}
+
+final_rf <- 
+  workflow() %>% 
+  add_recipe(rf_recipe) %>% 
+  add_model(update(rf_spec,
+                   mtry = 10, min_n = 4, trees = 1000)
+            )
+
+rf_fit <- last_fit(final_rf, df_split)
+
+```
+
+```{r RF_plot_pred_and_vip}
+rf_plot <- #Plot of predictions vs truth
+  collect_predictions(rf_fit) %>%
+  ggplot(aes(share, .pred)) +
+  geom_abline(lty = 2, color = "gray50") +
+  geom_point(alpha = 0.5, color = "midnightblue") +
+  coord_fixed()
+
+rf_vip <- 
+  rf_fit %>% 
+  pluck(".workflow", 1) %>%   
+  pull_workflow_fit() %>% 
+  vip::vip(num_features = 10)
+```
+
+<!-- XG-Boost -->
+```{r XGB_workflow}
+xgb_recipe <- 
+  recipe(formula = share ~ ., data = df_train) %>% 
+  step_novel(all_nominal(), -all_outcomes()) %>% 
+  step_dummy(all_nominal(), -all_outcomes(), one_hot = TRUE) %>% 
+  step_zv(all_predictors()) 
+
+xgb_spec <- 
+  boost_tree(trees = tune(), min_n = tune(), tree_depth = tune(), learn_rate = tune(), 
+    loss_reduction = tune(), sample_size = tune()) %>% 
+  set_mode("regression") %>% 
+  set_engine("xgboost") 
+
+xgb_workflow <- 
+  workflow() %>% 
+  add_recipe(xgboost_recipe) %>% 
+  add_model(xgboost_spec) 
+```
+
+```{r XGB_tune_fit_pred, eval = tune}
+
+set.seed(82993)
+
+xgb_tune <- tune_grid(xgboost_workflow, resamples = df_folds, grid = 60)
+
+show_best(ranger_tune, metric = "rmse")
+
+final_xgb <- xgb_workflow %>%
+  finalize_workflow(select_best(xgb_tune, metric = "rmse"))
+
+xgb_fit <- last_fit(final_xgb, df_split)
+
+```
+
+```{r XGB_custom_fit_pred, eval = 1-tune}
+
+final_xgb <- 
+  workflow() %>% 
+  add_recipe(xgb_recipe) %>% 
+  add_model(update(xgb_spec,
+                   trees = , min_n = , tree_depth = , 
+                   learn_rate = , loss_reduction = , sample_size = )
+            )
+
+xgb_fit <- last_fit(final_xgb, df_split)
+
+```
+
+```{r XGB_plot_pred_and_vip}
+
+xgb_plot <- #Plot of predictions vs truth
+  collect_predictions(xgb_fit) %>%
+  ggplot(aes(share, .pred)) +
+  geom_abline(lty = 2, color = "gray50") +
+  geom_point(alpha = 0.5, color = "midnightblue") +
+  coord_fixed()
+
+xgb_vip <- 
+  xgb_fit %>% 
+  pluck(".workflow", 1) %>%   
+  pull_workflow_fit() %>% 
+  vip::vip(num_features = 10)
+```
+
+
+<!-- Collect and plot performance metrics of algorithms -->
+```{r}
+metrics_df <- 
+  bind_rows(collect_metrics(glmnet_fit) %>% mutate(algo = "LASSO"),
+            collect_metrics(cart_fit) %>% mutate(algo = "CART"),
+            collect_metrics(rf_fit) %>% mutate(algo = "Random Forest"),
+            collect_metrics(xgb_fit) %>% mutate(algo = "XG Boost"),
+  )
+
+metrics_plot <- 
+  metrics_df %>% 
+  ggplot(aes(algo,.estimate)) +
+  geom_point() +
+  facet_grid(.metric ~ ., scales = "free_y")
+```
+
+<!-- Collect and plot variable importance plots of algorithms -->
+```{r}
+
+```
+
