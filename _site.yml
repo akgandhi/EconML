@@ -1,5 +1,6 @@
 name: "Econ712"
 title: "Econ 712"
+theme: theme.css
 description: |
   Spring 2021
 output_dir: "_site"
