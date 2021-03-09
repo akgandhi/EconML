@@ -1,0 +1,263 @@
+---
+title: "Random Forests"
+description: |
+  A short description of the post.
+author:
+  - name: Amit Gandhi
+    url: {}
+date: 02-11-2021
+output:
+  distill::distill_article:
+    self_contained: false
+preview: https://www.frontiersin.org/files/Articles/284242/fnagi-09-00329-HTML/image_m/fnagi-09-00329-g001.jpg
+---
+
+```{r setup}
+# Set global R options
+options(scipen = 999)
+
+# Set the graphical theme
+ggplot2::theme_set(ggplot2::theme_light())
+
+# Set global knitr chunk options
+knitr::opts_chunk$set(
+  warning = FALSE, 
+  message = FALSE,
+  echo = TRUE
+)
+
+library(rsample)
+```
+
+## Prerequisite Packages
+
+This chapter leverages the following packages:
+
+```{r rf-pkg-req}
+# Helper packages
+library(dplyr)    # for data wrangling
+library(ggplot2)  # for awesome graphics
+
+# Modeling packages
+library(ranger)   # a c++ implementation of random forest 
+library(h2o)      # a java-based implementation of random forest
+```
+
+## Ames, IA Data
+
+We'll continue working with the `ames_train` data set:
+
+```{r rf-ames-train, echo=TRUE}
+# create Ames training data
+set.seed(123)
+ames <- AmesHousing::make_ames()
+split  <- initial_split(ames, prop = 0.7, strata = "Sale_Price")
+ames_train  <- training(split)
+```
+
+## What is the problem? 
+
+Bagged trees are correlated and thus full variance reduction effects are not realized:
+
+```{r tree-correlation, message=FALSE, warning=FALSE, fig.align='center', fig.cap="Six decision trees based on different bootstrap samples.", echo=TRUE, dev='png'}
+library(caret)
+library(randomForest)
+iter = 6
+par(mfrow = c(3, 3))
+for(i in 1:iter){
+  set.seed(i+30)
+  # create train/test sets
+  train_index <- caret::createDataPartition(pdp::boston$cmedv, p = .6333,
+                                     list = FALSE,
+                                     times = 1)
+  
+  train_DF <- pdp::boston[train_index,]
+  validate_DF <- pdp::boston[-train_index,]
+  
+  train_y <- train_DF$cmedv
+  train_x <- train_DF[, setdiff(names(train_DF), "cmedv")]
+  
+  validate_y <- validate_DF$cmedv
+  validate_x <- validate_DF[, setdiff(names(validate_DF), "cmedv")]
+  
+  d_tree <- rpart::rpart(cmedv ~ ., train_DF)
+  
+  # graphs
+  
+  rpart.plot::rpart.plot(d_tree, main = paste0("Decision Tree ", i), type = 0, extra = 0) 
+  
+}
+```
+
+- Suppose that there is one very strong predictor in the data set, along with a number of other moderately strong predictors. 
+
+- Then in the collection of bagged trees, most or all of the trees will use this strong predictor in the top split.
+
+- All of the bagged trees will look quite similar to each other and the predictions from the bagged trees will be highly correlated. 
+
+- Averaging many highly correlated quantities does not lead to as large of a reduction in variance as averaging many uncorrelated quantities.
+
+- In particular, this means that bagging will not lead to a substantial reduction in variance over a single tree in this setting.
+
+## Random Forests
+
+- Random forests provide an improvement over bagged trees by way of a small tweak that decorrelates the trees. 
+
+- Random forests overcome this problem by forcing each split to consider only a subset of the predictors. 
+
+- Therefore, on average $(p - m)/p$ of the splits will not even consider the strong predictor, and so other predictors will have more of a chance.
+
+- We can think of this process as decorrelating the trees, thereby making the average of the resulting trees less variable and hence more reliable.
+
+- As in bagging, we build a number of decision trees on bootstrapped training samples. 
+
+- But when building these decision trees, each time a split in a tree is considered, a random sample of $m$ predictors is chosen as split candidates from the full set of $p$ predictors. 
+
+- The split is allowed to use only one of those $m$ predictors. 
+
+- A fresh sample of $m$ predictors is taken at each split, and typically we choose $m \approx \sqrt{p}$.
+
+
+- If a random forest is built where $m =p$, then bagging is a special case of random forests. 
+
+
+
+## Out-of-the-box performance
+
+```{r out-of-box-rf}
+# number of features
+n_features <- length(setdiff(names(ames_train), "Sale_Price"))
+
+# train a default random forest model
+ames_rf1 <- ranger(
+  Sale_Price ~ ., 
+  data = ames_train,
+  mtry = floor(n_features / 3),
+  respect.unordered.factors = "order",
+  seed = 123
+)
+
+# get OOB RMSE
+(default_rmse <- sqrt(ames_rf1$prediction.error))
+```
+
+## Hyperparameters
+
+The main hyperparameters to consider include:
+
+1. The number of trees in the forest
+2. The number of features to consider at any given split: $m$
+3. The complexity of each tree
+4. The sampling scheme
+5. The splitting rule to use during tree construction
+
+As *Hands on Machine Learning with R Explains*
+
+>(1) and (2) typically have the largest impact on predictive accuracy and should always be tuned. (3) and (4) tend to have marginal impact on predictive accuracy but are still worth exploring. They also have the ability to influence computational efficiency. (5) tends to have the smallest impact on predictive accuracy and is used primarily to increase computational efficiency.
+
+Lets try grid search:
+
+```{r ranger-grid-search}
+# create hyperparameter grid
+hyper_grid <- expand.grid(
+  mtry = floor(n_features * c(.05, .15, .25, .333, .4)),
+  min.node.size = c(1, 3, 5, 10), 
+  replace = c(TRUE, FALSE),                               
+  sample.fraction = c(.5, .63, .8),                       
+  rmse = NA                                               
+)
+
+# execute full cartesian grid search
+for(i in seq_len(nrow(hyper_grid))) {
+  # fit model for ith hyperparameter combination
+  fit <- ranger(
+    formula         = Sale_Price ~ ., 
+    data            = ames_train, 
+    num.trees       = n_features * 10,
+    mtry            = hyper_grid$mtry[i],
+    min.node.size   = hyper_grid$min.node.size[i],
+    replace         = hyper_grid$replace[i],
+    sample.fraction = hyper_grid$sample.fraction[i],
+    verbose         = FALSE,
+    seed            = 123,
+    respect.unordered.factors = 'order',
+  )
+  # export OOB error 
+  hyper_grid$rmse[i] <- sqrt(fit$prediction.error)
+}
+
+# assess top 10 models
+hyper_grid %>%
+  arrange(rmse) %>%
+  mutate(perc_gain = (default_rmse - rmse) / default_rmse * 100) %>%
+  head(10)
+```
+
+## Feature interpretation
+
+Interpretability of Bagged Trees and RF's is an important issue. 
+
+Recall that bagging typically results in improved accuracy over prediction using a single tree. 
+
+Unfortunately, however, it can be difficult to interpret the resulting model. 
+
+But one main attraction of decision trees is their intrepretability! 
+
+However, when we bag a large number of trees, it is no longer possible to represent the resulting statistical learning procedure using a single tree, and it is no longer clear which variables are most important to the procedure. 
+
+Thus, bagging improves prediction accuracy at the expense of interpretability.
+
+### Variable Importance Measures
+
+
+Although the collection of bagged trees is much more difficult to interpret than a single tree, one can obtain an overall summary of the importance of each predictor using the impurity gains at each node.
+
+- the RSS (for bagging regression trees) or 
+
+- the Gini index (for bagging classification trees).
+
+
+In the case of bagging regression trees, we can record the total amount that the RSS is decreased due to splits over a given predictor, averaged over all $B$ trees. 
+
+A large value indicates an important predictor. 
+
+Similarly, in the context of bagging classification trees, we can add up the total amount that the Gini index  is decreased by splits over a given predictor, averaged over all $B$ trees.
+
+```{r feature-importance}
+# re-run model with impurity-based variable importance
+rf_impurity <- ranger(
+  formula = Sale_Price ~ ., 
+  data = ames_train, 
+  num.trees = 2000,
+  mtry = 32,
+  min.node.size = 1,
+  sample.fraction = .80,
+  replace = FALSE,
+  importance = "impurity",
+  respect.unordered.factors = "order",
+  verbose = FALSE,
+  seed  = 123
+)
+
+# re-run model with permutation-based variable importance
+rf_permutation <- ranger(
+  formula = Sale_Price ~ ., 
+  data = ames_train, 
+  num.trees = 2000,
+  mtry = 32,
+  min.node.size = 1,
+  sample.fraction = .80,
+  replace = FALSE,
+  importance = "permutation",
+  respect.unordered.factors = "order",
+  verbose = FALSE,
+  seed  = 123
+)
+```
+
+```{r feature-importance-plot, fig.cap="Top 25 most important variables based on impurity (left) and permutation (right).", fig.height=4.5, fig.width=10}
+p1 <- vip::vip(rf_impurity, num_features = 25, bar = FALSE)
+p2 <- vip::vip(rf_permutation, num_features = 25, bar = FALSE)
+
+gridExtra::grid.arrange(p1, p2, nrow = 1)
+```
