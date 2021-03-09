@@ -11,6 +11,8 @@ output:
   distill::distill_article:
     self_contained: false
 preview: https://genialebooks.com/wp-content/uploads/2019/05/fd985c69272ef1d23a9ab3f19c918252-210x315.jpg
+categories:
+  - lecture
 bibliography: bibliography.bib
 ---
 
