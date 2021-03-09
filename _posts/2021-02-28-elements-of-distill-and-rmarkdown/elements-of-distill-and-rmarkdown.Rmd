@@ -16,6 +16,7 @@ preview: https://raw.githubusercontent.com/rstudio/hex-stickers/master/PNG/rmark
 categories:
    - lecture
 
+
 ---
 
 ```{r setup}
@@ -77,6 +78,8 @@ knitr::opts_chunk$set(echo=TRUE)
 ```
 
 
+
+
 Topics:
 
 - bibliography (Jonathan)
@@ -107,7 +110,7 @@ author: Amit Gandhi
 
 The structure of metadata is isomorphic to a named list in R. In particular we can convert from a list to a YAML specification.
 
-```{r}
+```{r }
 metaDat <- list(author = "Amit Gandhi")
 yml(metaDat)
 draw_yml_tree(metaDat)
@@ -115,7 +118,7 @@ draw_yml_tree(metaDat)
 
 Or vice-versa, the metadata of a document can be retreived as a named list in R
 
-```{r}
+```{r }
 docDat <- rmarkdown::metadata
 str(docDat)
 ```

@@ -7,8 +7,10 @@ author:
   - name: Jordan Peeples
 date: "`r Sys.Date()`"
 output: distill::distill_article
+
 #bibliography: 36423V1.ris
 categories: Jordan and Kristen's project
+
 ---
 
 ```{r setup, include=FALSE}
@@ -57,6 +59,7 @@ schoolData <- da36423.0001
 studentData <- da36423.0002
 ```
 
+
 Given that HSLS:09 holds over 6,000 variables, we will start our examination of the data by selecting just student interview questions. In later iterations of this project we will select other surveys, such as the survey for parents, teachers, or counselors. In this chunk of code we drop variables that have been suppressed for public use, and rename some complicated categorical variables.
 
 ```{r studentdat}
@@ -87,6 +90,7 @@ studentDataStudents <- studentData %>%
                           "(7) Taking course to prepare for the GED/other high school equivalency exam" = "GED Prep",
                           "(8) Equally focused on more than one of these" = "Multiple"))
 studentDataStudents <- studentDataStudents[ , colSums(is.na(studentDataStudents)) < 12000]
+
 ```
 
 These steps drop the student data from 6,608 to 365 variables over 23,503 observations. This will be a much easier place to begin unpacking the wealth of information within the data.
