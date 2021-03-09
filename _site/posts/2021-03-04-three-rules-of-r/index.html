@@ -1,0 +1,3369 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1"/>
+  <meta name="generator" content="distill" />
+
+  <style type="text/css">
+  /* Hide doc at startup (prevent jankiness while JS renders/transforms) */
+  body {
+    visibility: hidden;
+  }
+  </style>
+
+ <!--radix_placeholder_import_source-->
+ <!--/radix_placeholder_import_source-->
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ad0000; } /* Alert */
+code span.an { color: #5e5e5e; } /* Annotation */
+code span.at { color: #20794d; } /* Attribute */
+code span.bn { color: #ad0000; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007ba5; } /* ControlFlow */
+code span.ch { color: #20794d; } /* Char */
+code span.cn { color: #8f5902; } /* Constant */
+code span.co { color: #5e5e5e; } /* Comment */
+code span.cv { color: #5e5e5e; font-style: italic; } /* CommentVar */
+code span.do { color: #5e5e5e; font-style: italic; } /* Documentation */
+code span.dt { color: #ad0000; } /* DataType */
+code span.dv { color: #ad0000; } /* DecVal */
+code span.er { color: #ad0000; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #ad0000; } /* Float */
+code span.fu { color: #4758ab; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #5e5e5e; } /* Information */
+code span.kw { color: #007ba5; } /* Keyword */
+code span.op { color: #5e5e5e; } /* Operator */
+code span.ot { color: #007ba5; } /* Other */
+code span.pp { color: #ad0000; } /* Preprocessor */
+code span.sc { color: #20794d; } /* SpecialChar */
+code span.ss { color: #20794d; } /* SpecialString */
+code span.st { color: #20794d; } /* String */
+code span.va { color: #111111; } /* Variable */
+code span.vs { color: #20794d; } /* VerbatimString */
+code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
+</style>
+
+  <!--radix_placeholder_meta_tags-->
+<title>Econ 712: Everything in R is an Object</title>
+
+<meta property="description" itemprop="description" content="The First Deep Truth of R"/>
+
+
+<!--  https://schema.org/Article -->
+<meta property="article:published" itemprop="datePublished" content="2021-03-04"/>
+<meta property="article:created" itemprop="dateCreated" content="2021-03-04"/>
+<meta name="article:author" content="Amit Gandhi"/>
+
+<!--  https://developers.facebook.com/docs/sharing/webmasters#markup -->
+<meta property="og:title" content="Econ 712: Everything in R is an Object"/>
+<meta property="og:type" content="article"/>
+<meta property="og:description" content="The First Deep Truth of R"/>
+<meta property="og:locale" content="en_US"/>
+<meta property="og:site_name" content="Econ 712"/>
+
+<!--  https://dev.twitter.com/cards/types/summary -->
+<meta property="twitter:card" content="summary"/>
+<meta property="twitter:title" content="Econ 712: Everything in R is an Object"/>
+<meta property="twitter:description" content="The First Deep Truth of R"/>
+
+<!--/radix_placeholder_meta_tags-->
+  
+  <meta name="citation_reference" content="citation_title=Programming with data: A guide to the s language;citation_publication_date=1998;citation_publisher=Springer Science &amp; Business Media;citation_author=John M Chambers"/>
+  <!--radix_placeholder_rmarkdown_metadata-->
+
+<script type="text/json" id="radix-rmarkdown-metadata">
+{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","author","date","output","preview","bibliography"]}},"value":[{"type":"character","attributes":{},"value":["Everything in R is an Object"]},{"type":"character","attributes":{},"value":["The First Deep Truth of R"]},{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","url"]}},"value":[{"type":"character","attributes":{},"value":["Amit Gandhi"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":[]}},"value":[]}]}]},{"type":"character","attributes":{},"value":["03-04-2021"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["self_contained"]}},"value":[{"type":"logical","attributes":{},"value":[false]}]}]},{"type":"character","attributes":{},"value":["https://genialebooks.com/wp-content/uploads/2019/05/fd985c69272ef1d23a9ab3f19c918252-210x315.jpg"]},{"type":"character","attributes":{},"value":["bibliography.bib"]}]}
+</script>
+<!--/radix_placeholder_rmarkdown_metadata-->
+  
+  <script type="text/json" id="radix-resource-manifest">
+  {"type":"character","attributes":{},"value":["adv-r/_bookdown.yml","adv-r/_output.yml","adv-r/adv-r.css","adv-r/adv-r.Rproj","adv-r/arrange-html.png","adv-r/base-types.Rmd","adv-r/beyond-exception-handling.Rmd","adv-r/Big-picture.Rmd","adv-r/book.bib","adv-r/C-interface.Rmd","adv-r/CODE_OF_CONDUCT.md","adv-r/common.R","adv-r/Conditions.Rmd","adv-r/Connections.Rmd","adv-r/contribute.Rmd","adv-r/CONTRIBUTING.md","adv-r/contributors.csv","adv-r/Control-flow.Rmd","adv-r/cover.png","adv-r/debugging.R","adv-r/Debugging.Rmd","adv-r/DESCRIPTION","adv-r/diagrams/environments.graffle","adv-r/diagrams/environments/binding-2.png","adv-r/diagrams/environments/binding.png","adv-r/diagrams/environments/bindings.png","adv-r/diagrams/environments/calling.png","adv-r/diagrams/environments/closure-call.png","adv-r/diagrams/environments/closure.png","adv-r/diagrams/environments/execution.png","adv-r/diagrams/environments/loop.png","adv-r/diagrams/environments/namespace-bind.png","adv-r/diagrams/environments/namespace-env.png","adv-r/diagrams/environments/namespace.png","adv-r/diagrams/environments/parents-empty.png","adv-r/diagrams/environments/parents.png","adv-r/diagrams/environments/recursive-1.png","adv-r/diagrams/environments/recursive-2.png","adv-r/diagrams/environments/search-path-2.png","adv-r/diagrams/environments/search-path.png","adv-r/diagrams/environments/where-ex.png","adv-r/diagrams/evaluation.graffle","adv-r/diagrams/expressions.graffle","adv-r/diagrams/expressions/ambig-order.png","adv-r/diagrams/expressions/call-call.png","adv-r/diagrams/expressions/complicated.png","adv-r/diagrams/expressions/prefix.png","adv-r/diagrams/expressions/simple.png","adv-r/diagrams/fp.graffle","adv-r/diagrams/fp.png","adv-r/diagrams/function-factories.graffle","adv-r/diagrams/function-factories/counter-1.png","adv-r/diagrams/function-factories/counter-2.png","adv-r/diagrams/function-factories/power-exec.png","adv-r/diagrams/function-factories/power-full.png","adv-r/diagrams/function-factories/power-simple.png","adv-r/diagrams/functionals.graffle","adv-r/diagrams/functionals/invoke_map-recycle.png","adv-r/diagrams/functionals/invoke_map.png","adv-r/diagrams/functionals/map-arg-flipped.png","adv-r/diagrams/functionals/map-arg-recycle.png","adv-r/diagrams/functionals/map-arg.png","adv-r/diagrams/functionals/map-list.png","adv-r/diagrams/functionals/map.png","adv-r/diagrams/functionals/map2-arg.png","adv-r/diagrams/functionals/map2-recycle.png","adv-r/diagrams/functionals/map2.png","adv-r/diagrams/functionals/pmap-3.png","adv-r/diagrams/functionals/pmap-arg.png","adv-r/diagrams/functionals/pmap.png","adv-r/diagrams/functionals/reduce-arg.png","adv-r/diagrams/functionals/reduce-init.png","adv-r/diagrams/functionals/reduce.png","adv-r/diagrams/functionals/reduce2-init.png","adv-r/diagrams/functionals/reduce2.png","adv-r/diagrams/functionals/walk.png","adv-r/diagrams/functionals/walk2.png","adv-r/diagrams/functions.graffle","adv-r/diagrams/functions/components.png","adv-r/diagrams/functions/env.png","adv-r/diagrams/functions/first-class.png","adv-r/diagrams/name-value.graffle","adv-r/diagrams/name-value/binding-1.png","adv-r/diagrams/name-value/binding-2.png","adv-r/diagrams/name-value/binding-3.png","adv-r/diagrams/name-value/binding-f1.png","adv-r/diagrams/name-value/binding-f2.png","adv-r/diagrams/name-value/character-2.png","adv-r/diagrams/name-value/character.png","adv-r/diagrams/name-value/d-modify-c.png","adv-r/diagrams/name-value/d-modify-r.png","adv-r/diagrams/name-value/dataframe.png","adv-r/diagrams/name-value/e-modify-1.png","adv-r/diagrams/name-value/e-modify-2.png","adv-r/diagrams/name-value/e-self.png","adv-r/diagrams/name-value/l-modify-1.png","adv-r/diagrams/name-value/l-modify-2.png","adv-r/diagrams/name-value/list.png","adv-r/diagrams/name-value/unbinding-1.png","adv-r/diagrams/name-value/unbinding-2.png","adv-r/diagrams/name-value/unbinding-3.png","adv-r/diagrams/name-value/v-inplace-1.png","adv-r/diagrams/name-value/v-inplace-2.png","adv-r/diagrams/oo-venn.png","adv-r/diagrams/oo.graffle","adv-r/diagrams/quotation.graffle","adv-r/diagrams/quotation/bang-bang-bang.png","adv-r/diagrams/quotation/bang-bang.png","adv-r/diagrams/quotation/fun.png","adv-r/diagrams/quotation/infix-bad.png","adv-r/diagrams/quotation/infix.png","adv-r/diagrams/quotation/simple.png","adv-r/diagrams/s4.graffle","adv-r/diagrams/s4/emoji.png","adv-r/diagrams/s4/Matrix.png","adv-r/diagrams/s4/multiple-all.png","adv-r/diagrams/s4/multiple-ambig-2.png","adv-r/diagrams/s4/multiple-ambig.png","adv-r/diagrams/s4/multiple-any.png","adv-r/diagrams/s4/multiple-multiple.png","adv-r/diagrams/s4/multiple.png","adv-r/diagrams/s4/single-any.png","adv-r/diagrams/s4/single-multiple.png","adv-r/diagrams/s4/single-single-ambig.png","adv-r/diagrams/s4/single-single.png","adv-r/diagrams/s4/single.png","adv-r/diagrams/subsetting.graffle","adv-r/diagrams/subsetting/train-multiple.png","adv-r/diagrams/subsetting/train-single.png","adv-r/diagrams/subsetting/train.png","adv-r/diagrams/vectors.graffle","adv-r/diagrams/vectors/atomic.png","adv-r/diagrams/vectors/attr-dim-1.png","adv-r/diagrams/vectors/attr-dim-2.png","adv-r/diagrams/vectors/attr-names-1.png","adv-r/diagrams/vectors/attr-names-2.png","adv-r/diagrams/vectors/attr.png","adv-r/diagrams/vectors/data-frame-1.png","adv-r/diagrams/vectors/data-frame-2.png","adv-r/diagrams/vectors/data-frame-list.png","adv-r/diagrams/vectors/data-frame-matrix.png","adv-r/diagrams/vectors/factor.png","adv-r/diagrams/vectors/list-c.png","adv-r/diagrams/vectors/list-recursive.png","adv-r/diagrams/vectors/list.png","adv-r/diagrams/vectors/summary-tree-atomic.png","adv-r/diagrams/vectors/summary-tree-s3-1.png","adv-r/diagrams/vectors/summary-tree-s3-2.png","adv-r/diagrams/vectors/summary-tree.png","adv-r/dsl-html-attributes.r","adv-r/emoji.R","adv-r/emoji/1f576.png","adv-r/emoji/1f5fa.png","adv-r/emoji/1f603.png","adv-r/emoji/1f605.png","adv-r/emoji/1f609.png","adv-r/emoji/1f60d.png","adv-r/emoji/1f60e.png","adv-r/emoji/1f619.png","adv-r/emoji/1f61c.png","adv-r/emoji/1f636.png","adv-r/emoji/1f63d.png","adv-r/emoji/1f642.png","adv-r/Environments.Rmd","adv-r/Environments.tex","adv-r/Evaluation.Rmd","adv-r/Expressions.Rmd","adv-r/Foundations.Rmd","adv-r/FP-whole-game.Rmd","adv-r/FP.Rmd","adv-r/Function-factories.Rmd","adv-r/Function-operators.Rmd","adv-r/Functionals.Rmd","adv-r/Functions.Rmd","adv-r/ga_script.html","adv-r/index.Rmd","adv-r/Introduction.Rmd","adv-r/krantz.cls","adv-r/latex/after_body.tex","adv-r/latex/before_body.tex","adv-r/latex/preamble.tex","adv-r/latex/sidebar.lua","adv-r/LICENSE.md","adv-r/Makevars","adv-r/memory-read-delim.r","adv-r/Meta.Rmd","adv-r/mina.jpg","adv-r/Names-values.Rmd","adv-r/OO-tradeoffs.Rmd","adv-r/OO.Rmd","adv-r/Perf-improve.Rmd","adv-r/Perf-measure.Rmd","adv-r/Preface.Rmd","adv-r/profiling-example.R","adv-r/Quotation.Rmd","adv-r/R6.Rmd","adv-r/Rcpp.Rmd","adv-r/README.md","adv-r/References.Rmd","adv-r/S3.Rmd","adv-r/S4.Rmd","adv-r/screenshots/debug-toolbar.png","adv-r/screenshots/debugging/rstudio-error.png","adv-r/screenshots/debugging/rstudio-traceback.png","adv-r/screenshots/finish-loop.png","adv-r/screenshots/performance/flamegraph.png","adv-r/screenshots/performance/info.png","adv-r/screenshots/performance/memory.png","adv-r/screenshots/performance/tree.png","adv-r/screenshots/step-into.png","adv-r/Subsetting.Rmd","adv-r/Techniques.Rmd","adv-r/Translation.Rmd","adv-r/Vectors.Rmd","adv-r/www/bootstrap-theme.min.css","adv-r/www/bootstrap.min.css","adv-r/www/bootstrap.min.js","adv-r/www/glyphicons-halflings-white.png","adv-r/www/glyphicons-halflings.png","adv-r/www/highlight.css","adv-r/www/toc.js","bibliography.bib","oo-venn.png","prog/_bookdown.yml","prog/_common.R","prog/_output.yml","prog/data-structure-basics.Rmd","prog/data-structures.Rmd","prog/data/purrr-extras/file_001.csv","prog/data/purrr-extras/file_002.csv","prog/data/purrr-extras/file_003.csv","prog/data/purrr-extras/file_004.csv","prog/data/purrr-extras/file_005.csv","prog/data/purrr-extras/file_006.csv","prog/DESCRIPTION","prog/function-anonymous.Rmd","prog/function-predicate.Rmd","prog/function-vector.Rmd","prog/functions.Rmd","prog/images/data-structure-basics/tibble.png","prog/images/data-structure-basics/vector-atomic-list-tibble.png","prog/images/data-structure-basics/vector-atomic-list.png","prog/images/data-structure-basics/vector-atomic-vector.png","prog/images/data-structure-basics/vector.png","prog/images/emoticons_1-map.png","prog/images/emoticons_1-scalar.png","prog/images/emoticons_1-vector.png","prog/images/emoticons-mutate-0.png","prog/images/emoticons-mutate-1.png","prog/images/emoticons-mutate-2.png","prog/images/emoticons-mutate-3.png","prog/images/folder-organization.png","prog/images/length-list.png","prog/images/list-columns/list-column-tibbles.png","prog/images/list-columns/regions.png","prog/images/list-columns/tibble-atomic.png","prog/images/list-columns/tibble-list-col-tibbles.png","prog/images/list-columns/tibble-list-col-vectors.png","prog/images/list-columns/tibble-list-col.png","prog/images/list-columns/tibble.png","prog/images/list-columns/vectors.png","prog/images/lists-1.png","prog/images/lists-2.png","prog/images/lists-3.png","prog/images/lists-4.png","prog/images/lists-5.png","prog/images/map_df.png","prog/images/map_dfc.png","prog/images/map_dfr.png","prog/images/map-anonymous.png","prog/images/map-extra-arg.png","prog/images/map-int-output.png","prog/images/map-int.png","prog/images/map-length.png","prog/images/map-mutate-emoticons-1.png","prog/images/map-mutate-emoticons-2.png","prog/images/map-mutate-emoticons-3.png","prog/images/map-mutate-emoticons.png","prog/images/map-mutate.png","prog/images/map-output.png","prog/images/map-step-1.png","prog/images/map-step-2.png","prog/images/map.png","prog/images/map2.png","prog/images/mutate-2.png","prog/images/mutate-3.png","prog/images/mutate-scalar-2.png","prog/images/mutate-scalar.png","prog/images/mutate.png","prog/images/pmap-flipped.png","prog/images/pmap-list.png","prog/images/pmap.png","prog/images/scalar-function-vector.png","prog/images/scalar-function.png","prog/images/vector-function.png","prog/images/vector-subset.png","prog/images/vector-types.png","prog/images/vector.png","prog/index.Rmd","prog/iteration.Rmd","prog/LICENSE.md","prog/list-columns.Rmd","prog/purrr-basics.Rmd","prog/purrr-extras.Rmd","prog/purrr-mutate.Rmd","prog/purrr-parallel.Rmd","prog/README.md","prog/tidy-eval-basics.Rmd","prog/tidy-eval-section.Rmd","prog/tidy-eval-theory.Rmd","prog/tidy-eval.Rmd","r4ds/_bookdown.yml","r4ds/_common.R","r4ds/_output.yaml","r4ds/CODE_OF_CONDUCT.md","r4ds/communicate-plots.Rmd","r4ds/communicate.Rmd","r4ds/contribs.txt","r4ds/contribute.rmd","r4ds/contributors.csv","r4ds/contributors.R","r4ds/cover.png","r4ds/data/heights.csv","r4ds/data/heights.RDS","r4ds/datetimes.Rmd","r4ds/DESCRIPTION","r4ds/diagrams/data-science-communicate.png","r4ds/diagrams/data-science-explore.png","r4ds/diagrams/data-science-model.png","r4ds/diagrams/data-science-program.png","r4ds/diagrams/data-science-us.graffle","r4ds/diagrams/data-science-wrangle.png","r4ds/diagrams/data-science.graffle","r4ds/diagrams/data-science.png","r4ds/diagrams/data-structures-overview.png","r4ds/diagrams/data-structures.graffle","r4ds/diagrams/datetimes-arithmetic.png","r4ds/diagrams/datetimes.graffle","r4ds/diagrams/join-anti.png","r4ds/diagrams/join-inner.png","r4ds/diagrams/join-many-to-many.png","r4ds/diagrams/join-one-to-many.png","r4ds/diagrams/join-outer.png","r4ds/diagrams/join-semi-many.png","r4ds/diagrams/join-semi.png","r4ds/diagrams/join-setup.png","r4ds/diagrams/join-setup2.png","r4ds/diagrams/join-venn.png","r4ds/diagrams/join.graffle","r4ds/diagrams/lists-flatten.png","r4ds/diagrams/lists-invoke.png","r4ds/diagrams/lists-map2.png","r4ds/diagrams/lists-pmap-named.png","r4ds/diagrams/lists-pmap-unnamed.png","r4ds/diagrams/lists-structure.png","r4ds/diagrams/lists-subsetting.png","r4ds/diagrams/lists-transpose.png","r4ds/diagrams/lists.graffle","r4ds/diagrams/relational-nycflights.png","r4ds/diagrams/relational.graffle","r4ds/diagrams/rstudio-console.png","r4ds/diagrams/rstudio-editor.png","r4ds/diagrams/rstudio.graffle/data.plist","r4ds/diagrams/rstudio.graffle/image10.png","r4ds/diagrams/rstudio.graffle/image8.png","r4ds/diagrams/rstudio.graffle/image9.png","r4ds/diagrams/sample-rmarkdown.Rmd","r4ds/diagrams/transform-logical.png","r4ds/diagrams/transform.graffle","r4ds/EDA.Rmd","r4ds/explore.Rmd","r4ds/extra/clustering.Rmd","r4ds/extra/databases.Rmd","r4ds/extra/heights.Rmd","r4ds/extra/robust-code.Rmd","r4ds/factors.Rmd","r4ds/figures.R","r4ds/functions.Rmd","r4ds/ga_script.html","r4ds/hierarchy.Rmd","r4ds/images/0-keynote.key","r4ds/images/blank.png","r4ds/images/EDA-boxplot.pdf","r4ds/images/EDA-boxplot.png","r4ds/images/EDA-hclust.pdf","r4ds/images/EDA-hclust.png","r4ds/images/EDA-kmeans.pdf","r4ds/images/EDA-kmeans.png","r4ds/images/EDA-linkage.pdf","r4ds/images/EDA-linkage.png","r4ds/images/EDA-plotly.png","r4ds/images/embed_jpg.R","r4ds/images/growth-chart.png","r4ds/images/inline-1-heat.png","r4ds/images/interactive-1-htmlwidget.png","r4ds/images/interactive-2-shiny.png","r4ds/images/markdown-1-markup.png","r4ds/images/outputs-2-pdf.png","r4ds/images/outputs-3-toc.png","r4ds/images/params-1-hawaii.png","r4ds/images/params-2-aleutians.png","r4ds/images/params-3-florida.png","r4ds/images/pepper-1.jpg","r4ds/images/pepper-2.jpg","r4ds/images/pepper-3.jpg","r4ds/images/pepper.jpg","r4ds/images/rmarkdown-wizard.png","r4ds/images/RMarkdownFlow.png","r4ds/images/slides-1-viridis.png","r4ds/images/tables-2-kable.png","r4ds/images/tidy-1.png","r4ds/images/tidy-10.png","r4ds/images/tidy-11.png","r4ds/images/tidy-12.png","r4ds/images/tidy-13.png","r4ds/images/tidy-14.png","r4ds/images/tidy-15.png","r4ds/images/tidy-16.png","r4ds/images/tidy-17.png","r4ds/images/tidy-18.png","r4ds/images/tidy-2.png","r4ds/images/tidy-3.png","r4ds/images/tidy-3a.png","r4ds/images/tidy-4.png","r4ds/images/tidy-5.png","r4ds/images/tidy-6.png","r4ds/images/tidy-7.png","r4ds/images/tidy-8.png","r4ds/images/tidy-9.png","r4ds/images/visualization-coordinate-systems.png","r4ds/images/visualization-geoms-1.png","r4ds/images/visualization-geoms-2.png","r4ds/images/visualization-geoms-3.png","r4ds/images/visualization-geoms-4.png","r4ds/images/visualization-grammar-1.png","r4ds/images/visualization-grammar-2.png","r4ds/images/visualization-grammar-3.png","r4ds/images/visualization-stat-bar.png","r4ds/images/visualization-stat-point.png","r4ds/images/visualization-stats.png","r4ds/images/visualization-themes.png","r4ds/images/website-2-website.png","r4ds/import.Rmd","r4ds/index.rmd","r4ds/intro.Rmd","r4ds/issues.json","r4ds/iteration.Rmd","r4ds/LICENSE","r4ds/model-assess.Rmd","r4ds/model-basics.Rmd","r4ds/model-building.Rmd","r4ds/model-many.Rmd","r4ds/model.Rmd","r4ds/pipes.Rmd","r4ds/program.Rmd","r4ds/r4ds.css","r4ds/r4ds.Rproj","r4ds/README.md","r4ds/relational-data.Rmd","r4ds/rmarkdown-formats.Rmd","r4ds/rmarkdown-workflow.Rmd","r4ds/rmarkdown.Rmd","r4ds/rmarkdown/dashboard.Rmd","r4ds/rmarkdown/diamond-sizes-notebook.png","r4ds/rmarkdown/diamond-sizes-report.png","r4ds/rmarkdown/diamond-sizes.Rmd","r4ds/rmarkdown/example-site.yml","r4ds/rmarkdown/fuel-economy.Rmd","r4ds/rmarkdown/markdown.Rmd","r4ds/rmarkdown/rmarkdown.Rproj","r4ds/screenshots/rmarkdown-chunk-nav.png","r4ds/screenshots/rmarkdown-flexdashboard.png","r4ds/screenshots/rmarkdown-knit.png","r4ds/screenshots/rmarkdown-shiny.png","r4ds/screenshots/rstudio-diagnostic-tip.png","r4ds/screenshots/rstudio-diagnostic-warn.png","r4ds/screenshots/rstudio-diagnostic.png","r4ds/screenshots/rstudio-env.png","r4ds/screenshots/rstudio-nav.png","r4ds/screenshots/rstudio-project-1.png","r4ds/screenshots/rstudio-project-2.png","r4ds/screenshots/rstudio-project-3.png","r4ds/screenshots/rstudio-wd.png","r4ds/screenshots/rstudio-workspace.png","r4ds/screenshots/stringr-autocomplete.png","r4ds/screenshots/style-options.png","r4ds/strings.Rmd","r4ds/tibble.Rmd","r4ds/tidy.Rmd","r4ds/transform.Rmd","r4ds/vectors.Rmd","r4ds/visualize.Rmd","r4ds/workflow-basics.Rmd","r4ds/workflow-projects.Rmd","r4ds/workflow-scripts.Rmd","r4ds/wrangle.Rmd","three-rules-of-r_files/anchor-4.2.2/anchor.min.js","three-rules-of-r_files/bowser-1.9.3/bowser.min.js","three-rules-of-r_files/distill-2.2.21/template.v2.js","three-rules-of-r_files/figure-html5/unnamed-chunk-23-1.png","three-rules-of-r_files/figure-html5/unnamed-chunk-24-1.png","three-rules-of-r_files/figure-html5/unnamed-chunk-25-1.png","three-rules-of-r_files/figure-html5/unnamed-chunk-32-1.png","three-rules-of-r_files/figure-html5/unnamed-chunk-33-1.png","three-rules-of-r_files/figure-html5/unnamed-chunk-34-1.png","three-rules-of-r_files/header-attrs-2.7/header-attrs.js","three-rules-of-r_files/jquery-1.11.3/jquery.min.js","three-rules-of-r_files/webcomponents-2.0.0/webcomponents.js"]}
+  </script>
+  <!--radix_placeholder_navigation_in_header-->
+<meta name="distill:offset" content="../.."/>
+
+<script type="application/javascript">
+
+  window.headroom_prevent_pin = false;
+
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+
+    // initialize headroom for banner
+    var header = $('header').get(0);
+    var headerHeight = header.offsetHeight;
+    var headroom = new Headroom(header, {
+      tolerance: 5,
+      onPin : function() {
+        if (window.headroom_prevent_pin) {
+          window.headroom_prevent_pin = false;
+          headroom.unpin();
+        }
+      }
+    });
+    headroom.init();
+    if(window.location.hash)
+      headroom.unpin();
+    $(header).addClass('headroom--transition');
+
+    // offset scroll location for banner on hash change
+    // (see: https://github.com/WickyNilliams/headroom.js/issues/38)
+    window.addEventListener("hashchange", function(event) {
+      window.scrollTo(0, window.pageYOffset - (headerHeight + 25));
+    });
+
+    // responsive menu
+    $('.distill-site-header').each(function(i, val) {
+      var topnav = $(this);
+      var toggle = topnav.find('.nav-toggle');
+      toggle.on('click', function() {
+        topnav.toggleClass('responsive');
+      });
+    });
+
+    // nav dropdowns
+    $('.nav-dropbtn').click(function(e) {
+      $(this).next('.nav-dropdown-content').toggleClass('nav-dropdown-active');
+      $(this).parent().siblings('.nav-dropdown')
+         .children('.nav-dropdown-content').removeClass('nav-dropdown-active');
+    });
+    $("body").click(function(e){
+      $('.nav-dropdown-content').removeClass('nav-dropdown-active');
+    });
+    $(".nav-dropdown").click(function(e){
+      e.stopPropagation();
+    });
+  });
+</script>
+
+<style type="text/css">
+
+/* Theme (user-documented overrideables for nav appearance) */
+
+.distill-site-nav {
+  color: rgba(255, 255, 255, 0.8);
+  background-color: #0F2E3D;
+  font-size: 15px;
+  font-weight: 300;
+}
+
+.distill-site-nav a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.distill-site-nav a:hover {
+  color: white;
+}
+
+@media print {
+  .distill-site-nav {
+    display: none;
+  }
+}
+
+.distill-site-header {
+
+}
+
+.distill-site-footer {
+
+}
+
+
+/* Site Header */
+
+.distill-site-header {
+  width: 100%;
+  box-sizing: border-box;
+  z-index: 3;
+}
+
+.distill-site-header .nav-left {
+  display: inline-block;
+  margin-left: 8px;
+}
+
+@media screen and (max-width: 768px) {
+  .distill-site-header .nav-left {
+    margin-left: 0;
+  }
+}
+
+
+.distill-site-header .nav-right {
+  float: right;
+  margin-right: 8px;
+}
+
+.distill-site-header a,
+.distill-site-header .title {
+  display: inline-block;
+  text-align: center;
+  padding: 14px 10px 14px 10px;
+}
+
+.distill-site-header .title {
+  font-size: 18px;
+  min-width: 150px;
+}
+
+.distill-site-header .logo {
+  padding: 0;
+}
+
+.distill-site-header .logo img {
+  display: none;
+  max-height: 20px;
+  width: auto;
+  margin-bottom: -4px;
+}
+
+.distill-site-header .nav-image img {
+  max-height: 18px;
+  width: auto;
+  display: inline-block;
+  margin-bottom: -3px;
+}
+
+
+
+@media screen and (min-width: 1000px) {
+  .distill-site-header .logo img {
+    display: inline-block;
+  }
+  .distill-site-header .nav-left {
+    margin-left: 20px;
+  }
+  .distill-site-header .nav-right {
+    margin-right: 20px;
+  }
+  .distill-site-header .title {
+    padding-left: 12px;
+  }
+}
+
+
+.distill-site-header .nav-toggle {
+  display: none;
+}
+
+.nav-dropdown {
+  display: inline-block;
+  position: relative;
+}
+
+.nav-dropdown .nav-dropbtn {
+  border: none;
+  outline: none;
+  color: rgba(255, 255, 255, 0.8);
+  padding: 16px 10px;
+  background-color: transparent;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  margin: 0;
+  margin-top: 1px;
+  z-index: 2;
+}
+
+.nav-dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: white;
+  min-width: 200px;
+  border: 1px solid rgba(0,0,0,0.15);
+  border-radius: 4px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.1);
+  z-index: 1;
+  margin-top: 2px;
+  white-space: nowrap;
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+.nav-dropdown-content hr {
+  margin-top: 4px;
+  margin-bottom: 4px;
+  border: none;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.nav-dropdown-active {
+  display: block;
+}
+
+.nav-dropdown-content a, .nav-dropdown-content .nav-dropdown-header {
+  color: black;
+  padding: 6px 24px;
+  text-decoration: none;
+  display: block;
+  text-align: left;
+}
+
+.nav-dropdown-content .nav-dropdown-header {
+  display: block;
+  padding: 5px 24px;
+  padding-bottom: 0;
+  text-transform: uppercase;
+  font-size: 14px;
+  color: #999999;
+  white-space: nowrap;
+}
+
+.nav-dropdown:hover .nav-dropbtn {
+  color: white;
+}
+
+.nav-dropdown-content a:hover {
+  background-color: #ddd;
+  color: black;
+}
+
+.nav-right .nav-dropdown-content {
+  margin-left: -45%;
+  right: 0;
+}
+
+@media screen and (max-width: 768px) {
+  .distill-site-header a, .distill-site-header .nav-dropdown  {display: none;}
+  .distill-site-header a.nav-toggle {
+    float: right;
+    display: block;
+  }
+  .distill-site-header .title {
+    margin-left: 0;
+  }
+  .distill-site-header .nav-right {
+    margin-right: 0;
+  }
+  .distill-site-header {
+    overflow: hidden;
+  }
+  .nav-right .nav-dropdown-content {
+    margin-left: 0;
+  }
+}
+
+
+@media screen and (max-width: 768px) {
+  .distill-site-header.responsive {position: relative; min-height: 500px; }
+  .distill-site-header.responsive a.nav-toggle {
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
+  .distill-site-header.responsive a,
+  .distill-site-header.responsive .nav-dropdown {
+    display: block;
+    text-align: left;
+  }
+  .distill-site-header.responsive .nav-left,
+  .distill-site-header.responsive .nav-right {
+    width: 100%;
+  }
+  .distill-site-header.responsive .nav-dropdown {float: none;}
+  .distill-site-header.responsive .nav-dropdown-content {position: relative;}
+  .distill-site-header.responsive .nav-dropdown .nav-dropbtn {
+    display: block;
+    width: 100%;
+    text-align: left;
+  }
+}
+
+/* Site Footer */
+
+.distill-site-footer {
+  width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+  z-index: 3;
+  margin-top: 30px;
+  padding-top: 30px;
+  padding-bottom: 30px;
+  text-align: center;
+}
+
+/* Headroom */
+
+d-title {
+  padding-top: 6rem;
+}
+
+@media print {
+  d-title {
+    padding-top: 4rem;
+  }
+}
+
+.headroom {
+  z-index: 1000;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+.headroom--transition {
+  transition: all .4s ease-in-out;
+}
+
+.headroom--unpinned {
+  top: -100px;
+}
+
+.headroom--pinned {
+  top: 0;
+}
+
+</style>
+
+<link href="../../site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet"/>
+<link href="../../site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet"/>
+<script src="../../site_libs/headroom-0.9.4/headroom.min.js"></script>
+<script src="../../site_libs/autocomplete-0.37.1/autocomplete.min.js"></script>
+<script src="../../site_libs/fuse-6.4.1/fuse.min.js"></script>
+
+<script type="application/javascript">
+
+function getMeta(metaName) {
+  var metas = document.getElementsByTagName('meta');
+  for (let i = 0; i < metas.length; i++) {
+    if (metas[i].getAttribute('name') === metaName) {
+      return metas[i].getAttribute('content');
+    }
+  }
+  return '';
+}
+
+function offsetURL(url) {
+  var offset = getMeta('distill:offset');
+  return offset ? offset + '/' + url : url;
+}
+
+function createFuseIndex() {
+
+  // create fuse index
+  var options = {
+    keys: [
+      { name: 'title', weight: 20 },
+      { name: 'categories', weight: 15 },
+      { name: 'description', weight: 10 },
+      { name: 'contents', weight: 5 },
+    ],
+    ignoreLocation: true,
+    threshold: 0
+  };
+  var fuse = new window.Fuse([], options);
+
+  // fetch the main search.json
+  return fetch(offsetURL('search.json'))
+    .then(function(response) {
+      if (response.status == 200) {
+        return response.json().then(function(json) {
+          // index main articles
+          json.articles.forEach(function(article) {
+            fuse.add(article);
+          });
+          // download collections and index their articles
+          return Promise.all(json.collections.map(function(collection) {
+            return fetch(offsetURL(collection)).then(function(response) {
+              if (response.status === 200) {
+                return response.json().then(function(articles) {
+                  articles.forEach(function(article) {
+                    fuse.add(article);
+                  });
+                })
+              } else {
+                return Promise.reject(
+                  new Error('Unexpected status from search index request: ' +
+                            response.status)
+                );
+              }
+            });
+          })).then(function() {
+            return fuse;
+          });
+        });
+
+      } else {
+        return Promise.reject(
+          new Error('Unexpected status from search index request: ' +
+                      response.status)
+        );
+      }
+    });
+}
+
+window.document.addEventListener("DOMContentLoaded", function (event) {
+
+  // get search element (bail if we don't have one)
+  var searchEl = window.document.getElementById('distill-search');
+  if (!searchEl)
+    return;
+
+  createFuseIndex()
+    .then(function(fuse) {
+
+      // make search box visible
+      searchEl.classList.remove('hidden');
+
+      // initialize autocomplete
+      var options = {
+        autoselect: true,
+        hint: false,
+        minLength: 2,
+      };
+      window.autocomplete(searchEl, options, [{
+        source: function(query, callback) {
+          const searchOptions = {
+            isCaseSensitive: false,
+            shouldSort: true,
+            minMatchCharLength: 2,
+            limit: 10,
+          };
+          var results = fuse.search(query, searchOptions);
+          callback(results
+            .map(function(result) { return result.item; })
+            .filter(function(item) { return !!item.description; })
+          );
+        },
+        templates: {
+          suggestion: function(suggestion) {
+            var html = `
+              <div class="search-item">
+                <h3>${suggestion.title}</h3>
+                <div class="search-item-description">
+                  ${suggestion.description}
+                </div>
+                <div class="search-item-preview">
+                  <img src="${suggestion.preview ? offsetURL(suggestion.preview) : ''}"</img>
+                </div>
+              </div>
+            `;
+            return html;
+          }
+        }
+      }]).on('autocomplete:selected', function(event, suggestion) {
+        window.location.href = offsetURL(suggestion.path);
+      });
+      // remove inline display style on autocompleter (we want to
+      // manage responsive display via css)
+      $('.algolia-autocomplete').css("display", "");
+    })
+    .catch(function(error) {
+      console.log(error);
+    });
+
+});
+
+</script>
+
+<style type="text/css">
+
+/* Algolioa Autocomplete */
+
+.algolia-autocomplete {
+  display: inline-block;
+  margin-left: 10px;
+  vertical-align: sub;
+  background-color: white;
+  color: black;
+  padding: 6px;
+  padding-top: 8px;
+  padding-bottom: 0;
+  border-radius: 6px;
+  border: 1px #0F2E3D solid;
+  width: 180px;
+}
+
+
+@media screen and (max-width: 768px) {
+  .distill-site-nav .algolia-autocomplete {
+    display: none;
+    visibility: hidden;
+  }
+  .distill-site-nav.responsive .algolia-autocomplete {
+    display: inline-block;
+    visibility: visible;
+  }
+  .distill-site-nav.responsive .algolia-autocomplete .aa-dropdown-menu {
+    margin-left: 0;
+    width: 400px;
+    max-height: 400px;
+  }
+}
+
+.algolia-autocomplete .aa-input, .algolia-autocomplete .aa-hint {
+  width: 90%;
+  outline: none;
+  border: none;
+}
+
+.algolia-autocomplete .aa-hint {
+  color: #999;
+}
+.algolia-autocomplete .aa-dropdown-menu {
+  width: 550px;
+  max-height: 70vh;
+  overflow-x: visible;
+  overflow-y: scroll;
+  padding: 5px;
+  margin-top: 3px;
+  margin-left: -150px;
+  background-color: #fff;
+  border-radius: 5px;
+  border: 1px solid #999;
+  border-top: none;
+}
+
+.algolia-autocomplete .aa-dropdown-menu .aa-suggestion {
+  cursor: pointer;
+  padding: 5px 4px;
+  border-bottom: 1px solid #eee;
+}
+
+.algolia-autocomplete .aa-dropdown-menu .aa-suggestion:last-of-type {
+  border-bottom: none;
+  margin-bottom: 2px;
+}
+
+.algolia-autocomplete .aa-dropdown-menu .aa-suggestion .search-item {
+  overflow: hidden;
+  font-size: 0.8em;
+  line-height: 1.4em;
+}
+
+.algolia-autocomplete .aa-dropdown-menu .aa-suggestion .search-item h3 {
+  margin-block-start: 0;
+  margin-block-end: 5px;
+}
+
+.algolia-autocomplete .aa-dropdown-menu .aa-suggestion .search-item-description {
+  display: inline-block;
+  overflow: hidden;
+  height: 2.8em;
+  width: 80%;
+  margin-right: 4%;
+}
+
+.algolia-autocomplete .aa-dropdown-menu .aa-suggestion .search-item-preview {
+  display: inline-block;
+  width: 15%;
+}
+
+.algolia-autocomplete .aa-dropdown-menu .aa-suggestion .search-item-preview img {
+  height: 3em;
+  width: auto;
+  display: none;
+}
+
+.algolia-autocomplete .aa-dropdown-menu .aa-suggestion .search-item-preview img[src] {
+  display: initial;
+}
+
+.algolia-autocomplete .aa-dropdown-menu .aa-suggestion.aa-cursor {
+  background-color: #eee;
+}
+.algolia-autocomplete .aa-dropdown-menu .aa-suggestion em {
+  font-weight: bold;
+  font-style: normal;
+}
+
+</style>
+
+
+<!--/radix_placeholder_navigation_in_header-->
+  <!--radix_placeholder_distill-->
+
+<style type="text/css">
+
+body {
+  background-color: white;
+}
+
+.pandoc-table {
+  width: 100%;
+}
+
+.pandoc-table>caption {
+  margin-bottom: 10px;
+}
+
+.pandoc-table th:not([align]) {
+  text-align: left;
+}
+
+.pagedtable-footer {
+  font-size: 15px;
+}
+
+d-byline .byline {
+  grid-template-columns: 2fr 2fr;
+}
+
+d-byline .byline h3 {
+  margin-block-start: 1.5em;
+}
+
+d-byline .byline .authors-affiliations h3 {
+  margin-block-start: 0.5em;
+}
+
+.authors-affiliations .orcid-id {
+  width: 16px;
+  height:16px;
+  margin-left: 4px;
+  margin-right: 4px;
+  vertical-align: middle;
+  padding-bottom: 2px;
+}
+
+d-title .dt-tags {
+  margin-top: 1em;
+  grid-column: text;
+}
+
+.dt-tags .dt-tag {
+  text-decoration: none;
+  display: inline-block;
+  color: rgba(0,0,0,0.6);
+  padding: 0em 0.4em;
+  margin-right: 0.5em;
+  margin-bottom: 0.4em;
+  font-size: 70%;
+  border: 1px solid rgba(0,0,0,0.2);
+  border-radius: 3px;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+d-article table.gt_table td,
+d-article table.gt_table th {
+  border-bottom: none;
+}
+
+.html-widget {
+  margin-bottom: 2.0em;
+}
+
+.l-screen-inset {
+  padding-right: 16px;
+}
+
+.l-screen .caption {
+  margin-left: 10px;
+}
+
+.shaded {
+  background: rgb(247, 247, 247);
+  padding-top: 20px;
+  padding-bottom: 20px;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.shaded .html-widget {
+  margin-bottom: 0;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.shaded .shaded-content {
+  background: white;
+}
+
+.text-output {
+  margin-top: 0;
+  line-height: 1.5em;
+}
+
+.hidden {
+  display: none !important;
+}
+
+d-article {
+  padding-top: 2.5rem;
+  padding-bottom: 30px;
+}
+
+d-appendix {
+  padding-top: 30px;
+}
+
+d-article>p>img {
+  width: 100%;
+}
+
+d-article h2 {
+  margin: 1rem 0 1.5rem 0;
+}
+
+d-article h3 {
+  margin-top: 1.5rem;
+}
+
+d-article iframe {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  margin-bottom: 2.0em;
+  width: 100%;
+}
+
+/* Tweak code blocks */
+
+d-article div.sourceCode code,
+d-article pre code {
+  font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+}
+
+d-article pre,
+d-article div.sourceCode,
+d-article div.sourceCode pre {
+  overflow: auto;
+}
+
+d-article div.sourceCode {
+  background-color: white;
+}
+
+d-article div.sourceCode pre {
+  padding-left: 10px;
+  font-size: 12px;
+  border-left: 2px solid rgba(0,0,0,0.1);
+}
+
+d-article pre {
+  font-size: 12px;
+  color: black;
+  background: none;
+  margin-top: 0;
+  text-align: left;
+  white-space: pre;
+  word-spacing: normal;
+  word-break: normal;
+  word-wrap: normal;
+  line-height: 1.5;
+
+  -moz-tab-size: 4;
+  -o-tab-size: 4;
+  tab-size: 4;
+
+  -webkit-hyphens: none;
+  -moz-hyphens: none;
+  -ms-hyphens: none;
+  hyphens: none;
+}
+
+d-article pre a {
+  border-bottom: none;
+}
+
+d-article pre a:hover {
+  border-bottom: none;
+  text-decoration: underline;
+}
+
+@media(min-width: 768px) {
+
+d-article pre,
+d-article div.sourceCode,
+d-article div.sourceCode pre {
+  overflow: visible !important;
+}
+
+d-article div.sourceCode pre {
+  padding-left: 18px;
+  font-size: 14px;
+}
+
+d-article pre {
+  font-size: 14px;
+}
+
+}
+
+figure img.external {
+  background: white;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.1);
+  padding: 18px;
+  box-sizing: border-box;
+}
+
+/* CSS for d-contents */
+
+.d-contents {
+  grid-column: text;
+  color: rgba(0,0,0,0.8);
+  font-size: 0.9em;
+  padding-bottom: 1em;
+  margin-bottom: 1em;
+  padding-bottom: 0.5em;
+  margin-bottom: 1em;
+  padding-left: 0.25em;
+  justify-self: start;
+}
+
+@media(min-width: 1000px) {
+  .d-contents.d-contents-float {
+    height: 0;
+    grid-column-start: 1;
+    grid-column-end: 4;
+    justify-self: center;
+    padding-right: 3em;
+    padding-left: 2em;
+  }
+}
+
+.d-contents nav h3 {
+  font-size: 18px;
+  margin-top: 0;
+  margin-bottom: 1em;
+}
+
+.d-contents li {
+  list-style-type: none
+}
+
+.d-contents nav > ul {
+  padding-left: 0;
+}
+
+.d-contents ul {
+  padding-left: 1em
+}
+
+.d-contents nav ul li {
+  margin-top: 0.6em;
+  margin-bottom: 0.2em;
+}
+
+.d-contents nav a {
+  font-size: 13px;
+  border-bottom: none;
+  text-decoration: none
+  color: rgba(0, 0, 0, 0.8);
+}
+
+.d-contents nav a:hover {
+  text-decoration: underline solid rgba(0, 0, 0, 0.6)
+}
+
+.d-contents nav > ul > li > a {
+  font-weight: 600;
+}
+
+.d-contents nav > ul > li > ul {
+  font-weight: inherit;
+}
+
+.d-contents nav > ul > li > ul > li {
+  margin-top: 0.2em;
+}
+
+
+.d-contents nav ul {
+  margin-top: 0;
+  margin-bottom: 0.25em;
+}
+
+.d-article-with-toc h2:nth-child(2) {
+  margin-top: 0;
+}
+
+
+/* Figure */
+
+.figure {
+  position: relative;
+  margin-bottom: 2.5em;
+  margin-top: 1.5em;
+}
+
+.figure img {
+  width: 100%;
+}
+
+.figure .caption {
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 12px;
+  line-height: 1.5em;
+}
+
+.figure img.external {
+  background: white;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.1);
+  padding: 18px;
+  box-sizing: border-box;
+}
+
+.figure .caption a {
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.figure .caption b,
+.figure .caption strong, {
+  font-weight: 600;
+  color: rgba(0, 0, 0, 1.0);
+}
+
+/* Citations */
+
+d-article .citation {
+  color: inherit;
+  cursor: inherit;
+}
+
+div.hanging-indent{
+  margin-left: 1em; text-indent: -1em;
+}
+
+
+/* Tweak 1000px media break to show more text */
+
+@media(min-width: 1000px) {
+  .base-grid,
+  distill-header,
+  d-title,
+  d-abstract,
+  d-article,
+  d-appendix,
+  distill-appendix,
+  d-byline,
+  d-footnote-list,
+  d-citation-list,
+  distill-footer {
+    grid-template-columns: [screen-start] 1fr [page-start kicker-start] 80px [middle-start] 50px [text-start kicker-end] 65px 65px 65px 65px 65px 65px 65px 65px [text-end gutter-start] 65px [middle-end] 65px [page-end gutter-end] 1fr [screen-end];
+    grid-column-gap: 16px;
+  }
+
+  .grid {
+    grid-column-gap: 16px;
+  }
+
+  d-article {
+    font-size: 1.06rem;
+    line-height: 1.7em;
+  }
+  figure .caption, .figure .caption, figure figcaption {
+    font-size: 13px;
+  }
+}
+
+@media(min-width: 1180px) {
+  .base-grid,
+  distill-header,
+  d-title,
+  d-abstract,
+  d-article,
+  d-appendix,
+  distill-appendix,
+  d-byline,
+  d-footnote-list,
+  d-citation-list,
+  distill-footer {
+    grid-template-columns: [screen-start] 1fr [page-start kicker-start] 60px [middle-start] 60px [text-start kicker-end] 60px 60px 60px 60px 60px 60px 60px 60px [text-end gutter-start] 60px [middle-end] 60px [page-end gutter-end] 1fr [screen-end];
+    grid-column-gap: 32px;
+  }
+
+  .grid {
+    grid-column-gap: 32px;
+  }
+}
+
+
+/* Get the citation styles for the appendix (not auto-injected on render since
+   we do our own rendering of the citation appendix) */
+
+d-appendix .citation-appendix,
+.d-appendix .citation-appendix {
+  font-size: 11px;
+  line-height: 15px;
+  border-left: 1px solid rgba(0, 0, 0, 0.1);
+  padding-left: 18px;
+  border: 1px solid rgba(0,0,0,0.1);
+  background: rgba(0, 0, 0, 0.02);
+  padding: 10px 18px;
+  border-radius: 3px;
+  color: rgba(150, 150, 150, 1);
+  overflow: hidden;
+  margin-top: -12px;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+/* Include appendix styles here so they can be overridden */
+
+d-appendix {
+  contain: layout style;
+  font-size: 0.8em;
+  line-height: 1.7em;
+  margin-top: 60px;
+  margin-bottom: 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  color: rgba(0,0,0,0.5);
+  padding-top: 60px;
+  padding-bottom: 48px;
+}
+
+d-appendix h3 {
+  grid-column: page-start / text-start;
+  font-size: 15px;
+  font-weight: 500;
+  margin-top: 1em;
+  margin-bottom: 0;
+  color: rgba(0,0,0,0.65);
+}
+
+d-appendix h3 + * {
+  margin-top: 1em;
+}
+
+d-appendix ol {
+  padding: 0 0 0 15px;
+}
+
+@media (min-width: 768px) {
+  d-appendix ol {
+    padding: 0 0 0 30px;
+    margin-left: -30px;
+  }
+}
+
+d-appendix li {
+  margin-bottom: 1em;
+}
+
+d-appendix a {
+  color: rgba(0, 0, 0, 0.6);
+}
+
+d-appendix > * {
+  grid-column: text;
+}
+
+d-appendix > d-footnote-list,
+d-appendix > d-citation-list,
+d-appendix > distill-appendix {
+  grid-column: screen;
+}
+
+/* Include footnote styles here so they can be overridden */
+
+d-footnote-list {
+  contain: layout style;
+}
+
+d-footnote-list > * {
+  grid-column: text;
+}
+
+d-footnote-list a.footnote-backlink {
+  color: rgba(0,0,0,0.3);
+  padding-left: 0.5em;
+}
+
+
+
+/* Anchor.js */
+
+.anchorjs-link {
+  /*transition: all .25s linear; */
+  text-decoration: none;
+  border-bottom: none;
+}
+*:hover > .anchorjs-link {
+  margin-left: -1.125em !important;
+  text-decoration: none;
+  border-bottom: none;
+}
+
+/* Social footer */
+
+.social_footer {
+  margin-top: 30px;
+  margin-bottom: 0;
+  color: rgba(0,0,0,0.67);
+}
+
+.disqus-comments {
+  margin-right: 30px;
+}
+
+.disqus-comment-count {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.4);
+  cursor: pointer;
+}
+
+#disqus_thread {
+  margin-top: 30px;
+}
+
+.article-sharing a {
+  border-bottom: none;
+  margin-right: 8px;
+}
+
+.article-sharing a:hover {
+  border-bottom: none;
+}
+
+.sidebar-section.subscribe {
+  font-size: 12px;
+  line-height: 1.6em;
+}
+
+.subscribe p {
+  margin-bottom: 0.5em;
+}
+
+
+.article-footer .subscribe {
+  font-size: 15px;
+  margin-top: 45px;
+}
+
+
+.sidebar-section.custom {
+  font-size: 12px;
+  line-height: 1.6em;
+}
+
+.custom p {
+  margin-bottom: 0.5em;
+}
+
+/* Styles for listing layout (hide title) */
+.layout-listing d-title, .layout-listing .d-title {
+  display: none;
+}
+
+/* Styles for posts lists (not auto-injected) */
+
+
+.posts-with-sidebar {
+  padding-left: 45px;
+  padding-right: 45px;
+}
+
+.posts-list .description h2,
+.posts-list .description p {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", Arial, sans-serif;
+}
+
+.posts-list .description h2 {
+  font-weight: 700;
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.posts-list h2.post-tag {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+  padding-bottom: 12px;
+}
+.posts-list {
+  margin-top: 60px;
+  margin-bottom: 24px;
+}
+
+.posts-list .post-preview {
+  text-decoration: none;
+  overflow: hidden;
+  display: block;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  padding: 24px 0;
+}
+
+.post-preview-last {
+  border-bottom: none !important;
+}
+
+.posts-list .posts-list-caption {
+  grid-column: screen;
+  font-weight: 400;
+}
+
+.posts-list .post-preview h2 {
+  margin: 0 0 6px 0;
+  line-height: 1.2em;
+  font-style: normal;
+  font-size: 24px;
+}
+
+.posts-list .post-preview p {
+  margin: 0 0 12px 0;
+  line-height: 1.4em;
+  font-size: 16px;
+}
+
+.posts-list .post-preview .thumbnail {
+  box-sizing: border-box;
+  margin-bottom: 24px;
+  position: relative;
+  max-width: 500px;
+}
+.posts-list .post-preview img {
+  width: 100%;
+  display: block;
+}
+
+.posts-list .metadata {
+  font-size: 12px;
+  line-height: 1.4em;
+  margin-bottom: 18px;
+}
+
+.posts-list .metadata > * {
+  display: inline-block;
+}
+
+.posts-list .metadata .publishedDate {
+  margin-right: 2em;
+}
+
+.posts-list .metadata .dt-authors {
+  display: block;
+  margin-top: 0.3em;
+  margin-right: 2em;
+}
+
+.posts-list .dt-tags {
+  display: block;
+  line-height: 1em;
+}
+
+.posts-list .dt-tags .dt-tag {
+  display: inline-block;
+  color: rgba(0,0,0,0.6);
+  padding: 0.3em 0.4em;
+  margin-right: 0.2em;
+  margin-bottom: 0.4em;
+  font-size: 60%;
+  border: 1px solid rgba(0,0,0,0.2);
+  border-radius: 3px;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.posts-list img {
+  opacity: 1;
+}
+
+.posts-list img[data-src] {
+  opacity: 0;
+}
+
+.posts-more {
+  clear: both;
+}
+
+
+.posts-sidebar {
+  font-size: 16px;
+}
+
+.posts-sidebar h3 {
+  font-size: 16px;
+  margin-top: 0;
+  margin-bottom: 0.5em;
+  font-weight: 400;
+  text-transform: uppercase;
+}
+
+.sidebar-section {
+  margin-bottom: 30px;
+}
+
+.categories ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+.categories li {
+  color: rgba(0, 0, 0, 0.8);
+  margin-bottom: 0;
+}
+
+.categories li>a {
+  border-bottom: none;
+}
+
+.categories li>a:hover {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.4);
+}
+
+.categories .active {
+  font-weight: 600;
+}
+
+.categories .category-count {
+  color: rgba(0, 0, 0, 0.4);
+}
+
+
+@media(min-width: 768px) {
+  .posts-list .post-preview h2 {
+    font-size: 26px;
+  }
+  .posts-list .post-preview .thumbnail {
+    float: right;
+    width: 30%;
+    margin-bottom: 0;
+  }
+  .posts-list .post-preview .description {
+    float: left;
+    width: 45%;
+  }
+  .posts-list .post-preview .metadata {
+    float: left;
+    width: 20%;
+    margin-top: 8px;
+  }
+  .posts-list .post-preview p {
+    margin: 0 0 12px 0;
+    line-height: 1.5em;
+    font-size: 16px;
+  }
+  .posts-with-sidebar .posts-list {
+    float: left;
+    width: 75%;
+  }
+  .posts-with-sidebar .posts-sidebar {
+    float: right;
+    width: 20%;
+    margin-top: 60px;
+    padding-top: 24px;
+    padding-bottom: 24px;
+  }
+}
+
+
+/* Improve display for browsers without grid (IE/Edge <= 15) */
+
+.downlevel {
+  line-height: 1.6em;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", Arial, sans-serif;
+  margin: 0;
+}
+
+.downlevel .d-title {
+  padding-top: 6rem;
+  padding-bottom: 1.5rem;
+}
+
+.downlevel .d-title h1 {
+  font-size: 50px;
+  font-weight: 700;
+  line-height: 1.1em;
+  margin: 0 0 0.5rem;
+}
+
+.downlevel .d-title p {
+  font-weight: 300;
+  font-size: 1.2rem;
+  line-height: 1.55em;
+  margin-top: 0;
+}
+
+.downlevel .d-byline {
+  padding-top: 0.8em;
+  padding-bottom: 0.8em;
+  font-size: 0.8rem;
+  line-height: 1.8em;
+}
+
+.downlevel .section-separator {
+  border: none;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.downlevel .d-article {
+  font-size: 1.06rem;
+  line-height: 1.7em;
+  padding-top: 1rem;
+  padding-bottom: 2rem;
+}
+
+
+.downlevel .d-appendix {
+  padding-left: 0;
+  padding-right: 0;
+  max-width: none;
+  font-size: 0.8em;
+  line-height: 1.7em;
+  margin-bottom: 0;
+  color: rgba(0,0,0,0.5);
+  padding-top: 40px;
+  padding-bottom: 48px;
+}
+
+.downlevel .footnotes ol {
+  padding-left: 13px;
+}
+
+.downlevel .base-grid,
+.downlevel .distill-header,
+.downlevel .d-title,
+.downlevel .d-abstract,
+.downlevel .d-article,
+.downlevel .d-appendix,
+.downlevel .distill-appendix,
+.downlevel .d-byline,
+.downlevel .d-footnote-list,
+.downlevel .d-citation-list,
+.downlevel .distill-footer,
+.downlevel .appendix-bottom,
+.downlevel .posts-container {
+  padding-left: 40px;
+  padding-right: 40px;
+}
+
+@media(min-width: 768px) {
+  .downlevel .base-grid,
+  .downlevel .distill-header,
+  .downlevel .d-title,
+  .downlevel .d-abstract,
+  .downlevel .d-article,
+  .downlevel .d-appendix,
+  .downlevel .distill-appendix,
+  .downlevel .d-byline,
+  .downlevel .d-footnote-list,
+  .downlevel .d-citation-list,
+  .downlevel .distill-footer,
+  .downlevel .appendix-bottom,
+  .downlevel .posts-container {
+  padding-left: 150px;
+  padding-right: 150px;
+  max-width: 900px;
+}
+}
+
+.downlevel pre code {
+  display: block;
+  border-left: 2px solid rgba(0, 0, 0, .1);
+  padding: 0 0 0 20px;
+  font-size: 14px;
+}
+
+.downlevel code, .downlevel pre {
+  color: black;
+  background: none;
+  font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+  text-align: left;
+  white-space: pre;
+  word-spacing: normal;
+  word-break: normal;
+  word-wrap: normal;
+  line-height: 1.5;
+
+  -moz-tab-size: 4;
+  -o-tab-size: 4;
+  tab-size: 4;
+
+  -webkit-hyphens: none;
+  -moz-hyphens: none;
+  -ms-hyphens: none;
+  hyphens: none;
+}
+
+.downlevel .posts-list .post-preview {
+  color: inherit;
+}
+
+
+
+</style>
+
+<script type="application/javascript">
+
+function is_downlevel_browser() {
+  if (bowser.isUnsupportedBrowser({ msie: "12", msedge: "16"},
+                                 window.navigator.userAgent)) {
+    return true;
+  } else {
+    return window.load_distill_framework === undefined;
+  }
+}
+
+// show body when load is complete
+function on_load_complete() {
+
+  // add anchors
+  if (window.anchors) {
+    window.anchors.options.placement = 'left';
+    window.anchors.add('d-article > h2, d-article > h3, d-article > h4, d-article > h5');
+  }
+
+
+  // set body to visible
+  document.body.style.visibility = 'visible';
+
+  // force redraw for leaflet widgets
+  if (window.HTMLWidgets) {
+    var maps = window.HTMLWidgets.findAll(".leaflet");
+    $.each(maps, function(i, el) {
+      var map = this.getMap();
+      map.invalidateSize();
+      map.eachLayer(function(layer) {
+        if (layer instanceof L.TileLayer)
+          layer.redraw();
+      });
+    });
+  }
+
+  // trigger 'shown' so htmlwidgets resize
+  $('d-article').trigger('shown');
+}
+
+function init_distill() {
+
+  init_common();
+
+  // create front matter
+  var front_matter = $('<d-front-matter></d-front-matter>');
+  $('#distill-front-matter').wrap(front_matter);
+
+  // create d-title
+  $('.d-title').changeElementType('d-title');
+
+  // create d-byline
+  var byline = $('<d-byline></d-byline>');
+  $('.d-byline').replaceWith(byline);
+
+  // create d-article
+  var article = $('<d-article></d-article>');
+  $('.d-article').wrap(article).children().unwrap();
+
+  // move posts container into article
+  $('.posts-container').appendTo($('d-article'));
+
+  // create d-appendix
+  $('.d-appendix').changeElementType('d-appendix');
+
+  // flag indicating that we have appendix items
+  var appendix = $('.appendix-bottom').children('h3').length > 0;
+
+  // replace footnotes with <d-footnote>
+  $('.footnote-ref').each(function(i, val) {
+    appendix = true;
+    var href = $(this).attr('href');
+    var id = href.replace('#', '');
+    var fn = $('#' + id);
+    var fn_p = $('#' + id + '>p');
+    fn_p.find('.footnote-back').remove();
+    var text = fn_p.html();
+    var dtfn = $('<d-footnote></d-footnote>');
+    dtfn.html(text);
+    $(this).replaceWith(dtfn);
+  });
+  // remove footnotes
+  $('.footnotes').remove();
+
+  // move refs into #references-listing
+  $('#references-listing').replaceWith($('#refs'));
+
+  $('h1.appendix, h2.appendix').each(function(i, val) {
+    $(this).changeElementType('h3');
+  });
+  $('h3.appendix').each(function(i, val) {
+    var id = $(this).attr('id');
+    $('.d-contents a[href="#' + id + '"]').parent().remove();
+    appendix = true;
+    $(this).nextUntil($('h1, h2, h3')).addBack().appendTo($('d-appendix'));
+  });
+
+  // show d-appendix if we have appendix content
+  $("d-appendix").css('display', appendix ? 'grid' : 'none');
+
+  // localize layout chunks to just output
+  $('.layout-chunk').each(function(i, val) {
+
+    // capture layout
+    var layout = $(this).attr('data-layout');
+
+    // apply layout to markdown level block elements
+    var elements = $(this).children().not('div.sourceCode, pre, script');
+    elements.each(function(i, el) {
+      var layout_div = $('<div class="' + layout + '"></div>');
+      if (layout_div.hasClass('shaded')) {
+        var shaded_content = $('<div class="shaded-content"></div>');
+        $(this).wrap(shaded_content);
+        $(this).parent().wrap(layout_div);
+      } else {
+        $(this).wrap(layout_div);
+      }
+    });
+
+
+    // unwrap the layout-chunk div
+    $(this).children().unwrap();
+  });
+
+  // remove code block used to force  highlighting css
+  $('.distill-force-highlighting-css').parent().remove();
+
+  // remove empty line numbers inserted by pandoc when using a
+  // custom syntax highlighting theme
+  $('code.sourceCode a:empty').remove();
+
+  // load distill framework
+  load_distill_framework();
+
+  // wait for window.distillRunlevel == 4 to do post processing
+  function distill_post_process() {
+
+    if (!window.distillRunlevel || window.distillRunlevel < 4)
+      return;
+
+    // hide author/affiliations entirely if we have no authors
+    var front_matter = JSON.parse($("#distill-front-matter").html());
+    var have_authors = front_matter.authors && front_matter.authors.length > 0;
+    if (!have_authors)
+      $('d-byline').addClass('hidden');
+
+    // article with toc class
+    $('.d-contents').parent().addClass('d-article-with-toc');
+
+    // strip links that point to #
+    $('.authors-affiliations').find('a[href="#"]').removeAttr('href');
+
+    // add orcid ids
+    $('.authors-affiliations').find('.author').each(function(i, el) {
+      var orcid_id = front_matter.authors[i].orcidID;
+      if (orcid_id) {
+        var a = $('<a></a>');
+        a.attr('href', 'https://orcid.org/' + orcid_id);
+        var img = $('<img></img>');
+        img.addClass('orcid-id');
+        img.attr('alt', 'ORCID ID');
+        img.attr('src','data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo1N0NEMjA4MDI1MjA2ODExOTk0QzkzNTEzRjZEQTg1NyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDozM0NDOEJGNEZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDozM0NDOEJGM0ZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IE1hY2ludG9zaCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkZDN0YxMTc0MDcyMDY4MTE5NUZFRDc5MUM2MUUwNEREIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjU3Q0QyMDgwMjUyMDY4MTE5OTRDOTM1MTNGNkRBODU3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+84NovQAAAR1JREFUeNpiZEADy85ZJgCpeCB2QJM6AMQLo4yOL0AWZETSqACk1gOxAQN+cAGIA4EGPQBxmJA0nwdpjjQ8xqArmczw5tMHXAaALDgP1QMxAGqzAAPxQACqh4ER6uf5MBlkm0X4EGayMfMw/Pr7Bd2gRBZogMFBrv01hisv5jLsv9nLAPIOMnjy8RDDyYctyAbFM2EJbRQw+aAWw/LzVgx7b+cwCHKqMhjJFCBLOzAR6+lXX84xnHjYyqAo5IUizkRCwIENQQckGSDGY4TVgAPEaraQr2a4/24bSuoExcJCfAEJihXkWDj3ZAKy9EJGaEo8T0QSxkjSwORsCAuDQCD+QILmD1A9kECEZgxDaEZhICIzGcIyEyOl2RkgwAAhkmC+eAm0TAAAAABJRU5ErkJggg==');
+        a.append(img);
+        $(this).append(a);
+      }
+    });
+
+    // hide elements of author/affiliations grid that have no value
+    function hide_byline_column(caption) {
+      $('d-byline').find('h3:contains("' + caption + '")').parent().css('visibility', 'hidden');
+    }
+
+    // affiliations
+    var have_affiliations = false;
+    for (var i = 0; i<front_matter.authors.length; ++i) {
+      var author = front_matter.authors[i];
+      if (author.affiliation !== "&nbsp;") {
+        have_affiliations = true;
+        break;
+      }
+    }
+    if (!have_affiliations)
+      $('d-byline').find('h3:contains("Affiliations")').css('visibility', 'hidden');
+
+    // published date
+    if (!front_matter.publishedDate)
+      hide_byline_column("Published");
+
+    // document object identifier
+    var doi = $('d-byline').find('h3:contains("DOI")');
+    var doi_p = doi.next().empty();
+    if (!front_matter.doi) {
+      // if we have a citation and valid citationText then link to that
+      if ($('#citation').length > 0 && front_matter.citationText) {
+        doi.html('Citation');
+        $('<a href="#citation"></a>')
+          .text(front_matter.citationText)
+          .appendTo(doi_p);
+      } else {
+        hide_byline_column("DOI");
+      }
+    } else {
+      $('<a></a>')
+         .attr('href', "https://doi.org/" + front_matter.doi)
+         .html(front_matter.doi)
+         .appendTo(doi_p);
+    }
+
+     // change plural form of authors/affiliations
+    if (front_matter.authors.length === 1) {
+      var grid = $('.authors-affiliations');
+      grid.children('h3:contains("Authors")').text('Author');
+      grid.children('h3:contains("Affiliations")').text('Affiliation');
+    }
+
+    // remove d-appendix and d-footnote-list local styles
+    $('d-appendix > style:first-child').remove();
+    $('d-footnote-list > style:first-child').remove();
+
+    // move appendix-bottom entries to the bottom
+    $('.appendix-bottom').appendTo('d-appendix').children().unwrap();
+    $('.appendix-bottom').remove();
+
+    // clear polling timer
+    clearInterval(tid);
+
+    // show body now that everything is ready
+    on_load_complete();
+  }
+
+  var tid = setInterval(distill_post_process, 50);
+  distill_post_process();
+
+}
+
+function init_downlevel() {
+
+  init_common();
+
+   // insert hr after d-title
+  $('.d-title').after($('<hr class="section-separator"/>'));
+
+  // check if we have authors
+  var front_matter = JSON.parse($("#distill-front-matter").html());
+  var have_authors = front_matter.authors && front_matter.authors.length > 0;
+
+  // manage byline/border
+  if (!have_authors)
+    $('.d-byline').remove();
+  $('.d-byline').after($('<hr class="section-separator"/>'));
+  $('.d-byline a').remove();
+
+  // remove toc
+  $('.d-contents').remove();
+
+  // move appendix elements
+  $('h1.appendix, h2.appendix').each(function(i, val) {
+    $(this).changeElementType('h3');
+  });
+  $('h3.appendix').each(function(i, val) {
+    $(this).nextUntil($('h1, h2, h3')).addBack().appendTo($('.d-appendix'));
+  });
+
+
+  // inject headers into references and footnotes
+  var refs_header = $('<h3></h3>');
+  refs_header.text('References');
+  $('#refs').prepend(refs_header);
+
+  var footnotes_header = $('<h3></h3');
+  footnotes_header.text('Footnotes');
+  $('.footnotes').children('hr').first().replaceWith(footnotes_header);
+
+  // move appendix-bottom entries to the bottom
+  $('.appendix-bottom').appendTo('.d-appendix').children().unwrap();
+  $('.appendix-bottom').remove();
+
+  // remove appendix if it's empty
+  if ($('.d-appendix').children().length === 0)
+    $('.d-appendix').remove();
+
+  // prepend separator above appendix
+  $('.d-appendix').before($('<hr class="section-separator" style="clear: both"/>'));
+
+  // trim code
+  $('pre>code').each(function(i, val) {
+    $(this).html($.trim($(this).html()));
+  });
+
+  // move posts-container right before article
+  $('.posts-container').insertBefore($('.d-article'));
+
+  $('body').addClass('downlevel');
+
+  on_load_complete();
+}
+
+
+function init_common() {
+
+  // jquery plugin to change element types
+  (function($) {
+    $.fn.changeElementType = function(newType) {
+      var attrs = {};
+
+      $.each(this[0].attributes, function(idx, attr) {
+        attrs[attr.nodeName] = attr.nodeValue;
+      });
+
+      this.replaceWith(function() {
+        return $("<" + newType + "/>", attrs).append($(this).contents());
+      });
+    };
+  })(jQuery);
+
+  // prevent underline for linked images
+  $('a > img').parent().css({'border-bottom' : 'none'});
+
+  // mark non-body figures created by knitr chunks as 100% width
+  $('.layout-chunk').each(function(i, val) {
+    var figures = $(this).find('img, .html-widget');
+    if ($(this).attr('data-layout') !== "l-body") {
+      figures.css('width', '100%');
+    } else {
+      figures.css('max-width', '100%');
+      figures.filter("[width]").each(function(i, val) {
+        var fig = $(this);
+        fig.css('width', fig.attr('width') + 'px');
+      });
+
+    }
+  });
+
+  // auto-append index.html to post-preview links in file: protocol
+  // and in rstudio ide preview
+  $('.post-preview').each(function(i, val) {
+    if (window.location.protocol === "file:")
+      $(this).attr('href', $(this).attr('href') + "index.html");
+  });
+
+  // get rid of index.html references in header
+  if (window.location.protocol !== "file:") {
+    $('.distill-site-header a[href]').each(function(i,val) {
+      $(this).attr('href', $(this).attr('href').replace("index.html", "./"));
+    });
+  }
+
+  // add class to pandoc style tables
+  $('tr.header').parent('thead').parent('table').addClass('pandoc-table');
+  $('.kable-table').children('table').addClass('pandoc-table');
+
+  // add figcaption style to table captions
+  $('caption').parent('table').addClass("figcaption");
+
+  // initialize posts list
+  if (window.init_posts_list)
+    window.init_posts_list();
+
+  // implmement disqus comment link
+  $('.disqus-comment-count').click(function() {
+    window.headroom_prevent_pin = true;
+    $('#disqus_thread').toggleClass('hidden');
+    if (!$('#disqus_thread').hasClass('hidden')) {
+      var offset = $(this).offset();
+      $(window).resize();
+      $('html, body').animate({
+        scrollTop: offset.top - 35
+      });
+    }
+  });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  if (is_downlevel_browser())
+    init_downlevel();
+  else
+    window.addEventListener('WebComponentsReady', init_distill);
+});
+
+</script>
+
+<style type="text/css">
+/* base variables */
+
+/* Edit the CSS properties in this file to create a custom
+   Distill theme. Only edit values in the right column
+   for each row; values shown are the CSS defaults.
+   To return any property to the default,
+   you may set its value to: unset
+   All rows must end with a semi-colon.                      */
+
+/* Optional: embed custom fonts here with `@import`          */
+/* This must remain at the top of this file.                 */
+
+
+
+html {
+  /*-- Main font sizes --*/
+  --title-size:      50px;
+  --body-size:       1.06rem;
+  --code-size:       14px;
+  --aside-size:      12px;
+  --fig-cap-size:    13px;
+  /*-- Main font colors --*/
+  --title-color:     #000000;
+  --header-color:    rgba(0, 0, 0, 0.8);
+  --body-color:      rgba(0, 0, 0, 0.8);
+  --aside-color:     rgba(0, 0, 0, 0.6);
+  --fig-cap-color:   rgba(0, 0, 0, 0.6);
+  /*-- Specify custom fonts ~~~ must be imported above   --*/
+  --heading-font:    sans-serif;
+  --mono-font:       monospace;
+  --body-font:       sans-serif;
+  --navbar-font:     sans-serif;  /* websites + blogs only */
+}
+
+/*-- ARTICLE METADATA --*/
+d-byline {
+  --heading-size:    0.6rem;
+  --heading-color:   rgba(0, 0, 0, 0.5);
+  --body-size:       0.8rem;
+  --body-color:      rgba(0, 0, 0, 0.8);
+}
+
+/*-- ARTICLE TABLE OF CONTENTS --*/
+.d-contents {
+  --heading-size:    18px;
+  --contents-size:   13px;
+}
+
+/*-- ARTICLE APPENDIX --*/
+d-appendix {
+  --heading-size:    15px;
+  --heading-color:   rgba(0, 0, 0, 0.65);
+  --text-size:       0.8em;
+  --text-color:      rgba(0, 0, 0, 0.5);
+}
+
+/*-- WEBSITE HEADER + FOOTER --*/
+/* These properties only apply to Distill sites and blogs  */
+
+.distill-site-header {
+  --title-size:       18px;
+  --text-color:       rgba(255, 255, 255, 0.8);
+  --text-size:        15px;
+  --hover-color:      white;
+  --bkgd-color:       #0F2E3D;
+}
+
+.distill-site-footer {
+  --text-color:       rgba(255, 255, 255, 0.8);
+  --text-size:        15px;
+  --hover-color:      white;
+  --bkgd-color:       #0F2E3D;
+}
+
+/*-- Additional custom styles --*/
+/* Add any additional CSS rules below                      */
+</style>
+<style type="text/css">/* base variables */
+
+/* Edit the CSS properties in this file to create a custom
+   Distill theme. Only edit values in the right column
+   for each row; values shown are the CSS defaults.
+   To return any property to the default,
+   you may set its value to: unset
+   All rows must end with a semi-colon.                      */
+
+/* Optional: embed custom fonts here with `@import`          */
+/* This must remain at the top of this file.                 */
+@import url('https://fonts.googleapis.com/css2?family=Lato');
+@import url('https://fonts.googleapis.com/css2?family=Fira+Mono');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat');
+
+html {
+  /*-- Main font sizes --*/
+  --title-size:      50px;
+  --body-size:       1.0rem;                     /* edited */
+  --code-size:       0.9rem;                     /* edited */
+  --aside-size:      12px;
+  --fig-cap-size:    13px;
+  /*-- Main font colors --*/
+  --title-color:     #000000;
+  --heading-color:   rgba(0, 0, 0, 0.8);
+  --body-color:      #383838;                    /* edited */
+  --aside-color:     rgba(0, 0, 0, 0.6);
+  --fig-cap-color:   rgba(0, 0, 0, 0.6);
+  /*-- Specify custom fonts ~~~ must be imported above   --*/
+  --heading-font:    'Lato', sans-serif;         /* edited */
+  --mono-font:       'Fira Mono', monospace;     /* edited */
+  --body-font:       'Lato', sans-serif;         /* edited */
+  --navbar-font:     'Montserrat', sans-serif;   /* edited */
+}
+
+/*-- ARTICLE METADATA --*/
+d-byline {
+  --heading-size:    0.6rem;
+  --heading-color:   rgba(0, 0, 0, 0.5);
+  --body-size:       0.8rem;
+  --body-color:      rgba(0, 0, 0, 0.8);
+}
+
+/*-- ARTICLE TABLE OF CONTENTS --*/
+.d-contents {
+  --heading-size:    18px;
+  --contents-size:   13px;
+}
+
+/*-- ARTICLE APPENDIX --*/
+d-appendix {
+  --heading-size:    15px;
+  --heading-color:   rgba(0, 0, 0, 0.65);
+  --text-size:       0.8em;
+  --text-color:      rgba(0, 0, 0, 0.5);
+}
+
+/*-- WEBSITE HEADER + FOOTER --*/
+/* These properties only apply to Distill sites and blogs  */
+
+.distill-site-header {
+  --title-size:       20px;                      /* edited */
+  --text-color:       #FFFFFF;                   /* edited */
+  --text-size:        20px;                      /* edited */
+  --hover-color:      #383838;                   /* edited */
+  --bkgd-color:       rgb(249, 83, 85);          /* edited */
+}
+
+.distill-site-footer {
+  --text-color:       rgba(255, 255, 255, 0.8);
+  --text-size:        15px;
+  --hover-color:      white;
+  --bkgd-color:       #0F2E3D;
+}
+
+
+/*-- Additional custom styles --*/
+
+.posts-list .metadata .publishedDate {
+    color: rgb(249, 83, 85);
+}
+
+d-article p code {
+  color: #383838;
+  background: rgba(249, 83, 85, 0.1);
+  font-weight: 400;
+  font-size: 0.9em;
+}
+
+d-article a {
+    border-bottom: 2px solid rgba(249, 83, 85, 0.4);
+    text-decoration: none;
+}
+
+.distill-site-header .title {
+    font-weight: 600; 
+}
+
+ul > li::marker {
+  color: rgb(249, 83, 85);
+}</style>
+<style type="text/css">
+/* base style */
+
+/* FONT FAMILIES */
+
+:root {
+  --heading-default: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", Arial, sans-serif;
+  --mono-default: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+  --body-default: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", Arial, sans-serif;
+}
+
+body,
+.posts-list .post-preview p,
+.posts-list .description p {
+  font-family: var(--body-font), var(--body-default);
+}
+
+h1, h2, h3, h4, h5, h6,
+.posts-list .post-preview h2,
+.posts-list .description h2 {
+  font-family: var(--heading-font), var(--heading-default);
+}
+
+d-article div.sourceCode code,
+d-article pre code {
+	font-family: var(--mono-font), var(--mono-default);
+}
+
+
+/*-- TITLE --*/
+d-title h1,
+.posts-list > h1 {
+  color: var(--title-color, black);
+}
+
+d-title h1 {
+  font-size: var(--title-size, 50px);
+}
+
+/*-- HEADERS --*/
+d-article h1,
+d-article h2,
+d-article h3,
+d-article h4,
+d-article h5,
+d-article h6 {
+  color: var(--header-color, rgba(0, 0, 0, 0.8));
+}
+
+/*-- BODY --*/
+/* only text inside of <p> tags */
+d-article > p {
+  color: var(--body-color, rgba(0, 0, 0, 0.8));
+  font-size: var(--body-size, 1.06rem);
+}
+
+/*-- CODE --*/
+d-article div.sourceCode code,
+d-article pre code {
+	font-size: var(--code-size, 14px);
+}
+
+/*-- ASIDE --*/
+d-article aside {
+	font-size: var(--aside-size, 12px);
+	color: var(--aside-color, rgba(0, 0, 0, 0.6));
+}
+
+/*-- FIGURE CAPTIONS --*/
+figure .caption,
+figure figcaption,
+.figure .caption {
+	font-size: var(--fig-cap-size, 13px);
+	color: var(--fig-cap-color, rgba(0, 0, 0, 0.6));
+}
+
+/*-- METADATA --*/
+d-byline h3 {
+	font-size: var(--heading-size, 0.6rem);
+	color: var(--heading-color, rgba(0, 0, 0, 0.5));
+}
+
+d-byline {
+	font-size: var(--body-size, 0.8rem);
+	color: var(--body-color, rgba(0, 0, 0, 0.8));
+}
+
+d-byline a,
+d-article d-byline a {
+	color: var(--body-color, rgba(0, 0, 0, 0.8));
+}
+
+/*-- TABLE OF CONTENTS --*/
+.d-contents nav h3 {
+	font-size: var(--heading-size, 18px);
+}
+
+.d-contents nav a {
+	font-size: var(--contents-size, 13px);
+}
+
+/*-- APPENDIX --*/
+d-appendix h3 {
+  font-size: var(--heading-size, 15px);
+	color: var(--heading-color, rgba(0, 0, 0, 0.65));
+}
+
+d-appendix {
+  font-size: var(--text-size, 0.8em);
+	color: var(--text-color, rgba(0, 0, 0, 0.5));
+}
+
+d-appendix d-footnote-list a.footnote-backlink {
+	color: var(--text-color, rgba(0, 0, 0, 0.5));
+}
+
+/*-- WEBSITE HEADER + FOOTER --*/
+.distill-site-header .title {
+	font-size: var(--title-size, 18px);
+	font-family: var(--navbar-font), var(--heading-default);
+}
+
+.distill-site-header a,
+.nav-dropdown .nav-dropbtn {
+  font-family: var(--navbar-font), var(--heading-default);
+}
+
+.distill-site-header a:hover {
+	color: var(--hover-color, white);
+}
+
+.distill-site-header {
+	font-size: var(--text-size, 15px);
+	color: var(--text-color, rgba(255, 255, 255, 0.8));
+	background-color: var(--bkgd-color, #0F2E3D);
+}
+
+.distill-site-footer {
+	font-size: var(--text-size, 15px);
+	color: var(--text-color, rgba(255, 255, 255, 0.8));
+	background-color: var(--bkgd-color, #0F2E3D);
+}
+
+.distill-site-footer a:hover {
+	color: var(--hover-color, white);
+}</style>
+<!--/radix_placeholder_distill-->
+  <script src="../../site_libs/header-attrs-2.7/header-attrs.js"></script>
+  <script src="../../site_libs/jquery-1.11.3/jquery.min.js"></script>
+  <script src="../../site_libs/anchor-4.2.2/anchor.min.js"></script>
+  <script src="../../site_libs/bowser-1.9.3/bowser.min.js"></script>
+  <script src="../../site_libs/webcomponents-2.0.0/webcomponents.js"></script>
+  <script src="../../site_libs/distill-2.2.21/template.v2.js"></script>
+  <!--radix_placeholder_site_in_header-->
+<!--/radix_placeholder_site_in_header-->
+
+
+</head>
+
+<body>
+
+<!--radix_placeholder_front_matter-->
+
+<script id="distill-front-matter" type="text/json">
+{"title":"Everything in R is an Object","description":"The First Deep Truth of R","authors":[{"author":"Amit Gandhi","authorURL":{},"affiliation":"&nbsp;","affiliationURL":"#","orcidID":""}],"publishedDate":"2021-03-04T00:00:00.000+00:00","citationText":"Gandhi, 2021"}
+</script>
+
+<!--/radix_placeholder_front_matter-->
+<!--radix_placeholder_navigation_before_body-->
+<header class="header header--fixed" role="banner">
+<nav class="distill-site-nav distill-site-header">
+<div class="nav-left">
+<span class="logo">
+<img src="../../images/pennlogo.png"/>
+</span>
+<a href="../../index.html" class="title">Econ 712</a>
+<input id="distill-search" class="nav-search hidden" type="text" placeholder="Search..."/>
+</div>
+<div class="nav-right">
+<a href="../../index.html">Home</a>
+<a href="../../about.html">About</a>
+<a href="https://twitter.com/AmitEcon">
+<i class="fa fa-twitter" aria-hidden="true"></i>
+</a>
+<a href="mailto:akgandhi@upenn.edu">
+<i class="fa fa-envelope" aria-hidden="true"></i>
+</a>
+<a href="javascript:void(0);" class="nav-toggle">&#9776;</a>
+</div>
+</nav>
+</header>
+<!--/radix_placeholder_navigation_before_body-->
+<!--radix_placeholder_site_before_body-->
+<!--/radix_placeholder_site_before_body-->
+
+<div class="d-title">
+<h1>Everything in R is an Object</h1>
+<!--radix_placeholder_categories-->
+<!--/radix_placeholder_categories-->
+<p><p>The First Deep Truth of R</p></p>
+</div>
+
+<div class="d-byline">
+  Amit Gandhi true 
+  
+<br/>03-04-2021
+</div>
+
+<div class="d-article">
+<h1 id="introduction">Introduction</h1>
+<ul>
+<li><p>R is a rich software language for “programming with data” to quote the chief designer John Chambers <span class="citation" data-cites="chambers1998programming">(<a href="#ref-chambers1998programming" role="doc-biblioref">Chambers 1998</a>)</span> of the precursor and inspiration for R - the S programming language.</p></li>
+<li><p>While diverse in its applications, R is based on a few unifying design principles that allows one to separate the forest from the trees in developing R software for solving a problem.</p></li>
+<li><p>A useful summary of these principles for understanding the behavior of R code is captured by the memorable <a href="https://www.r-bloggers.com/three-deep-truths-about-r/">slogans</a>:</p></li>
+</ul>
+<ol type="1">
+<li><blockquote>
+<p>Everything in R is an object.</p>
+<p>— John Chambers</p>
+</blockquote></li>
+<li><blockquote>
+<p>Everything that happens in R is the result of a function call.</p>
+<p>— John Chambers</p>
+</blockquote></li>
+<li><blockquote>
+<p>Names have objects, objects don’t have names.</p>
+<p>— Hadley Wickham</p>
+</blockquote></li>
+</ol>
+<ul>
+<li><p>We will refer to these principles as the <em>deep truths</em> of R.</p></li>
+<li><p>Although these principles are omnipresent in R, they are reaffirmed and take center stage in the jump from “base R” (the original, core R language) to “modern R” as formalized by the <strong>Tidyverse</strong> ecosystem of packages.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p></li>
+<li><p>The first of these principles is arguably the most important to initiate an understanding of the full trilogy, and we begin our discussion there.</p></li>
+</ul>
+<h1 id="everything-in-r-is-an-object">Everything in R is an Object</h1>
+<ul>
+<li><p>Every entity that gets used in R is an object of some kind, and all computations involve constructing and manipulating objects in some form.</p></li>
+<li><p>However, the word “object” has many connotations in computer programming, particularly in relation to “object-oriented programming.” Hence it is crucial to recognize the more general meaning of objects in R.</p></li>
+<li><p>“Everything in R is an object” in the sense of being a data structure that can be manipulated and analyzed. As <span class="citation" data-cites="chambers1998programming"><a href="#ref-chambers1998programming" role="doc-biblioref">Chambers</a> (<a href="#ref-chambers1998programming" role="doc-biblioref">1998</a>)</span> writes, an object in R is a “dynamically created, self-describing container for data.”</p></li>
+<li><p>When complemented with the fact that R is a language designed to “program with data,” this means that everything in R is analyzable as a data. This is arguably what fundamentally distinguishes R from other languages - it achieves the capabilities of general purpose programming language through a paradigm that is centered around data structures and analysis of those structures.</p></li>
+<li><p>To unpack the Chambers defintion of R objects, the two distinct ideas he raises are “containers of data” and “self-describing.”</p></li>
+<li><p>These map directly to the <strong>intrinsic attributes</strong> that are associated to every R object. Every object in R has (1) a <em>mode</em> or <em>type</em> and (2) a <em>length</em>. These are <strong>intrinsic attributes</strong> of every R object.</p></li>
+</ul>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre><code><span class='fu'><a href='https://rdrr.io/r/base/mode.html'>mode</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>10</span><span class='op'>)</span> <span class='co'>#mode</span>
+</code></pre>
+</div>
+<pre><code>[1] &quot;numeric&quot;</code></pre>
+<div class="sourceCode">
+<pre><code><span class='fu'><a href='https://rdrr.io/r/base/typeof.html'>typeof</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>10</span><span class='op'>)</span> <span class='co'>#type</span>
+</code></pre>
+</div>
+<pre><code>[1] &quot;integer&quot;</code></pre>
+<div class="sourceCode">
+<pre><code><span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>10</span><span class='op'>)</span> <span class='co'>#length</span>
+</code></pre>
+</div>
+<pre><code>[1] 10</code></pre>
+</div>
+<ul>
+<li><p>The fact every object has a length means they are vector-like in some fashion and can be approached as a data structure, e.g., we can in principle access, manipulate, and analyze any R object through common data techniques, e.g., the data underlying an object <code>x</code> can be examined via a subsetting operation <code>x[[i]]</code> for <code>i</code> from <code>1:length(x)</code>.</p></li>
+<li><p>While this kind of data analysis and manipulation is immediate and natural in the case of numerical vectors, it can more novel and revealing when applied to different R objects.</p></li>
+</ul>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre><code><span class='fu'><a href='https://rdrr.io/r/base/typeof.html'>typeof</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/substitute.html'>quote</a></span><span class='op'>(</span><span class='va'>x</span><span class='op'>+</span><span class='va'>y</span><span class='op'>)</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>[1] &quot;language&quot;</code></pre>
+<div class="sourceCode">
+<pre><code><span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/substitute.html'>quote</a></span><span class='op'>(</span><span class='va'>x</span><span class='op'>+</span><span class='va'>y</span><span class='op'>)</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>[1] 3</code></pre>
+<div class="sourceCode">
+<pre><code><span class='fu'><a href='https://rdrr.io/r/base/cat.html'>cat</a></span><span class='op'>(</span><span class='st'>"\n"</span><span class='op'>)</span>
+</code></pre>
+</div>
+<div class="sourceCode">
+<pre><code><span class='kw'>for</span> <span class='op'>(</span><span class='va'>i</span> <span class='kw'>in</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq_along</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/substitute.html'>quote</a></span><span class='op'>(</span><span class='va'>x</span><span class='op'>+</span><span class='va'>y</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>{</span>
+  <span class='va'>ex</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/substitute.html'>quote</a></span><span class='op'>(</span><span class='va'>x</span><span class='op'>+</span><span class='va'>y</span><span class='op'>)</span>
+  <span class='fu'><a href='https://rdrr.io/r/base/cat.html'>cat</a></span><span class='op'>(</span><span class='va'>ex</span><span class='op'>[[</span><span class='va'>i</span><span class='op'>]</span><span class='op'>]</span>, <span class='st'>" "</span>, <span class='fu'><a href='https://rdrr.io/r/base/typeof.html'>typeof</a></span><span class='op'>(</span><span class='va'>ex</span><span class='op'>[[</span><span class='va'>i</span><span class='op'>]</span><span class='op'>]</span><span class='op'>)</span>, <span class='st'>"\n"</span> <span class='op'>)</span>
+<span class='op'>}</span>
+</code></pre>
+</div>
+<pre><code>+   symbol 
+x   symbol 
+y   symbol </code></pre>
+</div>
+<p>Not all objects subsetted like vectors despite being data containers with a <code>length</code>. <code>function</code> objects are notorious in this respect:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre><code><span class='co'>#What is a function</span>
+<span class='va'>f</span> <span class='op'>&lt;-</span> <span class='kw'>function</span><span class='op'>(</span><span class='op'>)</span> <span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span><span class='st'>"Hello World"</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/typeof.html'>typeof</a></span><span class='op'>(</span><span class='va'>f</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>[1] &quot;closure&quot;</code></pre>
+<div class="sourceCode">
+<pre><code><span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span><span class='op'>(</span><span class='va'>f</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>[1] 1</code></pre>
+</div>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>f[[<span class="dv">1</span>]]</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>Error <span class="cf">in</span> f[[<span class="dv">1</span>]] <span class="sc">:</span> object of type <span class="st">&#39;closure&#39;</span> is not subsettable</span></code></pre></div>
+</div>
+<p>We can however extract the underlying data via of a function object “as a container of data” through alternative function calls:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre><code><span class='fu'><a href='https://rdrr.io/r/base/formals.html'>formals</a></span><span class='op'>(</span><span class='va'>f</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>NULL</code></pre>
+<div class="sourceCode">
+<pre><code><span class='fu'><a href='https://rdrr.io/r/base/body.html'>body</a></span><span class='op'>(</span><span class='va'>f</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>print(&quot;Hello World&quot;)</code></pre>
+<div class="sourceCode">
+<pre><code><span class='fu'><a href='https://rdrr.io/r/base/environment.html'>environment</a></span><span class='op'>(</span><span class='va'>f</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>&lt;environment: R_GlobalEnv&gt;</code></pre>
+</div>
+<p>In addition to being containers of data, R objects are “self describing” in the Chambers definition. The key challenge with data structures of any form is to have a guide for interpreting what the underlying data mean.</p>
+<p>-The first clue as to the data meaning is the “base type” as given by <code>typeof()</code>.</p>
+<ul>
+<li>Of course, the interpretation of this data depend on the object type. The mode or type separates (1) data objects from (2) language objects. The data objects have modes that include <code>numeric</code> <code>integer</code>, <code>character</code>, <code>logical</code>, etc, whereas the language objects include <code>function</code>, <code>call</code>, <code>expression</code>, etc.</li>
+</ul>
+<p>Whereas the <em>mode</em> attribute was central to R’s precursor language S, object types are a more common to distinguish different families of objects. The type of an object we will reference as its <em>base type</em> (to distinguish from what we will later discuss as the object’s “class,” which is an enrichment of the object’s base type).</p>
+<p>There are a fixed set of 25 types defined by core-R. They are listed below, categorized by their distinct data interpretation.</p>
+<ul>
+<li><p>Vectors include types <code>NULL</code>, <code>logical</code>, <code>integer</code>, <code>double</code>, <code>complex</code>, <code>character</code>, <code>list</code>, and <code>raw</code>.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre><code><span class='fu'><a href='https://rdrr.io/r/base/typeof.html'>typeof</a></span><span class='op'>(</span><span class='cn'>NULL</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>[1] &quot;NULL&quot;</code></pre>
+<div class="sourceCode">
+<pre><code><span class='fu'><a href='https://rdrr.io/r/base/typeof.html'>typeof</a></span><span class='op'>(</span><span class='fl'>1L</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>[1] &quot;integer&quot;</code></pre>
+<div class="sourceCode">
+<pre><code><span class='fu'><a href='https://rdrr.io/r/base/typeof.html'>typeof</a></span><span class='op'>(</span><span class='fl'>1i</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>[1] &quot;complex&quot;</code></pre>
+</div></li>
+<li><p>Functions include types <code>closure</code> (regular R functions), <code>special</code> (internal functions), and <code>builtin</code> (primitive functions).</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre><code><span class='fu'><a href='https://rdrr.io/r/base/typeof.html'>typeof</a></span><span class='op'>(</span><span class='va'>mean</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>[1] &quot;closure&quot;</code></pre>
+<div class="sourceCode">
+<pre><code><span class='fu'><a href='https://rdrr.io/r/base/typeof.html'>typeof</a></span><span class='op'>(</span><span class='va'>`[`</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>[1] &quot;special&quot;</code></pre>
+<div class="sourceCode">
+<pre><code><span class='fu'><a href='https://rdrr.io/r/base/typeof.html'>typeof</a></span><span class='op'>(</span><span class='va'>sum</span><span class='op'>)</span>    
+</code></pre>
+</div>
+<pre><code>[1] &quot;builtin&quot;</code></pre>
+</div></li>
+<li><p>Environments have type <code>environment</code>.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre><code><span class='fu'><a href='https://rdrr.io/r/base/typeof.html'>typeof</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/environment.html'>globalenv</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>[1] &quot;environment&quot;</code></pre>
+</div></li>
+<li><p>The <code>S4</code> type is used for S4 classes that don’t inherit from an existing base type.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre><code><span class='va'>mle_obj</span> <span class='op'>&lt;-</span> <span class='fu'>stats4</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/r/stats4/mle.html'>mle</a></span><span class='op'>(</span><span class='kw'>function</span><span class='op'>(</span><span class='va'>x</span> <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span> <span class='op'>(</span><span class='va'>x</span> <span class='op'>-</span> <span class='fl'>2</span><span class='op'>)</span> <span class='op'>^</span> <span class='fl'>2</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/typeof.html'>typeof</a></span><span class='op'>(</span><span class='va'>mle_obj</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>[1] &quot;S4&quot;</code></pre>
+</div></li>
+<li><p>Language components include <code>symbol</code> (aka name), <code>language</code> (usually called calls), and <code>pairlist</code> (used for function arguments) types.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre><code><span class='fu'><a href='https://rdrr.io/r/base/typeof.html'>typeof</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/substitute.html'>quote</a></span><span class='op'>(</span><span class='va'>a</span><span class='op'>)</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>[1] &quot;symbol&quot;</code></pre>
+<div class="sourceCode">
+<pre><code><span class='fu'><a href='https://rdrr.io/r/base/typeof.html'>typeof</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/substitute.html'>quote</a></span><span class='op'>(</span><span class='va'>a</span> <span class='op'>+</span> <span class='fl'>1</span><span class='op'>)</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>[1] &quot;language&quot;</code></pre>
+<div class="sourceCode">
+<pre><code><span class='fu'><a href='https://rdrr.io/r/base/typeof.html'>typeof</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/formals.html'>formals</a></span><span class='op'>(</span><span class='va'>mean</span><span class='op'>)</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>[1] &quot;pairlist&quot;</code></pre>
+</div>
+<p><code>expression</code> is a special purpose type that’s only returned by <code>parse()</code> and <code>expression()</code>. Expressions are generally not needed in user code.</p></li>
+<li><p>The remaining types are esoteric and rarely seen in R. They are important primarily for connections to C code: <code>externalptr</code>, <code>weakref</code>, <code>bytecode</code>, <code>promise</code>, <code>...</code>, and <code>any</code>.</p></li>
+</ul>
+<p>All other attributes of an R object beyond its base type are a set of metadata associated with the object. This metadata is attached to the main object but subordinate in status. These attributes can be found en masse through a call to <code>attributes()</code></p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre><code><span class='fu'><a href='https://rdrr.io/r/base/attributes.html'>attributes</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>10</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>NULL</code></pre>
+</div>
+<ul>
+<li><p>In this case the object has no additional attributes beyond its intrinsic attributes and hence the call returns a <code>NULL</code> value.</p></li>
+<li><p>More generally, attributes are represented as a named list in R and can have value <code>NULL</code></p></li>
+</ul>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre><code><span class='va'>x</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>9</span>, nrow <span class='op'>=</span> <span class='fl'>3</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/attributes.html'>attributes</a></span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>$dim
+[1] 3 3</code></pre>
+<div class="sourceCode">
+<pre><code><span class='fu'><a href='https://rdrr.io/r/base/typeof.html'>typeof</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/attributes.html'>attributes</a></span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>[1] &quot;list&quot;</code></pre>
+</div>
+<ul>
+<li><p>An attribute that is often helpful for interpreting an object’s data is the object’s <code>class</code>. The <code>class</code> attribute is used by R’s native object oriented system - the S3 system. Not all objects have the <code>class</code> attribute, and those that do we can are designated “OO objects” (short for “object-oriented”). This can be confusing in lieu of the fact (and discussed above) that everything in R is an object!</p></li>
+<li><p>However as Wikham writes (<em>Advanced R</em>, page 291), “while everything is an object, not everything is object-oriented.” Hence the objects in R will come in two flavors that we can designate <em>base objects</em> and <em>OO objects</em>.</p></li>
+</ul>
+<p><img src="oo-venn.png" /></p>
+<ul>
+<li><p>The type of an object we will reference as its <em>base type</em> - this is because irrespective of whether an object is a base object or an OO object, its underlying type belongs to a pre-defined set established by R-core that was described above.</p></li>
+<li><p>Hence even OO objects have a base type. What distinguishes OO types is that they will have at least an additional “class” attribute. The class attribute can then be seen as an extension of the functionality of its underlying base type.</p></li>
+<li><p>As an aside - the S language, which is the basis for the core R language - was developed before the design of an OOP (Object Oriented Programming) system that introduced formal OO capabilities to the language. The original system - the S3 system - remains the simplest, most flexible, and most popular system used for R programming and package development. We focus attention on it here. Hence the simplest OO objects are S3 objects - e.g., a base type object with at least a <code>class</code> attribute.</p></li>
+</ul>
+<p>To appreciate the S3 system, it is useful to observe that R is at heart a functional programming language, e.g., functions are <strong>first-class functions</strong>. This means that objects in R are functions just like any other object, e.g., they are just another data structure. It is not surprising then that the S3 system brings OOP capabilities through functions the thus adopts the OOP through a paradigm of <em>generic functions</em>, where the different methods for manipulating different classes of objects that achieve a common functionality are associated with a <em>generic</em> function. For example the <code>print()</code> function behaves differently</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre><code><span class='va'>some_data</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>,<span class='fl'>2</span><span class='op'>)</span>, y <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>3</span>,<span class='fl'>4</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span><span class='va'>some_data</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>$x
+[1] 1 2
+
+$y
+[1] 3 4</code></pre>
+<div class="sourceCode">
+<pre><code><span class='fu'><a href='https://rdrr.io/r/base/attributes.html'>attributes</a></span><span class='op'>(</span><span class='va'>some_data</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>$names
+[1] &quot;x&quot; &quot;y&quot;</code></pre>
+<div class="sourceCode">
+<pre><code><span class='fu'><a href='https://rdrr.io/r/base/class.html'>class</a></span><span class='op'>(</span><span class='va'>some_data</span><span class='op'>)</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"data.frame"</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/attributes.html'>attributes</a></span><span class='op'>(</span><span class='va'>some_data</span><span class='op'>)</span><span class='op'>$</span><span class='va'>row.names</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1L</span>,<span class='fl'>2L</span><span class='op'>)</span>
+<span class='va'>some_data</span>
+</code></pre>
+</div>
+<pre><code>  x y
+1 1 3
+2 2 4</code></pre>
+<div class="sourceCode">
+<pre><code><span class='co'>## of course there are convenience functions for creating a data frame from a list that automate this process.</span>
+<span class='fu'><a href='https://rdrr.io/r/base/as.data.frame.html'>as.data.frame</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>,<span class='fl'>2</span><span class='op'>)</span>, y <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>3</span>,<span class='fl'>4</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>  x y
+1 1 3
+2 2 4</code></pre>
+</div>
+<p>How did this happen, e.g., the output of the <code>list</code> data structure change depending on the <code>class</code> attribute. The magic arises because the function <code>print</code> is actually a <em>generic</em>. As Hadley describes it (p. 300): "The generic is a middleman: its job is to define the interface (i.e., the arguments) then find the right implementation for the job. The implementation for a specific class is called a <strong>method</strong>, and the generic finds that method by performing <strong>method dispatch</strong>.</p>
+<p>The fact that <code>print</code> is a generic is revealed by its body, which is a single line that calls <code>UseMethod</code>.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre><code><span class='fu'><a href='https://rdrr.io/r/base/body.html'>body</a></span><span class='op'>(</span><span class='va'>print</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>UseMethod(&quot;print&quot;)</code></pre>
+</div>
+<p>The <code>UseMethod</code> function inspects the <code>class</code> attribute of the first argument and seeks the appropriate method (function). The methods are named according to the <em>generic.class</em> convention. Hence printing the data frame above should seek a method by the name of <code>print.data.frame</code>. To check this behavior, we can use the helper function <code>sloop::s3_dispatch()</code></p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre><code><span class='fu'>sloop</span><span class='fu'>::</span><span class='fu'><a href='https://sloop.r-lib.org/reference/s3_dispatch.html'>s3_dispatch</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span><span class='va'>some_data</span><span class='op'>)</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>=&gt; print.data.frame
+ * print.default</code></pre>
+</div>
+<p>The “=&gt;” in the output indicates the method that is called, confirming our characterization of the method dispatch process. A more thorough examination of method dispatch is given in Chapter 13 of Advanced R.</p>
+<p>An object can have multiple classes, e.g., the class attribute takes the value of a character vector. For example, a <em>tibble</em> is an enhanced data frame, and has 3 classes. Lets convert our data into a tibble:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre><code><span class='fu'><a href='https://rdrr.io/r/base/class.html'>class</a></span><span class='op'>(</span><span class='va'>some_data</span><span class='op'>)</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/append.html'>append</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"tbl_df"</span>, <span class='st'>"tbl"</span><span class='op'>)</span>, <span class='fu'><a href='https://rdrr.io/r/base/class.html'>class</a></span><span class='op'>(</span><span class='va'>some_data</span><span class='op'>)</span><span class='op'>)</span>
+<span class='va'>some_data</span>
+</code></pre>
+</div>
+<pre><code># A tibble: 2 x 2
+      x     y
+* &lt;dbl&gt; &lt;dbl&gt;
+1     1     3
+2     2     4</code></pre>
+<div class="sourceCode">
+<pre><code><span class='fu'>sloop</span><span class='fu'>::</span><span class='fu'><a href='https://sloop.r-lib.org/reference/s3_dispatch.html'>s3_dispatch</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span><span class='va'>some_data</span><span class='op'>)</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>   print.tbl_df
+=&gt; print.tbl
+ * print.data.frame
+ * print.default</code></pre>
+</div>
+<p>In the case of objects with multiple classes, method dispatch first seeks a method for the first class, and then the second class, and so forth.</p>
+<p>One useful feature of tibbles is that they readily support <em>list columns</em>. Data frames and tibbles are lists of equal length vectors.</p>
+<div class="layout-chunk" data-layout="l-body">
+<p><img src="prog/images/list-columns/tibble.png" width="594" /></p>
+</div>
+<p>The vectors contained inside of a data frame or tibble are typically <em>atomic vectors</em>.</p>
+<div class="layout-chunk" data-layout="l-body">
+<p><img src="prog/images/list-columns/tibble-atomic.png" width="594" /></p>
+</div>
+<p>However recall lists are also vectors (so called <em>recursive vectors</em> as discussed above). Thus if instead of an atomic vector, a tibble held a list as a column, this would give rise to (an appropriately called) <em>list column</em></p>
+<div class="layout-chunk" data-layout="l-body">
+<p><img src="prog/images/list-columns/tibble-list-col.png" width="594" /></p>
+</div>
+<p>And because lists are recursive, the elements of a list column can be other lists, e.g, tibbles themselves!</p>
+<div class="layout-chunk" data-layout="l-body">
+<p><img src="prog/images/list-columns/tibble-list-col-tibbles.png" width="596" /></p>
+</div>
+<p>This enables some very powerful workflows with data and empirical modeling. As an example, suppose we want to break a large data set into multiple sub-data sets by split according to the values of a group variable, and run a regression among the remaining variables for each group separately. How can we examine the pattern of values of the regression coefficient among the groups.</p>
+<p>The key function to enable list columns that are populated with tibbles is <code>nest()</code>. In particular as Hadley explains, “Pass <code>nest()</code> the names of the columns to put into each individual tibble. <code>nest()</code> will create one row for each unique value of the remaining variables.” (determine citation)</p>
+<p>Consider the example from the <code>tidymodels</code> tutorials:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre><code><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://tidymodels.tidymodels.org'>tidymodels</a></span><span class='op'>)</span>
+
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>Orange</span><span class='op'>)</span>
+
+<span class='va'>Orange</span> <span class='op'>&lt;-</span> <span class='fu'>as_tibble</span><span class='op'>(</span><span class='va'>Orange</span><span class='op'>)</span>
+<span class='va'>Orange</span>
+</code></pre>
+</div>
+<pre><code># A tibble: 35 x 3
+   Tree    age circumference
+   &lt;ord&gt; &lt;dbl&gt;         &lt;dbl&gt;
+ 1 1       118            30
+ 2 1       484            58
+ 3 1       664            87
+ 4 1      1004           115
+ 5 1      1231           120
+ 6 1      1372           142
+ 7 1      1582           145
+ 8 2       118            33
+ 9 2       484            69
+10 2       664           111
+# … with 25 more rows</code></pre>
+</div>
+<p>There is clear correlation between age and circumference for each class of tree.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre><code><span class='fu'><a href='https://rdrr.io/r/stats/cor.html'>cor</a></span><span class='op'>(</span><span class='va'>Orange</span><span class='op'>$</span><span class='va'>age</span>, <span class='va'>Orange</span><span class='op'>$</span><span class='va'>circumference</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>[1] 0.9135189</code></pre>
+<div class="sourceCode">
+<pre><code><span class='fu'>ggplot</span><span class='op'>(</span><span class='va'>Orange</span><span class='op'>)</span> <span class='op'>+</span> <span class='fu'>geom_line</span><span class='op'>(</span><span class='fu'>aes</span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>age</span>, y <span class='op'>=</span> <span class='va'>circumference</span>, color <span class='op'>=</span> <span class='va'>Tree</span><span class='op'>)</span><span class='op'>)</span>
+</code></pre>
+</div>
+<p><img src="three-rules-of-r_files/figure-html5/unnamed-chunk-23-1.png" width="624" /></p>
+</div>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre><code><span class='va'>Orange</span> <span class='op'>%&gt;%</span> <span class='fu'>group_by</span><span class='op'>(</span><span class='va'>Tree</span><span class='op'>)</span> <span class='op'>%&gt;%</span> <span class='fu'>summarize</span><span class='op'>(</span>correlation <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/stats/cor.html'>cor</a></span><span class='op'>(</span><span class='va'>circumference</span>,<span class='va'>age</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>%&gt;%</span> <span class='fu'>arrange</span><span class='op'>(</span><span class='va'>Tree</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code># A tibble: 5 x 2
+  Tree  correlation
+  &lt;ord&gt;       &lt;dbl&gt;
+1 3           0.988
+2 1           0.985
+3 5           0.988
+4 2           0.987
+5 4           0.984</code></pre>
+</div>
+<p>Now if we wish to examine the statistical properties of the bivariate correlation for each group, the task becomes more complicated. We can examine a proper correlation test at the aggregate level</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre><code><span class='va'>cor_agg</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/cor.test.html'>cor.test</a></span><span class='op'>(</span><span class='va'>Orange</span><span class='op'>$</span><span class='va'>age</span>,<span class='va'>Orange</span><span class='op'>$</span><span class='va'>circumference</span><span class='op'>)</span>
+<span class='va'>cor_agg</span>
+</code></pre>
+</div>
+<pre><code>
+    Pearson&#39;s product-moment correlation
+
+data:  Orange$age and Orange$circumference
+t = 12.9, df = 33, p-value = 1.931e-14
+alternative hypothesis: true correlation is not equal to 0
+95 percent confidence interval:
+ 0.8342364 0.9557955
+sample estimates:
+      cor 
+0.9135189 </code></pre>
+<div class="sourceCode">
+<pre><code><span class='va'>cor_agg</span> <span class='op'>%&gt;%</span> <span class='fu'><a href='https://rdrr.io/r/base/class.html'>class</a></span><span class='op'>(</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>[1] &quot;htest&quot;</code></pre>
+</div>
+<p>The output takes the form of a rich collection of information that is a data structure of class <code>htest</code>. To convert this information into consumable data for analyses, we will “tidy” it (a running themse in the “R for Data Science” book and a key principle that unifies the package in the <code>tidyverse</code>.)</p>
+<p>We tidy the data with the <code>tidy()</code> function:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre><code><span class='fu'>tidy</span><span class='op'>(</span><span class='va'>cor_agg</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code># A tibble: 1 x 8
+  estimate statistic  p.value parameter conf.low conf.high method     
+     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;     &lt;int&gt;    &lt;dbl&gt;     &lt;dbl&gt; &lt;chr&gt;      
+1    0.914      12.9 1.93e-14        33    0.834     0.956 Pearson&#39;s …
+# … with 1 more variable: alternative &lt;chr&gt;</code></pre>
+</div>
+<p>which produces a single row (one observation - in this case a single test) with each variable/dimension of the test being a column.</p>
+<p>We can use this workflow to generate a tidy data set on the statistical properties of the correlation across the subgroups of our data. This is enabled via the <code>nest-map-unnest</code> pattern.</p>
+<p>First we nest the data to create a list column:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre><code><span class='va'>Orange</span> <span class='op'>%&gt;%</span> <span class='fu'>nest</span><span class='op'>(</span>data <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='va'>circumference</span>, <span class='va'>age</span><span class='op'>)</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code># A tibble: 5 x 2
+  Tree  data            
+  &lt;ord&gt; &lt;list&gt;          
+1 1     &lt;tibble [7 × 2]&gt;
+2 2     &lt;tibble [7 × 2]&gt;
+3 3     &lt;tibble [7 × 2]&gt;
+4 4     &lt;tibble [7 × 2]&gt;
+5 5     &lt;tibble [7 × 2]&gt;</code></pre>
+</div>
+<p>We can add to the pipeline by mapping the correlation test across each tibble in the list column</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre><code><span class='va'>Orange</span> <span class='op'>%&gt;%</span> <span class='fu'>nest</span><span class='op'>(</span>data <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='va'>circumference</span>, <span class='va'>age</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>mutate</span><span class='op'>(</span>test <span class='op'>=</span> <span class='fu'>map</span><span class='op'>(</span><span class='va'>data</span>, <span class='op'>~</span><span class='fu'><a href='https://rdrr.io/r/stats/cor.test.html'>cor.test</a></span><span class='op'>(</span><span class='va'>.</span><span class='op'>$</span><span class='va'>age</span>, <span class='va'>.</span><span class='op'>$</span><span class='va'>circumference</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code># A tibble: 5 x 3
+  Tree  data             test   
+  &lt;ord&gt; &lt;list&gt;           &lt;list&gt; 
+1 1     &lt;tibble [7 × 2]&gt; &lt;htest&gt;
+2 2     &lt;tibble [7 × 2]&gt; &lt;htest&gt;
+3 3     &lt;tibble [7 × 2]&gt; &lt;htest&gt;
+4 4     &lt;tibble [7 × 2]&gt; &lt;htest&gt;
+5 5     &lt;tibble [7 × 2]&gt; &lt;htest&gt;</code></pre>
+</div>
+<p>Notice this produces another list column consisting of elements of the <code>htest</code> class. Now we need to tidy each one, which will give us a list column of tibbles:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre><code><span class='va'>Orange</span> <span class='op'>%&gt;%</span> <span class='fu'>nest</span><span class='op'>(</span>data <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='va'>circumference</span>, <span class='va'>age</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  
+  <span class='fu'>mutate</span><span class='op'>(</span>test <span class='op'>=</span> 
+           <span class='fu'>map</span><span class='op'>(</span><span class='va'>data</span>, <span class='op'>~</span><span class='fu'><a href='https://rdrr.io/r/stats/cor.test.html'>cor.test</a></span><span class='op'>(</span><span class='va'>.</span><span class='op'>$</span><span class='va'>age</span>, <span class='va'>.</span><span class='op'>$</span><span class='va'>circumference</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  
+  <span class='fu'>mutate</span><span class='op'>(</span>testdat <span class='op'>=</span> <span class='fu'>map</span><span class='op'>(</span><span class='va'>test</span>,<span class='va'>tidy</span><span class='op'>)</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code># A tibble: 5 x 4
+  Tree  data             test    testdat         
+  &lt;ord&gt; &lt;list&gt;           &lt;list&gt;  &lt;list&gt;          
+1 1     &lt;tibble [7 × 2]&gt; &lt;htest&gt; &lt;tibble [1 × 8]&gt;
+2 2     &lt;tibble [7 × 2]&gt; &lt;htest&gt; &lt;tibble [1 × 8]&gt;
+3 3     &lt;tibble [7 × 2]&gt; &lt;htest&gt; &lt;tibble [1 × 8]&gt;
+4 4     &lt;tibble [7 × 2]&gt; &lt;htest&gt; &lt;tibble [1 × 8]&gt;
+5 5     &lt;tibble [7 × 2]&gt; &lt;htest&gt; &lt;tibble [1 × 8]&gt;</code></pre>
+</div>
+<p>If we inspect an element of the <code>testdat</code> variable, we will see a tidy data frame associated to the correlation test applied to a group of the data:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre><code><span class='op'>(</span><span class='va'>Orange</span> <span class='op'>%&gt;%</span> <span class='fu'>nest</span><span class='op'>(</span>data <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='va'>circumference</span>, <span class='va'>age</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  
+  <span class='fu'>mutate</span><span class='op'>(</span>test <span class='op'>=</span> 
+           <span class='fu'>map</span><span class='op'>(</span><span class='va'>data</span>, <span class='op'>~</span><span class='fu'><a href='https://rdrr.io/r/stats/cor.test.html'>cor.test</a></span><span class='op'>(</span><span class='va'>.</span><span class='op'>$</span><span class='va'>age</span>, <span class='va'>.</span><span class='op'>$</span><span class='va'>circumference</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  
+  <span class='fu'>mutate</span><span class='op'>(</span>testdat <span class='op'>=</span> <span class='fu'>map</span><span class='op'>(</span><span class='va'>test</span>,<span class='va'>tidy</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span><span class='op'>$</span><span class='va'>testdat</span><span class='op'>[[</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>]</span>
+</code></pre>
+</div>
+<pre><code># A tibble: 1 x 8
+  estimate statistic  p.value parameter conf.low conf.high method     
+     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;     &lt;int&gt;    &lt;dbl&gt;     &lt;dbl&gt; &lt;chr&gt;      
+1    0.985      13.0  4.85e-5         5    0.901     0.998 Pearson&#39;s …
+# … with 1 more variable: alternative &lt;chr&gt;</code></pre>
+</div>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre><code><span class='va'>cortestDat</span> <span class='op'>&lt;-</span>
+<span class='va'>Orange</span> <span class='op'>%&gt;%</span> <span class='fu'>nest</span><span class='op'>(</span>data <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='va'>circumference</span>, <span class='va'>age</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  
+  <span class='fu'>mutate</span><span class='op'>(</span>test <span class='op'>=</span> 
+           <span class='fu'>map</span><span class='op'>(</span><span class='va'>data</span>, <span class='op'>~</span><span class='fu'><a href='https://rdrr.io/r/stats/cor.test.html'>cor.test</a></span><span class='op'>(</span><span class='va'>.</span><span class='op'>$</span><span class='va'>age</span>, <span class='va'>.</span><span class='op'>$</span><span class='va'>circumference</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  
+  <span class='fu'>mutate</span><span class='op'>(</span>testdat <span class='op'>=</span> <span class='fu'>map</span><span class='op'>(</span><span class='va'>test</span>,<span class='va'>tidy</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>unnest</span><span class='op'>(</span><span class='va'>testdat</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>select</span><span class='op'>(</span><span class='op'>-</span><span class='va'>data</span>, <span class='op'>-</span><span class='va'>test</span><span class='op'>)</span>
+</code></pre>
+</div>
+</div>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre><code><span class='fu'>ggplot</span><span class='op'>(</span><span class='va'>cortestDat</span><span class='op'>)</span> <span class='op'>+</span> <span class='fu'>geom_point</span><span class='op'>(</span><span class='fu'>aes</span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>p.value</span>, y <span class='op'>=</span> <span class='va'>estimate</span><span class='op'>)</span><span class='op'>)</span>
+</code></pre>
+</div>
+<p><img src="three-rules-of-r_files/figure-html5/unnamed-chunk-32-1.png" width="624" /></p>
+</div>
+<h3 id="s3-atomic-vectors">S3 Atomic Vectors</h3>
+<p>Atomic vectors also have S3 variants. Base R includes definitions for several important S3 atomic vectors to represent:</p>
+<ul>
+<li>Categorical data using <em>factor</em> vectors</li>
+<li>Dates using <em>Date</em> vectors</li>
+<li>Date_times using <em>POSIXct</em> vectors</li>
+<li>Durations using <em>difftime</em> vectors</li>
+</ul>
+<p>These S3 vectors (also called <em>augmented vectors</em> to signal their augmented attributes relative to their base vector type) and their connections to base type vectors are pictured below:</p>
+<div class="layout-chunk" data-layout="l-body">
+<p><img src="adv-r/diagrams/vectors/summary-tree-s3-1.png" width="372" /></p>
+</div>
+<p>Here we discuss factor vectors, which are built on top of integer vectors that can take one of a pre-defined set of values. A factor vector is defined on top of an integer vector through two additional attributes: (1): a <code>class</code> of “factor” which distinguishes factors from standard integer vectors, and (2): <code>levels</code> which are a set of allowed values.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre><code><span class='va'>x</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/factor.html'>factor</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"a"</span>, <span class='st'>"b,"</span>, <span class='st'>"c"</span>, <span class='st'>"d"</span><span class='op'>)</span><span class='op'>)</span>
+<span class='va'>x</span>
+</code></pre>
+</div>
+<pre><code>[1] a  b, c  d 
+Levels: a b, c d</code></pre>
+<div class="sourceCode">
+<pre><code><span class='fu'><a href='https://rdrr.io/r/base/typeof.html'>typeof</a></span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>[1] &quot;integer&quot;</code></pre>
+<div class="sourceCode">
+<pre><code><span class='fu'><a href='https://rdrr.io/r/base/class.html'>unclass</a></span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>[1] 1 2 3 4
+attr(,&quot;levels&quot;)
+[1] &quot;a&quot;  &quot;b,&quot; &quot;c&quot;  &quot;d&quot; </code></pre>
+</div>
+<p>R has functionality that allows you to immediately tabulate a factor vector based on the set of potential levels (as opposed to the observed levels)</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre><code><span class='va'>sex_char</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"m"</span>, <span class='st'>"m"</span><span class='op'>)</span>
+<span class='va'>sex_factor</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/factor.html'>factor</a></span><span class='op'>(</span><span class='va'>sex_char</span>, levels <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"m"</span>, <span class='st'>"f"</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/table.html'>table</a></span><span class='op'>(</span><span class='va'>sex_char</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>sex_char
+m 
+2 </code></pre>
+<div class="sourceCode">
+<pre><code><span class='fu'><a href='https://rdrr.io/r/base/table.html'>table</a></span><span class='op'>(</span><span class='va'>sex_factor</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>sex_factor
+m f 
+2 0 </code></pre>
+</div>
+<p>Ordered factors are a slightly different stripe of factors (an added class <code>ordered</code>) that orders the factor levels in a meaningful way that can be helpful for visualizations or modeling. We have already seen an example above in the case of the <code>Orange</code> data set:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre><code><span class='va'>Orange</span><span class='op'>$</span><span class='va'>Tree</span>
+</code></pre>
+</div>
+<pre><code> [1] 1 1 1 1 1 1 1 2 2 2 2 2 2 2 3 3 3 3 3 3 3 4 4 4 4 4 4 4 5 5 5 5 5
+[34] 5 5
+Levels: 3 &lt; 1 &lt; 5 &lt; 2 &lt; 4</code></pre>
+<div class="sourceCode">
+<pre><code><span class='fu'><a href='https://rdrr.io/r/base/class.html'>class</a></span><span class='op'>(</span><span class='va'>Orange</span><span class='op'>$</span><span class='va'>Tree</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>[1] &quot;ordered&quot; &quot;factor&quot; </code></pre>
+</div>
+<p>which explains how <code>Tree</code> was arranged in the summary tables (based on this order).</p>
+<p>When we import data we will generally want to convert character vectors in the data set into factors. The following workflow that we illustrate with a data set on European automobile sales and product characteristics leverages the <code>across()</code> functionality from <code>dplyr 1.0.0</code> to achieve these purposes and provides useful summaries.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre><code><span class='va'>carData</span> <span class='op'>&lt;-</span> <span class='fu'>read_csv</span><span class='op'>(</span><span class='st'>"../../data/total.csv"</span><span class='op'>)</span>
+<span class='fu'>glimpse</span><span class='op'>(</span><span class='va'>carData</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>Rows: 139,307
+Columns: 90
+$ brand               &lt;chr&gt; &quot;alfa_romeo&quot;, &quot;alfa_romeo&quot;, &quot;alfa_romeo&quot;…
+$ continent           &lt;dbl&gt; 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3…
+$ bodystyle           &lt;chr&gt; &quot;com&quot;, &quot;com&quot;, &quot;com&quot;, &quot;com&quot;, &quot;com&quot;, &quot;com&quot;…
+$ dup                 &lt;dbl&gt; 7834, 10302, 12393, 29626, 12797, 1868, …
+$ year                &lt;dbl&gt; 2011, 2010, 2013, 2014, 2012, 2016, 2012…
+$ month               &lt;dbl&gt; 8, 9, 3, 10, 6, 7, 2, 5, 10, 11, 3, 6, 6…
+$ time                &lt;dbl&gt; 20, 9, 39, 58, 30, 79, 26, 41, 34, 23, 8…
+$ muninumber          &lt;dbl&gt; 1657, 1102, 239, 1201, 213, 1422, 220, 1…
+$ market_ids          &lt;dbl&gt; 708, 168, 1263, 1823, 834, 2682, 840, 14…
+$ sales               &lt;dbl&gt; 1, 3, 1, 2, 4, 1, 3, 1, 1, 1, 1, 1, 1, 1…
+$ shares              &lt;dbl&gt; 1.467567e-04, 4.549936e-05, 3.746721e-04…
+$ product_ids         &lt;dbl&gt; 4, 5, 4, 5, 4, 4, 4, 4, 4, 5, 3, 3, 4, 3…
+$ car_ids             &lt;dbl&gt; 20, 28, 20, 26, 24, 19, 17, 20, 17, 28, …
+$ firm_ids            &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1…
+$ nvals               &lt;dbl&gt; 6, 57, 11, 50, 81, 16, 73, 46, 3, 73, 7,…
+$ numbersold          &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1…
+$ station_network     &lt;dbl&gt; 0, 6, 1, 118, 3, 1, 10, 1, 1, 1, 1, 2, 1…
+$ muni                &lt;chr&gt; &quot;skaun&quot;, &quot;sandnes&quot;, &quot;hurdal&quot;, &quot;bergen&quot;, …
+$ transmission        &lt;chr&gt; &quot;man&quot;, &quot;man&quot;, &quot;man&quot;, &quot;man&quot;, &quot;aut&quot;, &quot;man&quot;…
+$ prices              &lt;dbl&gt; 3.499, 2.499, 3.399, 1.899, 3.549, 3.199…
+$ trans               &lt;dbl&gt; 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 1…
+$ ev                  &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…
+$ length              &lt;dbl&gt; 0.435, 0.406, 0.435, 0.406, 0.435, 0.435…
+$ power_over_weight   &lt;dbl&gt; 0.13178295, 0.09633028, 0.13178295, 0.07…
+$ inversefuelecon     &lt;dbl&gt; 0.5447272, 0.5621190, 0.5447272, 0.86750…
+$ county              &lt;chr&gt; &quot;trÃ\u0083Â\u0083Ã\u0082Â¸ndelag&quot;, &quot;roga…
+$ model               &lt;chr&gt; &quot;giulietta&quot;, &quot;mito&quot;, &quot;giulietta&quot;, &quot;mito&quot;…
+$ drivetrain          &lt;chr&gt; &quot;2wd&quot;, &quot;2wd&quot;, &quot;2wd&quot;, &quot;2wd&quot;, &quot;2wd&quot;, &quot;2wd&quot;…
+$ fueltype            &lt;chr&gt; &quot;gasoline&quot;, &quot;gasoline&quot;, &quot;gasoline&quot;, &quot;gas…
+$ displacement        &lt;dbl&gt; 1368, 1368, 1368, 875, 1368, 1368, 1368,…
+$ effect_kw           &lt;dbl&gt; 125, 77, 125, 62, 125, 110, 88, 125, 88,…
+$ emissions           &lt;dbl&gt; 0, 0, 134, 98, 121, 127, 149, 134, 149, …
+$ latitude            &lt;dbl&gt; 63.30867, 58.85233, 60.43157, 60.37877, …
+$ longitude           &lt;dbl&gt; 10.083460, 5.750746, 11.065035, 5.321423…
+$ land                &lt;dbl&gt; 213.05, 285.55, 260.98, 445.00, 161.72, …
+$ freshwater          &lt;dbl&gt; 11.12, 19.06, 23.98, 19.70, 3.81, 66.66,…
+$ totalarea           &lt;dbl&gt; 224.17, 304.61, 284.96, 464.70, 165.53, …
+$ hh                  &lt;dbl&gt; 2653, 27025, 1201, 125929, 11846, 931, 2…
+$ medianincome        &lt;dbl&gt; 585497.8, 561638.1, 498247.4, 507902.6, …
+$ population          &lt;dbl&gt; 6814.0, 65935.0, 2669.0, 274379.0, 29191…
+$ diesel              &lt;dbl&gt; 16.10978, 14.35810, 16.29313, 15.71055, …
+$ gasoline            &lt;dbl&gt; 14.06, 12.45, 14.65, 14.60, 14.56, 13.88…
+$ cpi                 &lt;dbl&gt; 0.8727615, 0.8671065, 0.8991517, 0.92931…
+$ mintemp             &lt;dbl&gt; 5.6, 2.1, -23.3, 1.4, 2.1, 8.2, -18.5, -…
+$ maxtemp             &lt;dbl&gt; 24.0, 20.1, 7.5, 19.5, 22.5, 29.9, 12.0,…
+$ electricity         &lt;dbl&gt; 364.0284, 443.5326, 376.7662, 245.6011, …
+$ parkingfee          &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…
+$ numberofdoors       &lt;dbl&gt; 5, 3, 5, 3, 5, 5, 5, 5, 5, 3, 4, 4, 5, 4…
+$ numberofseats       &lt;dbl&gt; 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5…
+$ weight              &lt;dbl&gt; 1290, 1090, 1290, 1130, 1290, 1280, 1280…
+$ fueleconomy         &lt;dbl&gt; 0.58, 0.57, 0.58, 0.42, 0.52, 0.56, 0.64…
+$ numberofcylinders   &lt;dbl&gt; 4, 4, 4, 2, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4…
+$ effect_hp           &lt;dbl&gt; 170, 105, 170, 85, 170, 150, 120, 170, 1…
+$ range               &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…
+$ popdensity          &lt;dbl&gt; 31.983103, 230.905270, 10.226837, 616.58…
+$ price_over_income   &lt;dbl&gt; 0.5976111, 0.4449485, 0.6821913, 0.37389…
+$ n_fuel              &lt;dbl&gt; 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 2…
+$ n_bodystyle         &lt;dbl&gt; 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 7, 7, 2, 7…
+$ n_drivetrain        &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1…
+$ n_transmission      &lt;dbl&gt; 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 2, 2, 1, 2…
+$ n_brand             &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1…
+$ n_model             &lt;dbl&gt; 175, 267, 175, 267, 175, 175, 175, 175, …
+$ n_county            &lt;dbl&gt; 15, 11, 1, 6, 1, 12, 1, 11, 17, 3, 3, 7,…
+$ n_numberofdoors     &lt;dbl&gt; 4, 2, 4, 2, 4, 4, 4, 4, 4, 2, 3, 3, 4, 3…
+$ n_numberofseats     &lt;dbl&gt; 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3…
+$ mintemp_dbev        &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…
+$ maxtemp_dbev        &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…
+$ electricity_dbev    &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…
+$ parkingfee_dbev     &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…
+$ range_dbev          &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…
+$ msize               &lt;dbl&gt; 44.21667, 450.41666, 20.01667, 2098.8167…
+$ delta               &lt;dbl&gt; -8.826588, -9.995170, -7.888710, -11.828…
+$ evsn                &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…
+$ lnlength            &lt;dbl&gt; -0.8324093, -0.9014022, -0.8324093, -0.9…
+$ lndisplacement      &lt;dbl&gt; 7.221105, 7.221105, 7.221105, 6.774224, …
+$ lnpow               &lt;dbl&gt; -2.026599, -2.339973, -2.026599, -2.5873…
+$ lninv               &lt;dbl&gt; -0.6074703, -0.5760418, -0.6074703, -0.1…
+$ lnstation           &lt;dbl&gt; 0.0000000, 1.7917595, 0.0000000, 4.77068…
+$ lnevsn              &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…
+$ trend               &lt;dbl&gt; 2, 1, 4, 5, 3, 7, 3, 4, 3, 2, 8, 8, 3, 8…
+$ dummy               &lt;dbl&gt; 0.4081760, 0.3011693, 0.3698604, 0.43076…
+$ dummy2              &lt;dbl&gt; 526.5470, 328.2745, 477.1200, 486.7686, …
+$ demand_instruments0 &lt;dbl&gt; 1, 0, 1, 0, 4, 3, 5, 4, 5, 5, 2, 2, 3, 1…
+$ demand_instruments1 &lt;dbl&gt; 2, 2, 2, 0, 5, 5, 5, 5, 5, 5, 3, 3, 3, 3…
+$ demand_instruments2 &lt;dbl&gt; 0, 1, 1, 0, 3, 3, 1, 3, 3, 1, 2, 2, 0, 2…
+$ demand_instruments3 &lt;dbl&gt; 2, 2, 2, 0, 5, 5, 5, 5, 5, 5, 3, 3, 3, 3…
+$ demand_instruments4 &lt;dbl&gt; 61, 12, 55, 17, 53, 42, 65, 52, 66, 64, …
+$ demand_instruments5 &lt;dbl&gt; 75, 76, 77, 78, 71, 71, 73, 75, 70, 74, …
+$ demand_instruments6 &lt;dbl&gt; 26, 53, 53, 54, 51, 51, 25, 51, 51, 25, …
+$ demand_instruments7 &lt;dbl&gt; 79, 78, 79, 81, 76, 75, 75, 76, 75, 76, …</code></pre>
+</div>
+<p>Lets select which of the 90 variables are character columns:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre><code><span class='va'>carData</span> <span class='op'>%&gt;%</span> <span class='fu'>select</span><span class='op'>(</span><span class='fu'>where</span><span class='op'>(</span><span class='va'>is.character</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>glimpse</span><span class='op'>(</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>Rows: 139,307
+Columns: 8
+$ brand        &lt;chr&gt; &quot;alfa_romeo&quot;, &quot;alfa_romeo&quot;, &quot;alfa_romeo&quot;, &quot;alfa…
+$ bodystyle    &lt;chr&gt; &quot;com&quot;, &quot;com&quot;, &quot;com&quot;, &quot;com&quot;, &quot;com&quot;, &quot;com&quot;, &quot;com&quot;…
+$ muni         &lt;chr&gt; &quot;skaun&quot;, &quot;sandnes&quot;, &quot;hurdal&quot;, &quot;bergen&quot;, &quot;ski&quot;, …
+$ transmission &lt;chr&gt; &quot;man&quot;, &quot;man&quot;, &quot;man&quot;, &quot;man&quot;, &quot;aut&quot;, &quot;man&quot;, &quot;man&quot;…
+$ county       &lt;chr&gt; &quot;trÃ\u0083Â\u0083Ã\u0082Â¸ndelag&quot;, &quot;rogaland&quot;, …
+$ model        &lt;chr&gt; &quot;giulietta&quot;, &quot;mito&quot;, &quot;giulietta&quot;, &quot;mito&quot;, &quot;giul…
+$ drivetrain   &lt;chr&gt; &quot;2wd&quot;, &quot;2wd&quot;, &quot;2wd&quot;, &quot;2wd&quot;, &quot;2wd&quot;, &quot;2wd&quot;, &quot;2wd&quot;…
+$ fueltype     &lt;chr&gt; &quot;gasoline&quot;, &quot;gasoline&quot;, &quot;gasoline&quot;, &quot;gasoline&quot;,…</code></pre>
+</div>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre><code><span class='va'>carData</span> <span class='op'>&lt;-</span> <span class='va'>carData</span> <span class='op'>%&gt;%</span> <span class='fu'>mutate</span><span class='op'>(</span><span class='fu'>across</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='va'>year</span>,<span class='va'>month</span>,<span class='va'>time</span>,<span class='va'>muninumber</span>,<span class='va'>market_ids</span><span class='op'>)</span>, <span class='va'>as.factor</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>%&gt;%</span> 
+  <span class='fu'>mutate</span><span class='op'>(</span><span class='fu'>across</span><span class='op'>(</span><span class='fu'>where</span><span class='op'>(</span><span class='va'>is.character</span><span class='op'>)</span>, <span class='va'>as.factor</span><span class='op'>)</span><span class='op'>)</span>
+
+<span class='va'>carData</span> <span class='op'>%&gt;%</span> <span class='fu'>glimpse</span><span class='op'>(</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>Rows: 139,307
+Columns: 90
+$ brand               &lt;fct&gt; alfa_romeo, alfa_romeo, alfa_romeo, alfa…
+$ continent           &lt;dbl&gt; 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3…
+$ bodystyle           &lt;fct&gt; com, com, com, com, com, com, com, com, …
+$ dup                 &lt;dbl&gt; 7834, 10302, 12393, 29626, 12797, 1868, …
+$ year                &lt;fct&gt; 2011, 2010, 2013, 2014, 2012, 2016, 2012…
+$ month               &lt;fct&gt; 8, 9, 3, 10, 6, 7, 2, 5, 10, 11, 3, 6, 6…
+$ time                &lt;fct&gt; 20, 9, 39, 58, 30, 79, 26, 41, 34, 23, 8…
+$ muninumber          &lt;fct&gt; 1657, 1102, 239, 1201, 213, 1422, 220, 1…
+$ market_ids          &lt;fct&gt; 708, 168, 1263, 1823, 834, 2682, 840, 14…
+$ sales               &lt;dbl&gt; 1, 3, 1, 2, 4, 1, 3, 1, 1, 1, 1, 1, 1, 1…
+$ shares              &lt;dbl&gt; 1.467567e-04, 4.549936e-05, 3.746721e-04…
+$ product_ids         &lt;dbl&gt; 4, 5, 4, 5, 4, 4, 4, 4, 4, 5, 3, 3, 4, 3…
+$ car_ids             &lt;dbl&gt; 20, 28, 20, 26, 24, 19, 17, 20, 17, 28, …
+$ firm_ids            &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1…
+$ nvals               &lt;dbl&gt; 6, 57, 11, 50, 81, 16, 73, 46, 3, 73, 7,…
+$ numbersold          &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1…
+$ station_network     &lt;dbl&gt; 0, 6, 1, 118, 3, 1, 10, 1, 1, 1, 1, 2, 1…
+$ muni                &lt;fct&gt; skaun, sandnes, hurdal, bergen, ski, lÃÂÃÂ¦rdal, asker, vindafjord, re, lier, hol, volda, grimstad, horten, kristiansand, ballangen, sandnes, bergen, oslo, sarpsborg, bÃÂÃÂ¦rum, bÃÂÃÂ¸mlo, porsgrunn
+$ transmission        &lt;fct&gt; man, man, man, man, aut, man, man, man, …
+$ prices              &lt;dbl&gt; 3.499, 2.499, 3.399, 1.899, 3.549, 3.199…
+$ trans               &lt;dbl&gt; 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 1…
+$ ev                  &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…
+$ length              &lt;dbl&gt; 0.435, 0.406, 0.435, 0.406, 0.435, 0.435…
+$ power_over_weight   &lt;dbl&gt; 0.13178295, 0.09633028, 0.13178295, 0.07…
+$ inversefuelecon     &lt;dbl&gt; 0.5447272, 0.5621190, 0.5447272, 0.86750…
+$ county              &lt;fct&gt; trÃÂÃÂ¸ndelag, rogaland, akershus, hordaland, akershus, sogn og fjordane, akershus, rogaland, vestfold, buskerud, buskerud, mÃÂÃÂ¸re og romsdal, aust-agder, vestfold, vest-agder, nordland, rogaland, hordaland, oslo, ÃÂÃÂ¸stfold, akershus, hordaland, telemark
+$ model               &lt;fct&gt; giulietta, mito, giulietta, mito, giulie…
+$ drivetrain          &lt;fct&gt; 2wd, 2wd, 2wd, 2wd, 2wd, 2wd, 2wd, 2wd, …
+$ fueltype            &lt;fct&gt; gasoline, gasoline, gasoline, gasoline, …
+$ displacement        &lt;dbl&gt; 1368, 1368, 1368, 875, 1368, 1368, 1368,…
+$ effect_kw           &lt;dbl&gt; 125, 77, 125, 62, 125, 110, 88, 125, 88,…
+$ emissions           &lt;dbl&gt; 0, 0, 134, 98, 121, 127, 149, 134, 149, …
+$ latitude            &lt;dbl&gt; 63.30867, 58.85233, 60.43157, 60.37877, …
+$ longitude           &lt;dbl&gt; 10.083460, 5.750746, 11.065035, 5.321423…
+$ land                &lt;dbl&gt; 213.05, 285.55, 260.98, 445.00, 161.72, …
+$ freshwater          &lt;dbl&gt; 11.12, 19.06, 23.98, 19.70, 3.81, 66.66,…
+$ totalarea           &lt;dbl&gt; 224.17, 304.61, 284.96, 464.70, 165.53, …
+$ hh                  &lt;dbl&gt; 2653, 27025, 1201, 125929, 11846, 931, 2…
+$ medianincome        &lt;dbl&gt; 585497.8, 561638.1, 498247.4, 507902.6, …
+$ population          &lt;dbl&gt; 6814.0, 65935.0, 2669.0, 274379.0, 29191…
+$ diesel              &lt;dbl&gt; 16.10978, 14.35810, 16.29313, 15.71055, …
+$ gasoline            &lt;dbl&gt; 14.06, 12.45, 14.65, 14.60, 14.56, 13.88…
+$ cpi                 &lt;dbl&gt; 0.8727615, 0.8671065, 0.8991517, 0.92931…
+$ mintemp             &lt;dbl&gt; 5.6, 2.1, -23.3, 1.4, 2.1, 8.2, -18.5, -…
+$ maxtemp             &lt;dbl&gt; 24.0, 20.1, 7.5, 19.5, 22.5, 29.9, 12.0,…
+$ electricity         &lt;dbl&gt; 364.0284, 443.5326, 376.7662, 245.6011, …
+$ parkingfee          &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…
+$ numberofdoors       &lt;dbl&gt; 5, 3, 5, 3, 5, 5, 5, 5, 5, 3, 4, 4, 5, 4…
+$ numberofseats       &lt;dbl&gt; 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5…
+$ weight              &lt;dbl&gt; 1290, 1090, 1290, 1130, 1290, 1280, 1280…
+$ fueleconomy         &lt;dbl&gt; 0.58, 0.57, 0.58, 0.42, 0.52, 0.56, 0.64…
+$ numberofcylinders   &lt;dbl&gt; 4, 4, 4, 2, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4…
+$ effect_hp           &lt;dbl&gt; 170, 105, 170, 85, 170, 150, 120, 170, 1…
+$ range               &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…
+$ popdensity          &lt;dbl&gt; 31.983103, 230.905270, 10.226837, 616.58…
+$ price_over_income   &lt;dbl&gt; 0.5976111, 0.4449485, 0.6821913, 0.37389…
+$ n_fuel              &lt;dbl&gt; 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 2…
+$ n_bodystyle         &lt;dbl&gt; 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 7, 7, 2, 7…
+$ n_drivetrain        &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1…
+$ n_transmission      &lt;dbl&gt; 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 2, 2, 1, 2…
+$ n_brand             &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1…
+$ n_model             &lt;dbl&gt; 175, 267, 175, 267, 175, 175, 175, 175, …
+$ n_county            &lt;dbl&gt; 15, 11, 1, 6, 1, 12, 1, 11, 17, 3, 3, 7,…
+$ n_numberofdoors     &lt;dbl&gt; 4, 2, 4, 2, 4, 4, 4, 4, 4, 2, 3, 3, 4, 3…
+$ n_numberofseats     &lt;dbl&gt; 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3…
+$ mintemp_dbev        &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…
+$ maxtemp_dbev        &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…
+$ electricity_dbev    &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…
+$ parkingfee_dbev     &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…
+$ range_dbev          &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…
+$ msize               &lt;dbl&gt; 44.21667, 450.41666, 20.01667, 2098.8167…
+$ delta               &lt;dbl&gt; -8.826588, -9.995170, -7.888710, -11.828…
+$ evsn                &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…
+$ lnlength            &lt;dbl&gt; -0.8324093, -0.9014022, -0.8324093, -0.9…
+$ lndisplacement      &lt;dbl&gt; 7.221105, 7.221105, 7.221105, 6.774224, …
+$ lnpow               &lt;dbl&gt; -2.026599, -2.339973, -2.026599, -2.5873…
+$ lninv               &lt;dbl&gt; -0.6074703, -0.5760418, -0.6074703, -0.1…
+$ lnstation           &lt;dbl&gt; 0.0000000, 1.7917595, 0.0000000, 4.77068…
+$ lnevsn              &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…
+$ trend               &lt;dbl&gt; 2, 1, 4, 5, 3, 7, 3, 4, 3, 2, 8, 8, 3, 8…
+$ dummy               &lt;dbl&gt; 0.4081760, 0.3011693, 0.3698604, 0.43076…
+$ dummy2              &lt;dbl&gt; 526.5470, 328.2745, 477.1200, 486.7686, …
+$ demand_instruments0 &lt;dbl&gt; 1, 0, 1, 0, 4, 3, 5, 4, 5, 5, 2, 2, 3, 1…
+$ demand_instruments1 &lt;dbl&gt; 2, 2, 2, 0, 5, 5, 5, 5, 5, 5, 3, 3, 3, 3…
+$ demand_instruments2 &lt;dbl&gt; 0, 1, 1, 0, 3, 3, 1, 3, 3, 1, 2, 2, 0, 2…
+$ demand_instruments3 &lt;dbl&gt; 2, 2, 2, 0, 5, 5, 5, 5, 5, 5, 3, 3, 3, 3…
+$ demand_instruments4 &lt;dbl&gt; 61, 12, 55, 17, 53, 42, 65, 52, 66, 64, …
+$ demand_instruments5 &lt;dbl&gt; 75, 76, 77, 78, 71, 71, 73, 75, 70, 74, …
+$ demand_instruments6 &lt;dbl&gt; 26, 53, 53, 54, 51, 51, 25, 51, 51, 25, …
+$ demand_instruments7 &lt;dbl&gt; 79, 78, 79, 81, 76, 75, 75, 76, 75, 76, …</code></pre>
+</div>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre><code><span class='va'>carData</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>summarize</span><span class='op'>(</span><span class='fu'>across</span><span class='op'>(</span><span class='fu'>where</span><span class='op'>(</span><span class='va'>is.factor</span><span class='op'>)</span>, <span class='va'>nlevels</span><span class='op'>)</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code># A tibble: 1 x 13
+  brand bodystyle  year month  time muninumber market_ids  muni
+  &lt;int&gt;     &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;      &lt;int&gt;      &lt;int&gt; &lt;int&gt;
+1    44         9     8    12    96        416       3251   416
+# … with 5 more variables: transmission &lt;int&gt;, county &lt;int&gt;,
+#   model &lt;int&gt;, drivetrain &lt;int&gt;, fueltype &lt;int&gt;</code></pre>
+</div>
+<p>How many years of data for each municpality</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre><code><span class='va'>carData</span> <span class='op'>%&gt;%</span>
+<span class='fu'>group_by</span><span class='op'>(</span><span class='va'>muninumber</span>, <span class='va'>year</span><span class='op'>)</span> <span class='op'>%&gt;%</span> <span class='fu'>count</span><span class='op'>(</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code># A tibble: 3,251 x 3
+# Groups:   muninumber, year [3,251]
+   muninumber year      n
+   &lt;fct&gt;      &lt;fct&gt; &lt;int&gt;
+ 1 101        2010     82
+ 2 101        2011     85
+ 3 101        2012     96
+ 4 101        2013     94
+ 5 101        2014     77
+ 6 101        2015     81
+ 7 101        2016     87
+ 8 101        2017     81
+ 9 104        2010    111
+10 104        2011    111
+# … with 3,241 more rows</code></pre>
+<div class="sourceCode">
+<pre><code>  <span class='co'>#summarize(across(where(is.factor), nlevels))</span>
+</code></pre>
+</div>
+</div>
+<p>Base R will tend to create factor vectors often because when data is read using <code>read.csv()</code>, character vectors are automatically coerced into factors.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre><code><span class='va'>carData</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.csv</a></span><span class='op'>(</span><span class='st'>"../../data/total.csv"</span><span class='op'>)</span>
+</code></pre>
+</div>
+</div>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre><code><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://readr.tidyverse.org'>readr</a></span><span class='op'>)</span>
+<span class='va'>carData2</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://readr.tidyverse.org/reference/read_delim.html'>read_csv</a></span><span class='op'>(</span><span class='st'>"../../data/total.csv"</span><span class='op'>)</span>
+<span class='fu'>glimpse</span><span class='op'>(</span><span class='va'>carData</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>Rows: 139,307
+Columns: 90
+$ brand               &lt;chr&gt; &quot;alfa_romeo&quot;, &quot;alfa_romeo&quot;, &quot;alfa_romeo&quot;…
+$ continent           &lt;int&gt; 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3…
+$ bodystyle           &lt;chr&gt; &quot;com&quot;, &quot;com&quot;, &quot;com&quot;, &quot;com&quot;, &quot;com&quot;, &quot;com&quot;…
+$ dup                 &lt;int&gt; 7834, 10302, 12393, 29626, 12797, 1868, …
+$ year                &lt;int&gt; 2011, 2010, 2013, 2014, 2012, 2016, 2012…
+$ month               &lt;int&gt; 8, 9, 3, 10, 6, 7, 2, 5, 10, 11, 3, 6, 6…
+$ time                &lt;int&gt; 20, 9, 39, 58, 30, 79, 26, 41, 34, 23, 8…
+$ muninumber          &lt;int&gt; 1657, 1102, 239, 1201, 213, 1422, 220, 1…
+$ market_ids          &lt;int&gt; 708, 168, 1263, 1823, 834, 2682, 840, 14…
+$ sales               &lt;int&gt; 1, 3, 1, 2, 4, 1, 3, 1, 1, 1, 1, 1, 1, 1…
+$ shares              &lt;dbl&gt; 1.467567e-04, 4.549936e-05, 3.746721e-04…
+$ product_ids         &lt;int&gt; 4, 5, 4, 5, 4, 4, 4, 4, 4, 5, 3, 3, 4, 3…
+$ car_ids             &lt;int&gt; 20, 28, 20, 26, 24, 19, 17, 20, 17, 28, …
+$ firm_ids            &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1…
+$ nvals               &lt;int&gt; 6, 57, 11, 50, 81, 16, 73, 46, 3, 73, 7,…
+$ numbersold          &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1…
+$ station_network     &lt;int&gt; 0, 6, 1, 118, 3, 1, 10, 1, 1, 1, 1, 2, 1…
+$ muni                &lt;chr&gt; &quot;skaun&quot;, &quot;sandnes&quot;, &quot;hurdal&quot;, &quot;bergen&quot;, …
+$ transmission        &lt;chr&gt; &quot;man&quot;, &quot;man&quot;, &quot;man&quot;, &quot;man&quot;, &quot;aut&quot;, &quot;man&quot;…
+$ prices              &lt;dbl&gt; 3.499, 2.499, 3.399, 1.899, 3.549, 3.199…
+$ trans               &lt;int&gt; 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 1…
+$ ev                  &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…
+$ length              &lt;dbl&gt; 0.435, 0.406, 0.435, 0.406, 0.435, 0.435…
+$ power_over_weight   &lt;dbl&gt; 0.13178295, 0.09633028, 0.13178295, 0.07…
+$ inversefuelecon     &lt;dbl&gt; 0.5447272, 0.5621190, 0.5447272, 0.86750…
+$ county              &lt;chr&gt; &quot;trÃ\u0083Â\u0083Ã\u0082Â¸ndelag&quot;, &quot;roga…
+$ model               &lt;chr&gt; &quot;giulietta&quot;, &quot;mito&quot;, &quot;giulietta&quot;, &quot;mito&quot;…
+$ drivetrain          &lt;chr&gt; &quot;2wd&quot;, &quot;2wd&quot;, &quot;2wd&quot;, &quot;2wd&quot;, &quot;2wd&quot;, &quot;2wd&quot;…
+$ fueltype            &lt;chr&gt; &quot;gasoline&quot;, &quot;gasoline&quot;, &quot;gasoline&quot;, &quot;gas…
+$ displacement        &lt;int&gt; 1368, 1368, 1368, 875, 1368, 1368, 1368,…
+$ effect_kw           &lt;int&gt; 125, 77, 125, 62, 125, 110, 88, 125, 88,…
+$ emissions           &lt;int&gt; 0, 0, 134, 98, 121, 127, 149, 134, 149, …
+$ latitude            &lt;dbl&gt; 63.30867, 58.85233, 60.43157, 60.37877, …
+$ longitude           &lt;dbl&gt; 10.083460, 5.750746, 11.065035, 5.321423…
+$ land                &lt;dbl&gt; 213.05, 285.55, 260.98, 445.00, 161.72, …
+$ freshwater          &lt;dbl&gt; 11.12, 19.06, 23.98, 19.70, 3.81, 66.66,…
+$ totalarea           &lt;dbl&gt; 224.17, 304.61, 284.96, 464.70, 165.53, …
+$ hh                  &lt;int&gt; 2653, 27025, 1201, 125929, 11846, 931, 2…
+$ medianincome        &lt;dbl&gt; 585497.8, 561638.1, 498247.4, 507902.6, …
+$ population          &lt;dbl&gt; 6814.0, 65935.0, 2669.0, 274379.0, 29191…
+$ diesel              &lt;dbl&gt; 16.10978, 14.35810, 16.29313, 15.71055, …
+$ gasoline            &lt;dbl&gt; 14.06, 12.45, 14.65, 14.60, 14.56, 13.88…
+$ cpi                 &lt;dbl&gt; 0.8727615, 0.8671065, 0.8991517, 0.92931…
+$ mintemp             &lt;dbl&gt; 5.6, 2.1, -23.3, 1.4, 2.1, 8.2, -18.5, -…
+$ maxtemp             &lt;dbl&gt; 24.0, 20.1, 7.5, 19.5, 22.5, 29.9, 12.0,…
+$ electricity         &lt;dbl&gt; 364.0284, 443.5326, 376.7662, 245.6011, …
+$ parkingfee          &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…
+$ numberofdoors       &lt;int&gt; 5, 3, 5, 3, 5, 5, 5, 5, 5, 3, 4, 4, 5, 4…
+$ numberofseats       &lt;int&gt; 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5…
+$ weight              &lt;int&gt; 1290, 1090, 1290, 1130, 1290, 1280, 1280…
+$ fueleconomy         &lt;dbl&gt; 0.58, 0.57, 0.58, 0.42, 0.52, 0.56, 0.64…
+$ numberofcylinders   &lt;int&gt; 4, 4, 4, 2, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4…
+$ effect_hp           &lt;int&gt; 170, 105, 170, 85, 170, 150, 120, 170, 1…
+$ range               &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…
+$ popdensity          &lt;dbl&gt; 31.983103, 230.905270, 10.226837, 616.58…
+$ price_over_income   &lt;dbl&gt; 0.5976111, 0.4449485, 0.6821913, 0.37389…
+$ n_fuel              &lt;int&gt; 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 2…
+$ n_bodystyle         &lt;int&gt; 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 7, 7, 2, 7…
+$ n_drivetrain        &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1…
+$ n_transmission      &lt;int&gt; 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 2, 2, 1, 2…
+$ n_brand             &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1…
+$ n_model             &lt;int&gt; 175, 267, 175, 267, 175, 175, 175, 175, …
+$ n_county            &lt;int&gt; 15, 11, 1, 6, 1, 12, 1, 11, 17, 3, 3, 7,…
+$ n_numberofdoors     &lt;int&gt; 4, 2, 4, 2, 4, 4, 4, 4, 4, 2, 3, 3, 4, 3…
+$ n_numberofseats     &lt;int&gt; 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3…
+$ mintemp_dbev        &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…
+$ maxtemp_dbev        &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…
+$ electricity_dbev    &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…
+$ parkingfee_dbev     &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…
+$ range_dbev          &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…
+$ msize               &lt;dbl&gt; 44.21667, 450.41666, 20.01667, 2098.8167…
+$ delta               &lt;dbl&gt; -8.826588, -9.995170, -7.888710, -11.828…
+$ evsn                &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…
+$ lnlength            &lt;dbl&gt; -0.8324093, -0.9014022, -0.8324093, -0.9…
+$ lndisplacement      &lt;dbl&gt; 7.221105, 7.221105, 7.221105, 6.774224, …
+$ lnpow               &lt;dbl&gt; -2.026599, -2.339973, -2.026599, -2.5873…
+$ lninv               &lt;dbl&gt; -0.6074703, -0.5760418, -0.6074703, -0.1…
+$ lnstation           &lt;dbl&gt; 0.0000000, 1.7917595, 0.0000000, 4.77068…
+$ lnevsn              &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…
+$ trend               &lt;int&gt; 2, 1, 4, 5, 3, 7, 3, 4, 3, 2, 8, 8, 3, 8…
+$ dummy               &lt;dbl&gt; 0.4081760, 0.3011693, 0.3698604, 0.43076…
+$ dummy2              &lt;dbl&gt; 526.5470, 328.2745, 477.1200, 486.7686, …
+$ demand_instruments0 &lt;dbl&gt; 1, 0, 1, 0, 4, 3, 5, 4, 5, 5, 2, 2, 3, 1…
+$ demand_instruments1 &lt;dbl&gt; 2, 2, 2, 0, 5, 5, 5, 5, 5, 5, 3, 3, 3, 3…
+$ demand_instruments2 &lt;dbl&gt; 0, 1, 1, 0, 3, 3, 1, 3, 3, 1, 2, 2, 0, 2…
+$ demand_instruments3 &lt;dbl&gt; 2, 2, 2, 0, 5, 5, 5, 5, 5, 5, 3, 3, 3, 3…
+$ demand_instruments4 &lt;dbl&gt; 61, 12, 55, 17, 53, 42, 65, 52, 66, 64, …
+$ demand_instruments5 &lt;dbl&gt; 75, 76, 77, 78, 71, 71, 73, 75, 70, 74, …
+$ demand_instruments6 &lt;dbl&gt; 26, 53, 53, 54, 51, 51, 25, 51, 51, 25, …
+$ demand_instruments7 &lt;dbl&gt; 79, 78, 79, 81, 76, 75, 75, 76, 75, 76, …</code></pre>
+</div>
+<div class="sourceCode" id="cb58"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<div id="refs" class="references csl-bib-body hanging-indent" role="doc-bibliography">
+<div id="ref-chambers1998programming" class="csl-entry" role="doc-biblioentry">
+Chambers, John M. 1998. <em>Programming with Data: A Guide to the s Language</em>. Springer Science &amp; Business Media.
+</div>
+</div>
+<section class="footnotes" role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1" role="doc-endnote"><p>The tidyverse is a standardization and formalization of functional and meta-programming capabilities of R. The popularization and resurgence of R through the tidyverse owes an unusual amount to the influential packages and writings of Hadley Wickham - the author of <em>Advanced R</em> and co-author of <em>R for Data Science</em>.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+<!--radix_placeholder_article_footer-->
+<!--/radix_placeholder_article_footer-->
+</div>
+
+<div class="d-appendix">
+</div>
+
+
+<!--radix_placeholder_site_after_body-->
+<!--/radix_placeholder_site_after_body-->
+<!--radix_placeholder_appendices-->
+<div class="appendix-bottom">
+  <h3 id="references">References</h3>
+  <div id="references-listing"></div>
+</div>
+<!--/radix_placeholder_appendices-->
+<!--radix_placeholder_navigation_after_body-->
+<!--/radix_placeholder_navigation_after_body-->
+
+</body>
+
+</html>
