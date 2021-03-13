@@ -87,28 +87,32 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   <!--radix_placeholder_meta_tags-->
 <title>Econ 712: Predicting Take-Up Rate</title>
 
+<meta property="description" itemprop="description" content="Understanding the predictors of social programs application"/>
 
 
 <!--  https://schema.org/Article -->
 <meta property="article:published" itemprop="datePublished" content="2021-02-25"/>
 <meta property="article:created" itemprop="dateCreated" content="2021-02-25"/>
-<meta name="article:author" content="Ornella Darova &amp; Ozgur Seker"/>
+<meta name="article:author" content="Ornella Darova"/>
+<meta name="article:author" content="Ozgur Seker"/>
 
 <!--  https://developers.facebook.com/docs/sharing/webmasters#markup -->
 <meta property="og:title" content="Econ 712: Predicting Take-Up Rate"/>
 <meta property="og:type" content="article"/>
+<meta property="og:description" content="Understanding the predictors of social programs application"/>
 <meta property="og:locale" content="en_US"/>
 <meta property="og:site_name" content="Econ 712"/>
 
 <!--  https://dev.twitter.com/cards/types/summary -->
 <meta property="twitter:card" content="summary"/>
 <meta property="twitter:title" content="Econ 712: Predicting Take-Up Rate"/>
+<meta property="twitter:description" content="Understanding the predictors of social programs application"/>
 
 <!--/radix_placeholder_meta_tags-->
   <!--radix_placeholder_rmarkdown_metadata-->
 
 <script type="text/json" id="radix-rmarkdown-metadata">
-{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","author","date","output"]}},"value":[{"type":"character","attributes":{},"value":["Predicting Take-Up Rate"]},{"type":"NULL"},{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","url"]}},"value":[{"type":"character","attributes":{},"value":["Ornella Darova & Ozgur Seker"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":[]}},"value":[]}]}]},{"type":"character","attributes":{},"value":["02-25-2021"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["self_contained"]}},"value":[{"type":"logical","attributes":{},"value":[false]}]}]}]}
+{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","preview","author","date","output","categories"]}},"value":[{"type":"character","attributes":{},"value":["Predicting Take-Up Rate"]},{"type":"character","attributes":{},"value":["Understanding the predictors of social programs application"]},{"type":"character","attributes":{},"value":["https://dt2sdf0db8zob.cloudfront.net/wp-content/uploads/2020/02/form-builders-11-850x435.png"]},{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name"]}},"value":[{"type":"character","attributes":{},"value":["Ornella Darova"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","url"]}},"value":[{"type":"character","attributes":{},"value":["Ozgur Seker"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":[]}},"value":[]}]}]},{"type":"character","attributes":{},"value":["02-25-2021"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["self_contained"]}},"value":[{"type":"logical","attributes":{},"value":[false]}]}]},{"type":"character","attributes":{},"value":["post"]}]}
 </script>
 <!--/radix_placeholder_rmarkdown_metadata-->
   
@@ -2058,7 +2062,7 @@ document.addEventListener('DOMContentLoaded', function() {
 <!--radix_placeholder_front_matter-->
 
 <script id="distill-front-matter" type="text/json">
-{"title":"Predicting Take-Up Rate","authors":[{"author":"Ornella Darova & Ozgur Seker","authorURL":{},"affiliation":"&nbsp;","affiliationURL":"#","orcidID":""}],"publishedDate":"2021-02-25T00:00:00.000+00:00","citationText":"Seker, 2021"}
+{"title":"Predicting Take-Up Rate","description":"Understanding the predictors of social programs application","authors":[{"author":"Ornella Darova","authorURL":"#","affiliation":"&nbsp;","affiliationURL":"#","orcidID":""},{"author":"Ozgur Seker","authorURL":{},"affiliation":"&nbsp;","affiliationURL":"#","orcidID":""}],"publishedDate":"2021-02-25T00:00:00.000+00:00","citationText":"Darova & Seker, 2021"}
 </script>
 
 <!--/radix_placeholder_front_matter-->
@@ -2092,19 +2096,24 @@ document.addEventListener('DOMContentLoaded', function() {
 <div class="d-title">
 <h1>Predicting Take-Up Rate</h1>
 <!--radix_placeholder_categories-->
+<div class="dt-tags">
+  <a href="../../index.html#category:post" class="dt-tag">post</a>
+</div>
 <!--/radix_placeholder_categories-->
-
+<p>Understanding the predictors of social programs application</p>
 </div>
 
 <div class="d-byline">
-  Ornella Darova &amp; Ozgur Seker true 
+  Ornella Darova  
+  
+,   Ozgur Seker true 
   
 <br/>02-25-2021
 </div>
 
 <div class="d-article">
 <p>One of the central issues of policy design is <b>targeting</b>. Targeting may not be completely under the control of the policy maker, as the population actually participating to a public policy may self-select into it: in that case, we would have an <b> endogenous take-up rate</b>. Understanding what are the <b>predicting factors</b> of take-up rate, given eligibility, is of fundamental importance to improve not only <b>policy design</b> but also <b>policy evaluations</b>, as the take-up rate and the characteristics of the self-selected population can heavily affect the impact and the success of policies themselves.</p>
-<p>We employ <a href="https://cps.ipums.org/cps/">Current Population Survey (CPS)</a> microdata harmonized by IPUMS that we are going to integrate with other datasets with pertinent variables. We are going to employ <b>Machine Learning techniques</b> to forecast our outcome of interest and compare different policies take-up, such as public housing, government subsidies for the rent payment, energy subsidies, food stamp recipiency, and government school lunch subsidies, reflecting on the differences and similarities between these policies and the most important predictors.</p>
+<p>We employ <a href="https://cps.ipums.org/cps/">Current Population Survey (CPS)</a> microdata harmonized by IPUMS that we are going to integrate with other datasets with pertinent variables. The CPS data sample we have has more than 3.5 million observations and 57 variables. You can see and download a sample data from this <a href="https://docs.google.com/spreadsheets/d/1LqMcUJTLR95JHLbjKD3aGkYmtUFkBiyf1CqaVOJ74-k/edit?usp=sharing">link</a>. We are going to employ <b>Machine Learning techniques</b> to forecast our outcome of interest and compare different policies take-up, such as public housing, government subsidies for the rent payment, energy subsidies, food stamp recipiency, and government school lunch subsidies, reflecting on the differences and similarities between these policies and the most important predictors.</p>
 <p>Possible outcomes to explore:</p>
 <table style="width:100%">
 <tr>
