@@ -1,0 +1,210 @@
+---
+title: "Data Work and Exploration"
+description: |
+  Unpacking the student, parent, teacher, administrator, and counselor surveys.
+author:
+  - name: Kristen Beamer
+  - name: Jordan Peeples
+date: "3-15-2021"
+output: distill::distill_article
+#bibliography: 36423V1.ris
+categories: Jordan and Kristen's project
+preview: clipart.png
+---
+```{r setup, include=FALSE}
+#take these... you may need them
+library(jsonlite)
+library(tidyverse)
+library(tidyquant)
+library(lubridate)
+library(zoo)
+library(ggfortify)
+library(directlabels)
+library(gghighlight)
+library(plotly)
+library(stargazer)
+# a few more packages 
+library(rsample)
+library(rpart)
+library(rpart.plot)
+library(skimr)
+library(ranger)
+#import
+urlSchool <- url("https://www.dropbox.com/s/bzoyhrtj3gi4t1t/36423-0001-Data.rda?raw=1")
+urlStudent <- url("https://www.dropbox.com/s/x26tsp84rcn48gj/36423-0002-Data.rda?raw=1")
+load(urlSchool)
+load(urlStudent)
+# rename
+schoolData <- da36423.0001
+studentData <- da36423.0002
+```
+
+In this post we will dive deep into the data for our project, HSLS:09, in an attempt to better understand the wealth of information within the 6,000+ different variables. In addition to the 6,608 variables, we are dealing with more than 23,000 observations. With such large data, we must divide the data into smaller sections to better understand the contents and to perform machine learning analysis, as the many categorical variables are computationally taxing. 
+
+This post will be split into five sections pertaining to the surveys aggregated in HSLS:09 -- the parent survey, student survey, teacher survey, administrator survey, and counselor survey. Through these different surveys, we will be able to discover which variables are most important in determining a student's outcome after graduation. This post will expose our data cleaning exercise and document the challenges and important features we uncover along the way.
+
+For now we will just study the raw survey responses rather than the composite and imputation variables within the data. 
+
+### Student Survey
+
+The student survey is composed of three sections: base year, first year follow-up, and 2013 update. The base year questions are asked during the student's freshman year, the first year follow-up is in 2012, and the 2013 update occurs after a student has graduated high school (assuming the student graduated after four years). Variables that begin with "S1", "S2", and "S3" correspond to the base year, the first year follow-up, and the 2013 update respectively.
+
+```{r student}
+studentDataStudents <- studentData %>%
+  select(X3TCREDENG:S2PUBASSIST, S3FOCUS) %>%
+  mutate_all(na_if, -5) %>%
+  mutate_all(na_if, -4) %>%
+  mutate_all(na_if, -7) %>%
+  mutate_all(na_if, -8) %>%
+  mutate_all(na_if, -9) %>%
+  mutate(S1EDUEXPECT = recode(S1EDUEXPECT, "(01) Less than high school" = "Less than HS",
+                              "(02) High school diploma or GED" = "HS Diploma/GED",
+                              "(03) Start an Associate's degree" = "Start Assoc.",
+                              "(04) Complete an Associate's degree" = "Complete Assoc.",
+                              "(05) Start a Bachelor's degree" = "Start Bachelor's",
+                              "(06) Complete a Bachelor's degree" = "Complete Bachelor's",
+                              "(07) Start a Master's degree" = "Start Master's",
+                              "(08) Complete a Master's degree" = "Complete Master's",
+                              "(09) Start Ph.D/M.D/Law/other prof degree" = "Start PhD",
+                              "(10) Complete Ph.D/M.D/Law/other prof degree" = "Complete PhD",
+                              "(11) Don't know" = "Don't know")) %>%
+  mutate(S3FOCUS = recode(S3FOCUS, "(1) Taking classes from postsecondary institution" = "Postsecondary",
+                          "(2) Participating in an apprenticeship program" = "Apprenticeship",
+                          "(3) Working for pay" = "Work",
+                          "(4) Serving in the military" = "Military",
+                          "(5) Starting family or taking care of your/his/her children" = "Childcare",
+                          "(6) Attending high school or homeschool" = "Continued school",
+                          "(7) Taking course to prepare for the GED/other high school equivalency exam" = "GED Prep",
+                          "(8) Equally focused on more than one of these" = "Multiple"))
+
+studentDataStudents <- studentDataStudents[ , colSums(is.na(studentDataStudents)) < 12000]
+
+```
+Above, we have selected only the student survey questions and have dropped variables that contain an excessive amount of NA's. We also did not keep variables from the 2013 update because they are variations of outcomes after high school; our only interest is S3FOCUS for now, which is the general post-high school graduation outcome. After dropping these variables, this subset contains 649 variables.
+
+The variables being recoded for easier interpretability in the code excerpt above are the outcome variable of interest (S3FOCUS) and a potential predictor we are interested in (S1EDUEXPECT). The latter asks "As things stand now, how far in school do you think you will get?" We hypothesize that the variable will play a role in the machine learning analysis. Below, we plot the expectations over the outcome.
+
+```{r student2, layout="l-body-outset", fig.width=13, fig.height=5}
+ggplot(studentDataStudents, aes(x = S1EDUEXPECT, fill = S3FOCUS)) + 
+  geom_bar(position = "fill") +
+  labs(title = "Student Outcomes as Proportions of Expectations",
+       y = "Proportion",
+       x = "Student Expectation") +
+  guides(fill=guide_legend(title="Student Outcomes")) +
+  theme(axis.text.x=element_text(size=8))
+```
+
+Expectations are somewhat consistent with the actual student outcomes. Students who expect to complete Master's degrees and Ph.D.'s have the largest proportion of students who attend postsecondary schools. Those who expected to complete less than high school, receive a HS diploma or GED, or start an associates degree contain the largest proportion of students who worked after graduation. We expect this variable to play some role in predicting the outcome, but we will learn which variables have the most important in our machine learning analysis.
+
+There are other pertinent questions in this survey, such as grade-related questions, demographics, course-specific questions, and even reflective questions such as, "9th grader sees himself/herself as a math person." Overall, the variables are mostly categorical. We can see this below:
+
+```{r student3}
+skim(studentDataStudents%>%select(where(is.numeric)))
+```
+There are 74 numerical variables (out of 649 total variables) with most of them attributed to GPA and course credits. For example, XT3CREDAPENG are the total number of AP English credits a student has earned. The mean credits among all students in the survey is 0.260. A credit refers to a student passing a one year academic course. X3TGPAWGT is the GPA weighted by honors course, which gives an extra GPA point for an honors course. S2OCC30EARN is the expected occupation earnings at 30 years old, and S1ESTIN is the estimate of tuition and fees at public in-state 4 year college.
+
+### Parent Survey
+
+What makes these data unique is the link between a student's perspective and their parent's perspective. The parent survey, like the student survey, contains multiple years: the base year and a first year follow-up. As such, the variables begin with "P1" for the base year and "P2" for the follow-up year while the parent's child is still in school. The parent is asked questions like, "How sure are you that your child will pursue a Bachelor's degree?" and the parent's education level. Below, the data clean-up is very similar as the student's.
+
+```{r parent}
+studentDataParents <- studentData %>%
+  select(P1RELSHP:P2QHELP4, S3FOCUS) %>%
+  mutate_all(na_if, -5) %>%
+  mutate_all(na_if, -4) %>%
+  mutate_all(na_if, -7) %>%
+  mutate_all(na_if, -8) %>%
+  mutate_all(na_if, -9) 
+
+studentDataParents <- studentDataParents[ , colSums(is.na(studentDataParents)) < 12000]
+
+```
+
+There are only 94 variables in this survey, and only 6 of them are numeric. Compared to the student survey, this is a smaller proportion.
+
+```{r parent2}
+skim(studentDataParents%>%select(where(is.numeric)))
+```
+Parent survey variables mainly contain the following: demographics, information about relatives/siblings, expectations of the child, information about the child prior to high school, and the parents' college education and occupation types. Among these numeric variables, we see the number of older siblings (P1OLDERSIB), the year parents were born (P1YRBORN1 and P1YRBORN2), hours worked by each parent per week (P1HOURS1 and P2HOURS2), and the number of times the child has changed schools since kindergarten (P1CHANGESCH).
+
+### Teacher Survey
+
+Here, we will begin by selecting the variables from the teacher survey. Within HSLS:09, the teacher survey only occurred in the base year. In the naming convention of the teacher questionnaire, these variables begin with "M1" and "N1". Here "M1" corresponds to surveys of the students' math teachers and "N1" corresponds to surveys of the students' science teachers. We also drop variables that have majority NA observations.
+
+```{r teach1}
+studentDataTeacher <- studentData %>% 
+  select(M1SEX:N1TFAIL) %>%
+  mutate_all(na_if, -5) %>%
+  mutate_all(na_if, -4) %>%
+  mutate_all(na_if, -7) %>%
+  mutate_all(na_if, -8) %>%
+  mutate_all(na_if, -9)
+studentDataTeacher <- studentDataTeacher[,colSums(is.na(studentDataTeacher))<12000]
+```
+
+After dropping the majority NA variables, there are now 276 remaining variables from the teacher survey to explore. Questions within the teacher surveys can be grouped into several subcategories.
+
+1. Demographic information about the teacher and their qualifications
+2. Teacher's perception of the school and classroom environment
+
+Only 12 of the teacher variables are numeric. We will skim the numeric variables below.  
+
+```{r teach2}
+skim(studentDataTeacher%>%select(where(is.numeric)))
+```
+
+Note that there are 6 variables for the Math teacher and 6 for the science teacher: HIDEGYR: Year math (or science) teacher earned their highest degree, BAYR: Year math (or science) teacher earned their Bachelor's degree, M1MTHYRS912: Years math teacher has taught high school math, N1SCIYRS912: Years science teacher has taught high school science, TCHYRK8: Years math (or science) teacher has taught any subject to grades K-8, TCHYR912: Years math (or science) teacher has taught any subject to grades 9-12, and SCHYRS: Years math (or science) teacher has taught any subject at current school.
+
+These numeric variables capture some of the qualification data for the teachers. Note that across the 12 numeric variables, the math teacher complete rate tends to be higher (approximately 65-72%). Meanwhile the science teacher complete rate is approximately 60-66%. The distribution of teacher experience is skewed such that there are more inexperienced teachers.
+
+Within the categorical variables there are questions about the teacher's sex, their perception of the school's rigor and atmosphere, and their perception of the degree of support students receive at home. 
+
+### Administrator Survey
+
+The administrator survey occurred in both the base year and the first year follow-up of the survey. Like before, we begin by selecting just the variables from the administrator questionnaire. 
+
+```{r admin1}
+studentDataAdmin <- studentData %>% 
+  select(A1GRADEPREK:A2TCHSUBJO) %>%
+  mutate_all(na_if, -5) %>%
+  mutate_all(na_if, -4) %>%
+  mutate_all(na_if, -7) %>%
+  mutate_all(na_if, -8) %>%
+  mutate_all(na_if, -9)
+studentDataAdmin <- studentDataAdmin[,colSums(is.na(studentDataAdmin))<12000]
+```
+After dropping the majority NA variables, there are now only 141 remaining variables to consider. We can skim them below:
+
+```{r admin2}
+skim(studentDataAdmin%>%select(where(is.numeric)))
+```
+The 24 numeric variables pertain to the administrators experience, the hours per work they spend on different activities (working with teachers, parents, students, internal/external management, etc.). They also have data about the proportion of students enrolled in technical programs and average daily attendance by grade. Other variables are about grade repeat percentages and the proportion of seniors entering going on to higher ed. 
+
+The remaining categorical variables have to do with school type (private vs. public), available programs at the school, and requirements for graduation. 
+
+### Counselor Survey
+
+Again we can perform similar data work for the counselor survey. Like the administrator survey, there is data for both the base year and the follow-up. 
+
+```{r counsel1}
+studentDataCounsel <- studentData %>% 
+  select(C1FTCNSL:C2FBGRAD) %>%
+  mutate_all(na_if, -5) %>%
+  mutate_all(na_if, -4) %>%
+  mutate_all(na_if, -7) %>%
+  mutate_all(na_if, -8) %>%
+  mutate_all(na_if, -9)
+studentDataCounsel <- studentDataCounsel[,colSums(is.na(studentDataCounsel))<12000]
+```
+After dropping the majority NA variables, there are now only 282 remaining variables to consider. We can skim the numeric variables it below:
+
+```{r counsel2}
+skim(studentDataCounsel%>%select(where(is.numeric)))
+```
+There are only 10 variables within the Counselor survey that are numeric: CASELOAD: Average caseload for school's counselors (in each survey year), PCTCALC: Percent of 12th graders who have taken calculus, PCTPHYS: Percent of 12th graders who have taken physics, NUMAP: Total number of AP courses offered, NUMAPSCI: Number of AP science courses offered, NUMAPMATH: Number of AP math courses offered, NUMAPCOMP: Number of AP computer science courses offered,  PCTAP: Percent of current 12th graders that are currently enrolled in at least one AP course, and NUMGRADS: The number of seniors that graduated in May or June 2011.
+
+The remaining categorical variables have to do with the type of support offered by the school counselors and the sort of school programs a school counselor would be involved (job fairs, work study, etc.).
+
+### Conclusions
+
+After performing this data cleaning exercise we have learned that the majority of our data is, in fact, categorical. With these smaller data subsets, it is much easier to understand the data before we begin the machine learning analysis, and we will be able to use machine learning techniques with a lesser burden by using the techniques on each survey subset. 
