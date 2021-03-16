@@ -24,7 +24,8 @@ After estimating demands, we want to focus on predicting prosperity of business 
 ## Data
 
 ```{r pressure, echo=FALSE, fig.cap="example of a business district", out.width = '50%'}
-knitr::include_graphics("C:/Users/Administrator/Desktop/2021 Spring/Nonpara and ML/bd_map.jpg") 
+
+knitr::include_graphics("bd_map.jpg") 
 
 ```
 
@@ -43,104 +44,93 @@ Also, for other datasets, there are related variables like worker population(by 
 # echo = FALSE : not show the data
 
 # web version. takes too long, so I will work locally and update.
-if (FALSE){
-  estimated_sales_2020 <- read.csv("https://www.dropbox.com/s/1zcve0st9loa6vb/Businessdistrict_stores_2020.csv?dl=1")
+dropbox = TRUE
+if (dropbox){
+  estimated_sales_2020 <- read.csv("https://www.dropbox.com/s/kiysg9cnw8kokbo/estimated_sales_2020.csv?dl=1")
   
-  Businessdistrict_apartment <- read.csv("https://www.dropbox.com/s/yo7taotcc7dzbvv/Businessdistrict_apartment.csv?dl=1")
-  
-  
-  Businessdistrict_changeindex <- read.csv("https://www.dropbox.com/s/ztq6h08zrd9n8f6/Businessdistrict_changeindex.csv?dl=1")
+  Businessdistrict_apartment <- read.csv("https://www.dropbox.com/s/se6bx5vr2e0tl8o/Businessdistrict_apartment.csv?dl=1")
   
   
-  Businessdistrict_estimated_floatingpopulation <- read.csv("https://www.dropbox.com/s/c1k9udgqdi06aik/Businessdistrict_estimated_floatingpopulation.csv?dl=1")
+  Businessdistrict_changeindex <- read.csv("https://www.dropbox.com/s/zj7ad65s7pkqhyr/Businessdistrict_changeindex.csv?dl=1")
   
   
-  Businessdistrict_stores_2020 <- read.csv("https://www.dropbox.com/s/kojdoy7v45h112a/Businessdistrict_stores_2020.csv?dl=1")
-  
-  Businessdistrict_worker_population <- read.csv("https://www.dropbox.com/s/oxu1tcyjf75ebuf/Businessdistrict_worker_population.csv?dl=1")
+  Businessdistrict_estimated_floatingpopulation <- read.csv("https://www.dropbox.com/s/nxjv2b4ykxjxyj4/Businessdistrict_estimated_floatingpopulation.csv?dl=1")
   
   
-  Hinterland_income_consumption <- read.csv("https://www.dropbox.com/s/nb11gcgux9dszrm/Hinterland_income_consumption.csv?dl=1")
+  Businessdistrict_stores_2020 <- read.csv("https://www.dropbox.com/s/427xehbn74g18af/Businessdistrict_stores_2020.csv?dl=1")
+  
+  Businessdistrict_worker_population <- read.csv("https://www.dropbox.com/s/xu3xja4gxde1u52/Businessdistrict_worker_population.csv?dl=1")
   
   
-  Hinterland_worker_population <- read.csv("https://www.dropbox.com/s/rr1qzz7ehxhw007/Hinterland_worker_population.csv?dl=1")
+  Hinterland_income_consumption <- read.csv("https://www.dropbox.com/s/gnzpjt9lvcv09tx/Hinterland_income_consumption.csv?dl=1")
+  
+  
+  Hinterland_worker_population <- read.csv("https://www.dropbox.com/s/pfmh4i6tea5onci/Hinterland_worker_population.csv?dl=1")
 }
 
-
- # codes for local work.
-estimated_sales_2020 <- read.csv("C:/Users/Administrator/Desktop/2021 Spring/Nonpara and ML/estimated_sales_2020.csv")
-
-Businessdistrict_apartment <- read.csv("C:/Users/Administrator/Desktop/2021 Spring/Nonpara and ML/Businessdistrict_apartment.csv")
-
-Businessdistrict_changeindex <- read.csv("C:/Users/Administrator/Desktop/2021 Spring/Nonpara and ML/Businessdistrict_changeindex.csv")
-
-Businessdistrict_estimated_floatingpopulation <- read.csv("C:/Users/Administrator/Desktop/2021 Spring/Nonpara and ML/Businessdistrict_estimated_floatingpopulation.csv")
-
-Businessdistrict_stores_2020 <- read.csv("C:/Users/Administrator/Desktop/2021 Spring/Nonpara and ML/Businessdistrict_stores_2020.csv")
-
-Businessdistrict_worker_population <- read.csv("C:/Users/Administrator/Desktop/2021 Spring/Nonpara and ML/Businessdistrict_worker_population.csv")
-
-Hinterland_income_consumption <- read.csv("C:/Users/Administrator/Desktop/2021 Spring/Nonpara and ML/Hinterland_income_consumption.csv")
-
-Hinterland_worker_population <- read.csv("C:/Users/Administrator/Desktop/2021 Spring/Nonpara and ML/Hinterland_worker_population.csv")
-
-# rename columns
-colnames(estimated_sales_2020) <- c("year", "quarter","bd_class_code","bd_class_codename","district_code","district_name",
-                 "category_code","category_name","sales","number_of_transactions","sales_weekday_ratio","sales_weekend_ratio",
-                 "sales_monday_ratio","sales_tuesday_ratio","sales_wednesday_ratio","sales_thursday_ratio","sales_friday_ratio","sales_saturday_ratio","sales_sunday_ratio",
-                 "time_00.06_sales_ratio","time_06.11_sales_ratio","time_11.14_sales_ratio","time_14.17_sales_ratio","time_17.21_sales_ratio","time_21.24_sales_ratio",
-                 "male_sales_ratio","female_sales_ratio","age10_sales_ratio","age20_sales_ratio","age30_sales_ratio","age40_sales_ratio","age50_sales_ratio","ageover60_sales_ratio",
-                 "weekday_sales_amount","weekend_sales_amount","monday_sales_amount","tuesday_sales_amount","wednesday_sales_amount","thursday_sales_amount","friday_sales_amount","saturday_sales_amount","sunday_sales_amount",
-                 "time_00.06_sales_amount","time_06.11_sales_amount","time_11.14_sales_amount","time_14.17_sales_amount","time_17.21_sales_amount","time_21.24_sales_amount",
-                 "male_sales_amount","female_sales_amount","age10_sales_amount","age20_sales_amount","age30_sales_amount","age40_sales_amount","age50_sales_amount","ageover60_sales_amount",
-                 "transaction_number_weekday","transaction_number_weekend","transaction_number_monday","transaction_number_tuesday","transaction_number_wednesday","transaction_number_thursday","transaction_number_friday","transaction_number_saturday","transaction_number_sunday",
-                 "time_00.06_transaction","time_06.11_transaction","time_11.14_transaction","time_14.17_transaction","time_17.21_transaction","time_21.24_transaction",
-                 "male_transaction","female_transaction","age10_transaction","age20_transaction","age30_transaction","age40_transaction","age50_transaction","ageover60_transaction",
-                 "number_of_stores")
-
-colnames(Businessdistrict_apartment) <- c("year", "quarter","bd_class_code","bd_class_codename","district_code","district_name",
-                                          "apart_complex_number","apart_under66sqm","apart_66sqm","apart_99sqm","apart_132sqm","apart_165sqm",
-                                          "apart_underprice1","apart_price1","apart_price2","apart_price3","apart_price4","apart_price5","apart_price6over",
-                                          "apart_avg_area","apart_avg_price")
-
-colnames(Businessdistrict_changeindex) <- c("year", "quarter","bd_class_code","bd_class_codename","district_code","district_name",
-                                            "bd_change_index","bd_change_name","avg_operating_month","avg_operating_month_for_closed","avg_opmonth_of_seoul","avg_opmonth_ofseoul_for_closed"
-                                            )
-
-# For floating population file, I need more time to figure out what the time slot means.
-#colnames(Businessdistrict_estimated_floatingpopulation) <- c()
-
-colnames(Businessdistrict_stores_2020) <- c("year", "quarter","bd_class_code","bd_class_codename","district_code","district_name",
-                                            "business_category_code","business_category_name","number_of_stores","number_of_stores_similar","open_rate","open_store_number","closing_rate","closed_store_number","franchise_store_number")
-
-colnames(Businessdistrict_worker_population) <- c("year", "quarter","bd_class_code","bd_class_codename","district_code","district_name",
-                                                  "total_worker_population","male_worker_population","female_worker_population",
-                                                  "age10_worker_population","age20_worker_population","age30_worker_population","age40_worker_population","age50_worker_population","age60over_worker_population",
-                                                  "male10_worker_population","male20_worker_population","male30_worker_population","male40_worker_population","male50_worker_population","male60over_worker_population",
-                                                  "female10_worker_population","female20_worker_population","female30_worker_population","female40_worker_population","female50_worker_population","female60over_worker_population")
-
-colnames(Hinterland_income_consumption) <- c("year", "quarter","bd_class_code","bd_class_codename","district_code","district_name",
-                                                  "avg_monthly_income","income_segment","total_expenditure","grocery_expenditure","clothing_expenditure","household_goods_expenditure",
-                                                  "medical_expenditure","transportation_expenditure","leisure_expenditure","culture_expenditure","education_expenditure","pleasure_expenditure")
-
-colnames(Hinterland_worker_population) <- c("year", "quarter","bd_class_code","bd_class_codename","district_code","district_name",
-                                            "total_worker_population","male_worker_population","female_worker_population",
-                                            "age10_worker_population","age20_worker_population","age30_worker_population","age40_worker_population","age50_worker_population","age60over_worker_population",
-                                            "male10_worker_population","male20_worker_population","male30_worker_population","male40_worker_population","male50_worker_population","male60over_worker_population",
-                                            "female10_worker_population","female20_worker_population","female30_worker_population","female40_worker_population","female50_worker_population","female60over_worker_population")
+# codes for local work.
+if (!dropbox){
+  estimated_sales_2020 <- read.csv("C:/Users/Administrator/Desktop/2021 Spring/Nonpara and ML/estimated_sales_2020.csv")
+  
+  Businessdistrict_apartment <- read.csv("C:/Users/Administrator/Desktop/2021 Spring/Nonpara and ML/Businessdistrict_apartment.csv")
+  
+  Businessdistrict_changeindex <- read.csv("C:/Users/Administrator/Desktop/2021 Spring/Nonpara and ML/Businessdistrict_changeindex.csv")
+  
+  Businessdistrict_estimated_floatingpopulation <- read.csv("C:/Users/Administrator/Desktop/2021 Spring/Nonpara and ML/Businessdistrict_estimated_floatingpopulation.csv")
+  
+  Businessdistrict_stores_2020 <- read.csv("C:/Users/Administrator/Desktop/2021 Spring/Nonpara and ML/Businessdistrict_stores_2020.csv")
+  
+  Businessdistrict_worker_population <- read.csv("C:/Users/Administrator/Desktop/2021 Spring/Nonpara and ML/Businessdistrict_worker_population.csv")
+  
+  Hinterland_income_consumption <- read.csv("C:/Users/Administrator/Desktop/2021 Spring/Nonpara and ML/Hinterland_income_consumption.csv")
+  
+  Hinterland_worker_population <- read.csv("C:/Users/Administrator/Desktop/2021 Spring/Nonpara and ML/Hinterland_worker_population.csv")
+}
  
 merge_test <- merge(estimated_sales_2020,Businessdistrict_apartment,by=c("year","quarter","bd_class_code","bd_class_codename","district_code","district_name"))
 merge_test <- merge(merge_test,Businessdistrict_changeindex,by=c("year","quarter","bd_class_code","bd_class_codename","district_code","district_name"))
 merge_test <- merge(merge_test,Businessdistrict_worker_population,by=c("year","quarter","bd_class_code","bd_class_codename","district_code","district_name"))
 merge_test <- merge(merge_test,Hinterland_income_consumption,by=c("year","quarter","bd_class_code","bd_class_codename","district_code","district_name"))
 merge_test <- merge(merge_test,Hinterland_worker_population,by=c("year","quarter","bd_class_code","bd_class_codename","district_code","district_name"))
+
+ML_test_data <- merge_test[,append(c(1:33), 80:155)]
+merge_test <- ML_test_data
 ```
 
 ```{r summary_data,echo=FALSE}
 
-summary(estimated_sales_2020)
+library(rmarkdown)
+library(tidyverse)
 
+df_summ<- merge_test %>%
+  group_by(category_name) %>% 
+  summarize(`Observations`=n(),`average_sales`=mean(sales),
+            `average_number_transactions`=mean(number_of_transactions),
+            `sales_weekday_ratio`=mean(sales_weekday_ratio),
+            `sales_weekend_ratio`=mean(sales_weekend_ratio),
+            `sales_monday_ratio`=mean(sales_monday_ratio),
+            `sales_tuesday_ratio`=mean(sales_tuesday_ratio),
+            `sales_wednesday_ratio`=mean(sales_wednesday_ratio),
+            `sales_thursday_ratio`=mean(sales_thursday_ratio),
+            `sales_friday_ratio`=mean(sales_friday_ratio),
+            `sales_saturday_ratio`=mean(sales_saturday_ratio),
+            `sales_sunday_ratio`=mean(sales_sunday_ratio),
+            `time_00.06_sales_ratio`=mean(time_00.06_sales_ratio),
+            `time_06.11_sales_ratio`=mean(time_06.11_sales_ratio),
+            `time_11.14_sales_ratio`=mean(time_11.14_sales_ratio),
+            `time_14.17_sales_ratio`=mean(time_14.17_sales_ratio),
+            `time_17.21_sales_ratio`=mean(time_17.21_sales_ratio),
+            `time_21.24_sales_ratio`=mean(time_21.24_sales_ratio),
+            `male_sales_ratio`=mean(male_sales_ratio),`female_sales_ratio`=mean(female_sales_ratio),
+            `age10_sales_ratio`=mean(age10_sales_ratio),
+            `age20_sales_ratio`=mean(age20_sales_ratio),
+            `age30_sales_ratio`=mean(age30_sales_ratio),
+            `age40_sales_ratio`=mean(age40_sales_ratio),
+            `age50_sales_ratio`=mean(age50_sales_ratio),
+            `ageover60_sales_ratio`=mean(ageover60_sales_ratio)
+            )
 
+paged_table(df_summ)
 ```
 
 ## Including Plots
@@ -258,13 +248,113 @@ rpart.plot(optimal_tree,cex=0.5)
 
 The above plot is a result for tree method. It doesn't seem to have predictive power. I think I have to estimate demands for each category. 
 
-## Things to proceed
+## Random Forest Method
 
-RF method
+Now, proceed to the RF method.
+
+```{r Random Forest}
+# Helper packages
+library(dplyr)    # for data wrangling
+library(ggplot2)  # for awesome graphics
+
+# Modeling packages
+library(ranger)   # a c++ implementation of random forest 
+library(h2o)      # a java-based implementation of random forest
+
+
+# create Ames training data
+set.seed(123)
+ames <- merge_test
+split  <- initial_split(ames, prop = 0.7, strata = "sales")
+ames_train  <- training(split)
+
+# number of features
+n_features <- length(setdiff(names(ames_train), "sales"))
+
+# train a default random forest model
+ames_rf1 <- ranger(
+  sales ~ ., 
+  data = ames_train[complete.cases(ames_train),],
+  mtry = floor(n_features / 3),
+  respect.unordered.factors = "order",
+  seed = 123
+)
+
+# get OOB RMSE
+(default_rmse <- sqrt(ames_rf1$prediction.error))
+
+# create hyperparameter grid
+hyper_grid <- expand.grid(
+  mtry = floor(n_features * c(.05, .15, .25, .333, .4)),
+  min.node.size = c(1, 3, 5, 10), 
+  replace = c(TRUE, FALSE),                               
+  sample.fraction = c(.5, .63, .8),                       
+  rmse = NA                                               
+)
+
+# execute full cartesian grid search
+for(i in seq_len(nrow(hyper_grid))) {
+  # fit model for ith hyperparameter combination
+  fit <- ranger(
+    formula         = sales ~ ., 
+    data            = ames_train[complete.cases(ames_train),], 
+    num.trees       = n_features * 10,
+    mtry            = hyper_grid$mtry[i],
+    min.node.size   = hyper_grid$min.node.size[i],
+    replace         = hyper_grid$replace[i],
+    sample.fraction = hyper_grid$sample.fraction[i],
+    verbose         = FALSE,
+    seed            = 123,
+    respect.unordered.factors = 'order',
+  )
+  # export OOB error 
+  hyper_grid$rmse[i] <- sqrt(fit$prediction.error)
+}
+
+# assess top 10 models
+hyper_grid %>%
+  arrange(rmse) %>%
+  mutate(perc_gain = (default_rmse - rmse) / default_rmse * 100) %>%
+  head(10)
+
+# re-run model with impurity-based variable importance
+rf_impurity <- ranger(
+  formula = sales ~ ., 
+  data = ames_train[complete.cases(ames_train),], 
+  num.trees = 2000,
+  mtry = 32,
+  min.node.size = 1,
+  sample.fraction = .80,
+  replace = FALSE,
+  importance = "impurity",
+  respect.unordered.factors = "order",
+  verbose = FALSE,
+  seed  = 123
+)
+
+# re-run model with permutation-based variable importance
+rf_permutation <- ranger(
+  formula = sales ~ ., 
+  data = ames_train[complete.cases(ames_train),], 
+  num.trees = 2000,
+  mtry = 32,
+  min.node.size = 1,
+  sample.fraction = .80,
+  replace = FALSE,
+  importance = "permutation",
+  respect.unordered.factors = "order",
+  verbose = FALSE,
+  seed  = 123
+)
+p1 <- vip::vip(rf_impurity, num_features = 25, bar = FALSE)
+p2 <- vip::vip(rf_permutation, num_features = 25, bar = FALSE)
+
+gridExtra::grid.arrange(p1, p2, nrow = 1)
+```
 
 1) vary the hyperparameters and RMSE
 2) list the most important variables based on impurity or permutation based importance
 
 we have to do with t-1 data for sales_ratio or sales_amount.
 
-
+sdfsdf
