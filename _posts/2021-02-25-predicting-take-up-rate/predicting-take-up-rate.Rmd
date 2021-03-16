@@ -10,8 +10,7 @@ date: 02-25-2021
 output:
   distill::distill_article:
     self_contained: false
-categories: 
-  - Ornella and Ozgur
+categories: Ornella and Ozgur's project
 ---
 
 One of the central issues of policy design is <b>targeting</b>. Targeting may not be completely under the control of the policy maker, as the population actually participating to a public policy may self-select into it: in that case, we would have an <b> endogenous take-up rate</b>. Understanding what are the <b>predicting factors</b> of take-up rate, given eligibility, is of fundamental importance to improve not only <b>policy design</b> but also <b>policy evaluations</b>, as the take-up rate and the characteristics of the self-selected population can heavily affect the impact and the success of policies themselves. 
