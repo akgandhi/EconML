@@ -1,0 +1,123 @@
+---
+title: "Post Model Selection Inference"
+description: |
+  Or the near impossibility of frequentist inference with algorithmic models
+author:
+  - name: Amit Gandhi
+    url: {}
+date: 02-06-2021
+output:
+  distill::distill_article:
+    self_contained: false
+preview: https://d33wubrfki0l68.cloudfront.net/478f2689f1b9903ce2feed61a1f5e9c9deb2bcc9/55b03/post/commentary/inference-vs-prediction_files/figure-html/unnamed-chunk-1-1.png
+ 
+---
+
+```{r}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(MASS)
+library(leaps)
+library(rmarkdown)
+```
+
+Suppose we have tuned our model on training data using a re-sampling procedure such as cross validation. We now have a model we can use for prediction, as well as an estimate of its predictive performance in the form of its expected test error $Err$. 
+
+Unfortunately the selected model $\hat{f}(x; \hat{\eta})$ which is fit to the training data $D$ on the basis of the tuned parameters $\hat{\eta}$ is invalidates inference in the traditional sense using the training data $D$. 
+
+Another way to state the situation is that with algorithmic model combined with cross validation, you have been handed a bazooka - quite powerful at automatically deconstructing large and complex data. However before firing the trigger, it is critical to read the user manual as to the appropriate way to apply for data you might have in hand. 
+
+
+
+Let us observe how this happens. First let us build a list of *design matrices* for the linear model, where the length of the list corresponds to the number of simulation runs `nSim`. Each design matrix will correspond to a data set of `nData` observations, and consist of `p` predictors. We will use the `map` function to build the list (and thus availing ourselves of the `purr` package and its functional programming capabilities.)
+
+
+```{r, echo = TRUE}
+set.seed(1234)
+nSim <- 500
+p <- 50
+nData <- 100
+
+# Generate design matrices for each simulation run
+xDat <- map(1:nSim, ~mvrnorm(nData, rnorm(p), Sigma = diag(p) ) )
+typeof(xDat)
+length(xDat)
+```
+We now build a data frame (in the form of a `tibble`) that contains a *list column* corresponding to the design matrix from each simulation run. 
+
+```{r, layout="l-body-outset"}
+simData <- tibble(run = 1:nSim, xDat = xDat)
+paged_table(simData)
+```
+
+Now we add the $Y$ outcome associated to each design matrix, where we assume the null hypothesis is true. 
+
+```{r, layout="l-body-outset"}
+simData <- 
+  simData %>% 
+  mutate(yDat = map(xDat, ~(.x %*% rep(0,p)) + rnorm(nData)  %>% drop() ) )
+
+paged_table(simData)
+```
+
+Now suppose we want to isolate the best subset regression based on an estimate of its (expected) predictive accuracy. We can use the `regsubsets()` function from the `leaps` package.
+
+
+We want to create a data set of predictors and outcome for each run in the form of its own tibble
+
+```{r}
+simData <- 
+  simData %>% 
+  mutate(xyDat = map2(xDat, yDat, 
+                      ~bind_cols( tibble(y =.y), as_tibble(.x))),
+         .keep = "unused" )
+
+paged_table(simData)
+```
+
+We can examine a single dataset to expose its structure
+
+```{r, layout="l-body-outset"}
+dat <- simData$xyDat[[1]]
+paged_table(dat)
+```
+
+
+Let us isolate a single simulated data set and run best subset regression to find the optimal model under Mallow's CP. 
+
+```{r, layout="l-body-outset" }
+regModels <- regsubsets(y ~ ., data = dat, method = "seqrep")
+summary(regModels)
+(summary(regModels))$cp
+```
+We can see here that the number of predictors with the lower Mallow CP score is `r which.min((summary(regModels))$cp)`. Suppose we chose this model as our optimal predictor, and use the selected model for inference on the training data. What would be the result?
+
+```{r, layout="l-body-outset"}
+simData <-
+simData %>% 
+  mutate(models = map(xyDat, ~regsubsets(y ~ ., data = .x, method = "seqrep"))) %>%
+  mutate(mallowcp = map(models, ~(summary(.x))$cp)) %>%
+  mutate(coefvals = map2(models, mallowcp, ~coef(.x, which.min(.y)) %>% unname() ) )
+
+paged_table(simData)
+```
+
+Now let us plot the coefficient values from the estimation
+
+```{r}
+coefdat <- flatten(simData$coefvals) %>% as.double()
+tibble(coefdat = coefdat) %>% ggplot() + geom_density(aes(x = coefdat))
+```
+
+Suppose instead we fix the model in advance that we estimate
+
+```{r}
+simData <-
+  simData %>% 
+  mutate(fixedMod = map(xyDat, ~lm(y ~ V1 + V2 + V3 + V4, data = .x) ) ) %>%
+  mutate(fixedCoef = map(fixedMod, ~coef(.x) %>% unname() ) )
+
+coefdata <- flatten(simData$fixedCoef) %>% as.double()
+tibble(coefdat = coefdata) %>% ggplot() + geom_density(aes(x = coefdata))
+```
+
