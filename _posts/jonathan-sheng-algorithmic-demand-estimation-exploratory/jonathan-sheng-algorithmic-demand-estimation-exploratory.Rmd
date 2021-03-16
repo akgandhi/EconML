@@ -1,15 +1,16 @@
 ---
-title: "An Algorithmic Perspective on BLP-Style Demand Estimation"
+title: "Fords, Fiats, and Figures: Exploring Automobile Data"
 description: |
   Exploratory Analysis
 author:
   - Jonathan Arnold 
   - Sheng Chao Ho
-date: 02-26-2021
+date: 03-09-2021
 output:
   distill::distill_article:
     self_contained: false
 categories: "Jonathan and Sheng"
+preview: prev_image.jpg
 ---
 
 
@@ -17,9 +18,7 @@ categories: "Jonathan and Sheng"
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 options(width = 60)
-ggplot2::theme_set(ggplot2::theme_minimal())
 
-#setwd("./_posts/jonathan-sheng-algorithmic-demand-estimation-exploratory")
 ```
 
 ```{r load_packages, include=FALSE}
@@ -29,434 +28,336 @@ library(ggrepel)
 library(skimr)
 library(ranger)
 library(vip)
+library(DescTools)
+library(gt)
+library(gtsummary)
+library(viridis)
+library(treemapify)
 ```
 
-```{r load and process data, include=FALSE}
+```{r load data}
 
-df_raw <- haven::read_dta("Model_panel_cleaned.dta", encoding = "ASCII")
-
-#This chunk returns names of columns that do not vary within each year
-zero_var_in_year <- 
-  df_raw %>%  
-  mutate(across(where(is.character), ~ factor(.x) %>% as.numeric)) %>% 
-  group_by(Year) %>%
-  summarise(across(.cols = everything(), ~ var(.x))) %>% 
-  select(where(~ is.numeric(.x) && mean(.x,na.rm = TRUE) == 0.0)) %>% 
-  colnames()
-
-#Now get subset of df_raw that may be more relevant. 
-df <- df_raw %>% 
-  #remove columns that are duplicates (in the case of nationality1 and nationality2  they are "almost" duplicates of nationality)
-  select(-starts_with("log"),
-         -c(trim_name,
-            transmission_id,drivetype_id,
-            MY_id,Model_id,
-            nationality1,nationality2,
-            I_convertible,I_coupe,I_hatchback,I_pickup,I_sedan,I_suv,I_van,I_wagon)
-         ) %>% 
-  #remove the 2 observations without input for nationality
-  filter(nationality!="") %>% 
-  #the following part finds real price and market share of each product within a year 
-  group_by(Year) %>% 
-  mutate(share = sales*price / sum(sales*price),
-         realprice = price*100/cpi) %>% 
-  #the following part finds the average price of a firm's competitors' products in each year, and also the average price of a firm's own products (excluding current observation) in each year
-  mutate(total_sum = sum(price),
-         total_n = n()) %>% 
-  ungroup %>% 
-  group_by(Year,company) %>% 
-  mutate(own_sum = sum(price),
-         own_n = n()) %>% 
-  ungroup %>% 
-  mutate(comp_avg_price = (total_sum-own_sum)/(total_n-own_n),
-         own_avg_price = (own_sum-price)/(own_n-1)
-         ) %>%
-  select(-c(total_sum,total_n,own_sum,own_n)) %>% 
-  #the following generates an own price to average price in class ratio 
-  group_by(Year,class) %>% 
-  mutate(total_sum = sum(price),
-         total_n = n()) %>%
-  ungroup %>% 
-  mutate(own_to_class_price_ratio = (total_sum-price)/(total_n-1)) %>% 
-  select(-c(total_sum,total_n)) %>% 
-  #remove columns that do not vary within each year
-  select(-all_of(zero_var_in_year))
-
-#Note that body_original and class do not agree:
-distinct(df,body_original,class)
-
-#class of columns
-lapply(df,class)
-  
-```
-
-# Introduction to data 
-
-We have yearly data on automobile sales and characteristics from 1985 to 2015, with a total of nearly 7000 observations and 40+ auto characteristics. In addition, we also have data on the distribution of income across years, currency exchange rates etc. 
-
-```{r skimming}
-
-df %>% 
-  select(where(is.character)) %>% 
-  skim %>% 
-  focus(n_missing,character.empty,character.n_unique) %>% 
-  print(include_summary = FALSE)
-
-df %>%
-  select(where(~ is.numeric(.x) || is.double(.x))) %>%
-  skim %>% 
-  focus(n_missing,numeric.mean,numeric.p0,numeric.p100) %>% 
-  print(include_summary = FALSE)
-```
-
-To get a handle on the data: there are 10 columns with character inputs and 30+ columns with numeric inputs that vary within each year. 
-
-There are a total of 27 companies in the sample. The brand is a coarser classification of model. For example, under the "Acura" brand of Honda, there is "Acura Cl", "Acure Mdx", etc. Note that data between trims of the same model are confounded, and we're abstracting from this issue of aggregation for now. Note also that the nationality is that of the companies, and does not provide information on whether the car is an imported product. 
-
-"suv_class" has non-empty cells only when the car is an suv (it provides further information on the type of suv).
-
-Let's first take a look at the evolution of sales and real price over time. 
-
-```{r sales, fig.cap="\\label{fig:sales} Total unit sales (1e6)"}
-df %>% 
-  group_by(Year) %>% 
-  summarise(across(sales, ~ sum(.x))) %>%
-  ggplot(aes(x=Year,y=sales/1e6)) +
-  geom_line(size=1.5) +
-  labs(y = "")
-  
-```
-
-Sales are on the order of 10 million and have been roughly constant since the 2000s (excluding the recession years). 
-
-```{r price, fig.cap="\\label{fig:price} Real and Nominal Price (in 1982 dollars)"}
-df %>% 
-  group_by(Year) %>% 
-  summarise(across(c(price,realprice), .fns = list(median = ~ quantile(.x,0.5),
-                                      p25 =  ~ quantile(.x,0.25),
-                                      p75 = ~ quantile(.x,0.75)
-                                      )
-                   )
-            ) %>%
-  pivot_longer(-Year) %>% 
-  mutate(type = if_else( grepl("real",name), "real", "nominal"),
-         name = case_when(grepl("median",name) ~ "median",
-                          grepl("p75",name) ~ "p75",
-                          grepl("p25",name) ~ "p25",
-                          )) %>% 
-  mutate(label = if_else(Year == max(Year), as.character(name), NA_character_)) %>% 
-  ggplot(aes(x=Year,y=value, color=name)) +
-  geom_line(size=1.5) +
-  guides(color = FALSE) +
-  labs(y="") +
-  facet_wrap(~type, nrow = 2) +
-  geom_label_repel(aes(label = label),na.rm = TRUE)
-  
+df_raw <- haven::read_dta("Model_panel_cleaned.dta")
 
 ```
 
-Real prices have instead been falling, with the most expensive cars falling by the largest proportion. There seems to be a tightening of the price distribution in recent years.
+## Introduction to the Data 
 
-```{r market_conc, fig.cap="\\label{fig:marketconc} Market concentration measures"}
+We are working with data on US automobile sales and characteristics. The dataset is a panel with around 7,000 observations, collected annually from 1985 to 2015. There are 7 categorical characteristics, like nationality and transmission type, and about 30 numerical characteristics, like miles per gallon and size.
 
-df %>% group_by(Year,company) %>% 
-  summarise(across(share, ~ sum(.x))) %>% 
-  ungroup %>% group_by(Year) %>% 
-  top_n(5,share) %>% 
-  summarise(top_five = sum(share)) %>% 
-  ggplot(aes(x=Year,y=top_five)) +
-  geom_line(size=1.5) +
-  labs(y = "", title = "Market share of top 5 firms by year")
+In this data, an observation is a model-year pair, where "model" is a distinct level of aggregation relative to "brand" or "trim." To be more specific, an individual automobile may be identified at several different levels: its brand, model, trim, and of course at the highest level of granularity, its VIN (vehicle identification number). For example, a Ford F-150 has a brand identifier (Ford), a model identifier (F), and a trim identifier (150). Though we have characteristics data at the trim level, we only have sales data at the model level. Thus, we've aggregated the characteristics data to be at the model level in this dataset. We used a "flagship" aggregation rule: we use the characteristics for the flagship trim of each model as the aggregate characteristics. This aggregation rule may be revisited later.
 
-df %>% group_by(Year) %>% 
-  summarise(across(company, ~ n_distinct(.x))) %>% 
-  ggplot(aes(x=Year,y=company)) +
-  geom_line(size=1.5) +
-  labs(y = "", title = "Number of firms")
+In addition to automobile sales and characteristics, we also have yearly data on several US macroeconomic indices. These include gas prices, household income distributions, and foreign exchange rates for countries from which automobiles may be imported.
 
-```
+Below we show some summary data for selected variables, at the year level (for ease of exposition, we only show every other year):
 
-While the market shares of the largest five firms have decreased over time, the number of firms has also fallen slightly. 
+```{r, year summary}
 
-# Graphing by slices
-
-Now let's attempt to graph by slices. First, we take a look at the composition of nationalities that have exceeded a 5% market share for at least 1 year: 
-
-```{r nationalities, fig.cap="\\label{fig:nationalities} Market share by nationality"}
-library(ggplot2)
-library(ggrepel)
-
-df %>% select(Year,nationality) %>% 
-  mutate(Japan = if_else(nationality=="Japan",1,0),
-         US = if_else(nationality %in% c("US","US/Germany"),1,0),
-         Germany = if_else(nationality %in% c("Germany","US/Germany"),1,0),
-         Italy = if_else(nationality %in% c("Italy","US/Italy"),1,0),
-         Korea = if_else(nationality=="Korea",1,0),
-         Indian = if_else(nationality=="Indian",1,0),
-         UK = if_else(nationality=="UK",1,0),
-         France = if_else(nationality=="France",1,0),
-         Netherlands = if_else(nationality=="Netherlands",1,0),
-         Sweden = if_else(nationality=="Sweden",1,0),
-         China = if_else(nationality=="China",1,0)
-         ) %>% 
-  select(-nationality) %>% 
-  group_by(Year) %>% 
-  summarise(across( .cols = everything(), ~ mean(.x))) %>% 
-  select(where( ~ max(.x) > 0.05)) %>% 
-  pivot_longer(-Year) %>% 
-  mutate(label = if_else(Year == max(Year), as.character(name), NA_character_)) %>% 
-  ggplot(aes(x=Year,y=value,color=name)) +
-  geom_line(size=1.5) +
-  guides(color = FALSE) +
-  labs(y = "") +
-  geom_label_repel(aes(label = label),na.rm = TRUE)
-  
-```
-
-Consumers have been increasingly purchasing cars made by foreign automobiles company, particularly from Japanese and German firms. Is this in any way driven by price differences? 
-
-```{r price_by_nationality, fig.cap="\\label{fig:pricebynationality} Median real price by nationality"}
 df_raw %>% 
-  filter(nationality %in% c("Germany","Japan","Korea","US")) %>% 
-  mutate(price = price * 100 / cpi) %>% 
-  group_by(Year,nationality) %>% 
-  summarise(across(price, ~ median(.x))) %>%
-  ungroup() %>% 
-  mutate(label = if_else(Year == max(Year), as.character(nationality), NA_character_)) %>% 
-  ggplot(aes(x=Year,y=price, color=nationality)) +
-  geom_line(size=1.5) +
-  guides(color = FALSE) +
-  labs(y = "") +
-  geom_label_repel(aes(label = label),na.rm = TRUE)
-```
-
-While the prices of Japanese cars have roughly kept constant with US cars, it seems possible that part of the increase in market share of cars by German companies, particularly the increase in the 1990s and 2000s is due to the price fall.   
-
-```{r class, fig.cap="\\label{fig:class} Market share by class"}
-
-df %>% select(Year,class) %>% 
-  mutate(Coupe = if_else(class=="Coupe",1,0),
-         Sedan = if_else(class=="Sedan",1,0),
-         Suv = if_else(class=="Suv",1,0),
-         Wagon = if_else(class=="Wagon",1,0),
-         Hatchback = if_else(class=="Hatchback",1,0),
-         Minivan = if_else(class=="Minivan",1,0),
-         Pickup = if_else(class=="Pickup",1,0),
-         Cargo_van = if_else(class=="Cargo Van",1,0)
-         ) %>% 
-  select(-class) %>% 
-  group_by(Year) %>% 
-  summarise(across( .cols = everything(), ~ mean(.x))) %>% 
-  select(where( ~ max(.x) > 0.05)) %>% 
-  pivot_longer(-Year) %>%
-  mutate(label = if_else(Year == max(Year), as.character(name), NA_character_)) %>%
-  ggplot(aes(x=Year,y=value,color=name)) +
-  geom_line(size=1.5) +
-  guides(color = FALSE) +
-  labs(y = "") +
-  geom_label_repel(aes(label = label),na.rm = TRUE)
-  
+  select(Year,company,brand,model,price,sales,nationality,
+         mpg_combined,engine_hp,size_length_ins) %>%
+  group_by(Year) %>%
+  summarize(`No. Models`=n(),`No. Brands`=length(unique(brand)),
+            `Mean Price`=weighted.mean(price,sales),`No. Sales` = sum(sales),
+            `Top Nationality`=Mode(nationality,na.rm=TRUE),
+            `Mean MPG`=weighted.mean(mpg_combined,sales),
+            `Mean HP`=weighted.mean(engine_hp,sales),
+            `Mean Length`= weighted.mean(size_length_ins,sales)) %>%
+  filter(Year %in% seq(1985,2015,by=2)) %>%
+  gt() %>%
+  tab_header(title="Year-Level Summary Statistics, Selected Variables")
 
 ```
 
-In terms of market share by classes, consumers are clearly substituting away from Sedans to SUVs.
+All means are sales-weighted.
 
-We'll now look at how the average quality of automobiles has changed.
+Note that the total number of models in the dataset is almost 700, which means that there is significant variation in the types of models available each year. However, the number of brands is fairly constant across years, with a slight decline towards the end of the time period. 
 
-```{r auto_quality, fig.cap="\\label{fig:autoquality} Quality of automobiles"}
-df %>% 
-  group_by(Year) %>% 
-  summarise(across(.cols=c(mpg_combined,engine_nbcylinder,engine_hp,hp_to_weight), 
-         ~ mean(.x))) %>% 
-  pivot_longer(!Year) %>% 
-  ggplot(aes(x=Year,y=value,color=name)) +
-  geom_line(size=2) +
-  guides(color=FALSE) +
-  facet_wrap(~name, nrow = 2, scales = "free")
-```
+Prices are rising throughout the time period (note that prices are in 1982 dollars). Sales are quite variable; note in particular the sharp decline in sales in 2009 (likely due to the recession). Finally, note that the most common nationality of car by 2010 was Japan, while it had been the United States for the first 25 years of the data.
 
-The horsepower and horsepower to weight ratio have both increased and the fuel efficiency of cars has also increased.
+## Market Shares
 
-(Might take this part out) The exchange rates are a potential IV for prices. Let's see if we can catch any correlation. Here, we exclude post-2000 data as it does not contain information on whether the car is imported.
+Since we're interested in demand estimation a la BLP, it's worth examining our data in the context of market shares. Just like BLP, we will treat each year as a market. Market shares can thus be calculated at the model level by dividing sales by the total sales for that year. For the purposes of exploratory analysis, we will ignore analyzing the so-called outside option market share. 
 
-```{r exchange_rates, fig.cap="\\label{fig:exchangerates}"}
-df_holding <- 
-  df_raw %>%
-  filter(I_import==1 & Year<=2000) %>% 
-  filter(nationality %in% c("Germany","Japan","Korea","US")) %>%
-  select(Year,price,nationality,germany,japan,korea) %>% 
-  group_by(Year,nationality) %>% 
-  summarise(across(everything(), ~ mean(.x))) %>% 
-  ungroup() %>% group_by(nationality) %>% 
-  mutate(price = price / first(price)) %>% 
-  ungroup() 
+Below we use a treemap to showcase the median market shares for each brand, grouped together by company. In addition, the median price (inflation-adjusted) for each brand is denoted by its color.
 
-df_holding %>% 
-  mutate(label = if_else(Year == max(Year), as.character(nationality), NA_character_)) %>%
-  ggplot(aes(x=Year,y=price,color=nationality)) +
-  geom_line(size=1.5) +
-  guides(color = FALSE) +
-  labs(x="",title="Mean price of imported cars (1985 mean price as base)") +
-  geom_label_repel(aes(label = label),na.rm = TRUE)
+```{r, brand treemap}
 
-df_holding %>% 
-  select(-nationality,-price) %>% 
-  pivot_longer(-Year) %>% 
-  group_by(name) %>% 
-  mutate(value = 1 / (value / first(value))) %>% 
-  distinct(Year,name, .keep_all = TRUE) %>% 
-  mutate(label = if_else(Year == max(Year), as.character(name), NA_character_)) %>%
-  ggplot(aes(x=Year,y=value,color=name)) +
-  geom_line(size=1.5) +
-  guides(color = FALSE) +
-  labs(x="",title="exchange rates (1985 exchange rate as base)") +
-  geom_label_repel(aes(label = label),na.rm = TRUE)
-```
-
-# Exploring through variable importance
-
-Lastly, let's try to incorporate the variable importance concept from algorithmic modelling into our exploratory analysis: run a simple random forest (i.e. without tuning anything), and then continue our analysis on the variables that are most important (in the prediction sense) in determining market shares.
-
-```{r simple_random_forest, fig.cap="\\label{fig:rf} Left(Permutation). Right(Impurity)."}
-
-quickfit_permut <- 
-  ranger::ranger(formula = share ~ ., 
-                 data = df %>% drop_na() %>% select(-sales),
-                 num.trees = 1000,
-                 mtry = 10, 
-                 min.node.size = 1,
-                 sample.fraction = 0.80,
-                 importance = "permutation",
-                 seed = 123
-                 )
-quickfit_impur <- 
-  ranger::ranger(formula = share ~ ., 
-                 data = df %>% drop_na() %>% select(-sales),
-                 num.trees = 1000,
-                 mtry = 10, 
-                 min.node.size = 1,
-                 sample.fraction = 0.80,
-                 importance = "impurity",
-                 seed = 123
-                 )
-
-grid.arrange(vip(quickfit_permut,num_features = 10),
-             vip(quickfit_impur,num_features = 10),
-             nrow = 1)
-```
-
-Both measures of variable importance seem to provide the same conclusion. First, a rather obvious observation that cars which do well in a year also tend to do well in another. Second, the importance of variables associated with the size of a car (e.g. length of wheel base, length of car) are the next strongest predictors of market share. Is this due to them picking up size differences in different classes of cars?  
-
-```{r size_by_class, fig.cap="\\label{fig:sizebyclass} Characteristics by class"}
-df %>% 
-  group_by(Year,class) %>% 
-  summarise(across(c(wheelbase_ins,size_length_ins,car_size,engine_hp_rpm), 
-                   ~ median(.x))) %>%
-  pivot_longer(-c(Year,class)) %>% 
-  filter(class %in% c("Suv","Sedan","Coupe","Hatchback")) %>% 
-  ggplot(aes(x=Year,y=value,color = class)) +
-  geom_line(size=1.5) +
-  facet_wrap(~name, nrow = 2, scales = "free") +
-  labs(y = "")
-```
-
-Sedan and SUVs are well separated by size from Coupe and Hatchback. And as we recall from Figure \ref{fig:class} before, they are also well separated by market share. So this might be why size predicts market shares well. Let's see the breakdown by price too. 
-
-```{r price_by_class, fig.cap="\\label{fig:pricebyclass} Price by class"}
-df %>% 
-  group_by(Year,class) %>% 
-  summarise(across(price, ~ median(.x))) %>%
-  filter(class %in% c("Suv","Sedan","Coupe","Hatchback")) %>% 
+df_raw %>% 
+  group_by(Year,brand) %>%
+  summarize(sales=sum(sales),
+            price=median(price),
+            company=Mode(company)) %>%
   ungroup %>% 
-  mutate(label = if_else(Year == max(Year), as.character(class), NA_character_)) %>%
-  ggplot(aes(x=Year,y=price,color = class)) +
-  geom_line(size=1.5) +
-  guides(color = FALSE) +
-  labs(x = "", title = "Price by class") +
-  geom_label_repel(aes(label = label),na.rm = TRUE)
-```
-
-Again, SUV and Sedan are increasingly similar in pricing, and distinct from Hatchbacks and Coupes as well. So this indeed seems to be a plausible explanation for why size characteristics predict market shares so well. 
-
-One interesting point, from the above analysis is that SUV and Sedans are very similar, and that would explain the strong substitution of Sedans into SUVs. Note also that their prices converge in recent years, consistent with this substitution phenomenon. In other words, the gap in market shares between SUVs and Sedans from previous years might be explainable by their similarity but higher price of SUV.
-
-Let's try and re-do the random forest analysis, this time with sales quantity as the dependent variable.
-
-```{r simple_random_forest_sales, fig.cap="\\label{fig:rf} Left(Permutation). Right(Impurity)."}
-
-quickfit_permut <- 
-  ranger::ranger(formula = sales ~ ., 
-                 data = df %>% drop_na() %>% select(-share),
-                 num.trees = 1000,
-                 mtry = 20, 
-                 min.node.size = 1,
-                 sample.fraction = 0.80,
-                 importance = "permutation",
-                 seed = 123
-                 )
-quickfit_impur <- 
-  ranger::ranger(formula = sales ~ ., 
-                 data = df %>% drop_na() %>% select(-share),
-                 num.trees = 1000,
-                 mtry = 20, 
-                 min.node.size = 1,
-                 sample.fraction = 0.80,
-                 importance = "impurity",
-                 seed = 123
-                 )
-
-grid.arrange(vip(quickfit_permut,num_features = 10),
-             vip(quickfit_impur,num_features = 10),
-             nrow = 1)
-```
-
-Here we have a slightly different conclusion. While brand, model and size of a car are still important, price emerges as a much stronger predictor.
-
-How about running the random forest on a cross-sectional slice? Here we use the data from year 2015 as the cross-sectional slice.
-
-```{r simple_random_forest_cs, fig.cap="\\label{fig:rfcs} Left(Share as dep). Right(Sales as dep). Impurity measure."}
-
-quickfit_share <- 
-  ranger::ranger(formula = share ~ ., 
-                 data = df %>% drop_na() %>% filter(Year==2015) %>% select(-sales),
-                 num.trees = 1000,
-                 mtry = 20, 
-                 min.node.size = 1,
-                 sample.fraction = 0.80,
-                 importance = "impurity",
-                 seed = 123
-                 )
-quickfit_sales <- 
-  ranger::ranger(formula = sales ~ ., 
-                 data = df %>% drop_na() %>% filter(Year==2015) %>% select(-share),
-                 num.trees = 1000,
-                 mtry = 20, 
-                 min.node.size = 1,
-                 sample.fraction = 0.80,
-                 importance = "impurity",
-                 seed = 123
-                 )
-grid.arrange(vip::vip(quickfit_share, num_features = 10),
-             vip::vip(quickfit_sales, num_features = 10),
-             nrow = 1)
-
+  group_by(Year) %>% 
+  mutate(sales_tot=sum(sales)) %>% 
+  mutate(mkt_share=sales/sales_tot) %>% 
+  ungroup %>% 
+  group_by(brand) %>% 
+  summarize(share=median(mkt_share),
+            price=median(price),
+            num_mkt=length(unique(Year)),
+            company=Mode(company)) %>%
+  ggplot(aes(area=share,fill=price,label=brand,subgroup=company)) +
+  geom_treemap()+
+  geom_treemap_subgroup_border()+
+  geom_treemap_text(colour="white",place="topleft",
+                    reflow=T,grow=F,size=6)+
+  geom_treemap_subgroup_text(place="centre",grow=T,alpha=0.7,
+                             colour="black",fontface="italic",
+                             min.size = 0)+
+  scale_fill_viridis(alpha=0.7,name="Price (1982 Dollars)")
 
 
 ```
 
-Size still remains among the most important predictors (if not the most important) of both market share and sales.
+Clearly, the top five or six companies (Ford, GM, Honda, etc.) dominate the US automobile industry, making up around three-quarters of the market in terms of sales. This is perhaps an apt illustration of the Pareto principle: around 80 percent of the revenue is made by around 20 percent of the companies.
 
+In addition, this principle is somewhat replicated within companies. We see many larger (and even smaller) manufacturers making most of their sales from their "baseline" brand; for example, think Chevrolet for General Motors or Toyota for Toyota. Then, each company may branch out into other, smaller brands, typically first choosing to create a luxury brand: think Cadillac for General Motors or Lexus for Toyota. The largest companies have several brands appealing to more niche markets: think of the cost-conscious Saturn for General Motors or the outdoorsy Jeep brand for Fiat Chrysler.
 
+What about shares at the model level? Below we plot shares and inflation-adjusted prices for each model across all years. 
 
+```{r, market share}
 
-<!-- This gives a quick plot-summary of the important predictors and market shares -->
-```{r, fig.height = 10, fig.width = 10, eval = FALSE}
-library(GGally)
+# Calculating Market Shares
+df_2<- df_raw %>% 
+   group_by(Year) %>% 
+   mutate(sales_tot=sum(sales)) %>% 
+   mutate(mkt_share=sales/sales_tot) %>% 
+   ungroup %>% 
+   select(company,brand,Year,model,mkt_share,
+          price,nationality,class,engine_hp,
+          hp_to_weight,mpg_combined,engine_nbcylinder)
 
-
-df %>% select(share,price,wheelbase_ins,class) %>% 
-  filter(class %in% c("Sedan","Suv","Coupe","Hatchback")) %>% 
-  ggpairs(mapping=aes())
+# Plot market share vs price
+df_2 %>% ggplot() +
+  geom_point(aes(x=mkt_share*100,y=price,col=Year))+
+  scale_color_viridis()+
+  xlab("Market Share (in Percentage)") + 
+  ylab("Price (in 1982 Dollars)") + 
+  theme_minimal()
 
 ```
+
+A demand curve doesn't jump off the page from this graph, but we shouldn't expect it to. Partially this could be due to simultaneity, but also remember that this is a differentiated products market. Thus, our analysis will need to control for different characteristics of the cars in order to estimate a reasonable demand curve.
+
+Though we can't visually see the demand curve from this plot, we can make a note of a couple of interesting facts about the automobile market. First, we can clearly see that models with high market share tend to be on the cheaper side - though perhaps not the cheapest. This matches well with the basic intuition that lower prices = higher demand. And second, we see that models with extremely high prices, like Porsches or Jaguars, tend to have rather low market share. This also matches up well with our intuition from the law of demand. 
+
+## Characteristics
+
+In order to analyze the data further, we will need to divide up the automobile models by their characteristics. Here, we'll focus on a few important pieces of information we have in our data: nationality, class, and efficiency.
+
+# Nationality
+
+A total of eleven nationalities of automobile manufacturers are present in our data. The below plot shows how their market shares have evolved over time.
+
+```{r, nationality area plot}
+
+# Fix data issues with nationality
+df_2$nationality<- ifelse(df_2$nationality=="","US",
+                          df_2$nationality)
+df_2$nationality<- ifelse(df_2$nationality=="Germany/US","US",
+                          df_2$nationality)
+df_2$nationality<- ifelse(df_2$nationality=="Italy/US","US",
+                          df_2$nationality)
+df_2$nationality<- ifelse(df_2$nationality
+                          %in% c("US","Japan",
+                                 "Korea","Germany"),
+                          df_2$nationality,"Other")
+
+# Order the nationality labels
+df_2$nationality<- factor(df_2$nationality,
+                      levels=c("Other","Korea",
+                               "Germany","Japan","US"))
+
+df_2 %>% 
+  group_by(Year,nationality) %>% 
+  summarize(share=sum(mkt_share)) %>% 
+  ggplot() + 
+  geom_area(aes(x=Year,y=share,fill=nationality)) +
+  scale_fill_viridis(discrete=T,option="plasma",alpha=0.8,
+                     name="Nationality")+
+  theme_minimal()+xlab("Year") + 
+  ylab("Market Share")
+
+```
+
+The US automobile industry is dominated by domestic automobiles and automobiles from three other countries: Japan, Germany, and Korea. However, domestic manufacturers have over time lost their majority share in the market, mainly being replaced by the growth of Japanese and Korean manufacturers. 
+
+A reasonable question to ask would be whether this radical change in market share by nationality was caused by price changes. To attempt to answer that question, we plot the median price of automobile models by nationality over time:
+
+```{r, nationality price plot}
+
+df_2 %>% 
+  filter(nationality != "Other") %>% 
+  group_by(Year,nationality) %>% 
+  summarize(price=median(price)) %>% 
+  ggplot() + 
+  geom_line(aes(x=Year,y=price,col=nationality),size=1) +
+  scale_color_viridis(discrete=T,option="plasma",
+                      name="Nationality") + 
+  theme_minimal() + xlab("Year") + 
+  ylab("Price (in 1982 Dollars)")
+
+```
+
+This is an interesting result: the prices of Japanese and US automobiles track each other extremely closely throughout the entire time period. The price of German automobiles somewhat decreases towards the end of the period, which does match up with an overall increase in German market share, but the explosion of Japanese automobiles in the US market is still unexplained.
+
+There have been many articles and papers written on the reasons for Japan's growing dominance in the automobile industry, and most of them focus on the desirable characteristics of the Japanese automobiles relative to those from other countries. We have data on many such characteristics, but we will show one as an example of how automobiles differ systematically in characteristics by nationality. 
+
+Customers and reviewers of Japanese automobiles often discuss the relatively light weight of Japanese cars, relative to American or German counterparts. Below we plot the median prices and weights of cars from each of the four main nationalities for each year of our data.
+
+```{r, nationality weight plot}
+
+# Select relevant variables
+df_3<- df_raw %>% 
+  select(model,Year,price,cpi,
+         nationality,curb_weight_lbs) 
+
+# Correct data issues
+df_3$nationality<- ifelse(df_3$nationality=="","US",
+                          df_3$nationality)
+df_3$nationality<- ifelse(df_3$nationality=="Germany/US","US",
+                          df_3$nationality)
+df_3$nationality<- ifelse(df_3$nationality=="Italy/US","US",
+                          df_3$nationality)
+df_3$nationality<- ifelse(df_3$nationality 
+                  %in%c("US","Japan","Korea","Germany"),
+                  df_3$nationality,"Other")
+df_3$nationality<- factor(df_3$nationality,
+                    levels=c("Other","Korea","Germany","Japan","US"))
+
+
+df_3 %>% 
+  filter(nationality !="Other") %>% 
+  group_by(Year,nationality) %>%
+  summarize(weight=median(curb_weight_lbs),
+            price=median(price)) %>%
+  ggplot(aes(x=weight,y=price,col=nationality)) +
+  geom_point() + 
+  scale_color_viridis(option="plasma",
+                      name="Nationality",discrete=T) + 
+  theme_minimal() + 
+  ylab("Price (in 1982 Dollars)") + 
+  xlab("Weight (in Pounds)")
+
+```
+This plot shows clear separations between the nationalities on the weight dimension. Japanese and Korean automobiles are the lightest, whereas American and German automobiles tend to be heavier. Certainly weight alone isn't responsible for the Japanese dominance in the US market, but this at least shows us that there are some noticeable distinctions in characteristics that might help to predict market shares when we enter that stage of our project.
+
+# Class 
+
+There are several different types, or classes, of automobiles sold on the market: sedans, pickup trucks, SUVs, etc. Our data contain eight such class identifiers. Over the 30-year time period that we analyze, the market composition by class has changed signficantly. See the following plot for a summary of the relevant trends:
+
+```{r, class market share plot}
+
+# Reorder class factors
+df_2$class<- factor(df_2$class,levels=c("Wagon","Cargo Van","Hatchback","Minivan","Coupe","Pickup","Suv","Sedan"))
+
+# Plot
+df_2 %>% 
+  group_by(Year,class) %>% 
+  summarize(share=sum(mkt_share)) %>% 
+  ggplot() +
+  geom_area(aes(x=Year,y=share,fill=class)) +
+  scale_fill_viridis(discrete=T,option="inferno",
+                     alpha=0.8,name="Class")+
+  theme_minimal()+xlab("Year") + 
+  ylab("Market Share")
+
+```
+
+Overall, the most stark trend is the decreasing market share of sedans, and the increasing market share of SUVs. The increasing market share of SUVs is a topic of some significant discussion. Popular explanations are that SUVs offer the family-friendly size of minivans with better style, and that the high driving position is desirable to buyers. Interestingly, little is said about price; in fact, SUVs are rather more expensive and less efficient than their sedan or minivan counterparts. Clearly, characteristics like size and style matter considerably for automobile demand.
+
+Does the demand curve differ by class? Take a look at the following (winsorized) plot to see:
+
+```{r,layout="l-body-outset", fig.height=5}
+
+df_2 %>% 
+  ggplot(aes(x=mkt_share*100,y=price)) + 
+  geom_point(alpha=0.2) +
+  facet_wrap(~class)+xlim(0,2)+
+  ylim(0,30000)+theme_minimal()+
+  xlab("Market Share (in Percentage)") +
+  ylab("Price (in 1982 Dollars)")
+
+```
+
+Each point in the plot represents a model. This plot gives us some interesting intuition about demand elasticities across different classes of vehicles. For example, demand for minivans and pickup trucks appears almost flat, implying a very elastic demand curve. Particularly for minivans, this integrates well with our intuition about these types of vehicles: buyers are purchasing these vehicles for practical purposes, and are fairly cost-sensitive.
+
+Coupes, on the other hand, tell a different story. While there appears to be a flat portion of the demand curve, there is also an almost vertical portion. Towards the top, you may find expensive sports cars like Porsches and Jaguars. These vehicles are probably purchased by buyers who are looking for style and luxury over cost, and thus have a more inelastic demand.
+
+Sedans and SUVs are the default vehicles for most US buyers, and thus seem to have a demand curve that falls somewhere in between the former two categories. While many options are available for cost-conscious buyers, we can see that there are more expensive luxury versions available, and demand for these versions is less elastic. 
+
+# Efficiency
+
+As we've seen, automobile characteristics like nationality and class have been changing significantly from 1985 to 2015, and these characteristics matter to consumers. But at least superficially, they have little to do with how a given car actually performs. For this information, we can turn to metrics such as horsepower and fuel efficiency.
+
+Metrics like horsepower give information about the power of a car's engine; loosely, the higher the horsepower, the faster a car can drive and the faster it accelerates. However, it is also important to consider the ratio of horsepower to weight, as a lower horsepower but lighter car can sometimes outrun a heavier, higher horsepower vehicle. 
+
+The number of cylinders in the engine is a similar metric: the more cylinders, the more power the engine tends to have. However, the differences have become smaller as new technologies have improved engine efficiency.
+
+Finally, the price you pay for a more powerful engine, whether measured in horespower of number of cylinders, is typically a loss of fuel efficiency. This can significantly increase the cost of owning and operating the vehicle.
+
+Over time, we see some striking trends in these metrics:
+
+```{r,message=FALSE}
+
+# Labels for the facets
+var_labels<- list("hp"="Median Horsepower","hp_w"="Median Horsepower per Pound","mpg"="Median Miles per Gallon","n_cyl"="Median Number of Cylinders")
+
+# Labelling function for facets
+var_labeller <- function(variable,value){
+  return(var_labels[value])
+}
+
+# Plot
+df_raw %>% 
+  group_by(Year) %>%
+  summarize(n_cyl=median(engine_nbcylinder),
+            mpg=median(mpg_combined),hp=median(engine_hp),
+            hp_w=median(hp_to_weight)) %>%
+  gather(key="variable",value="value",-Year) %>%
+  ggplot(aes(x=Year,y=value,col=variable)) + 
+  geom_line(size=1) +
+  facet_wrap(~variable,scales="free",labeller=var_labeller) +
+  scale_color_viridis(discrete=T,option="cividis",
+                      guide=FALSE) + 
+  theme_minimal()+ylab("")
+
+```
+Horsepower has significantly increased over time, even when accounting for changes in car weight. The median number of cylinders started out at 4, increased to 6, and in recent years has returned to 4. All the while, the median miles per gallon was fairly constant until the mid-2000s, when it began to significantly increase. We might conjecture that consumers began to value fuel efficiency more than they did earlier. In addition, the introduction of hybrid and electric cars to the market would surely increase the median miles per gallon. 
+
+Does horsepower correlate with market share? We might surmise that if customers value horsepower, we would see a positive correlation with horsepower and market share. However, the data tells a different story:
+
+```{r}
+df_2 %>% 
+  filter(Year %in% c(1985,1995,2005,2015)) %>% 
+  ggplot(aes(x=engine_hp,y=mkt_share)) + 
+  geom_point() + 
+  facet_wrap(~Year) +
+  theme_minimal() +
+  xlab("Horsepower") + 
+  ylab("Market Share")
+```
+
+There's no obvious association here. By the way, this isn't unique to horsepower - even the fuel efficiency variables show rather little association with market share. 
+
+On the other hand, when we look at the association between horsepower and price, we see a much stronger correlation:
+
+```{r}
+
+df_2 %>% 
+  filter(Year %in% c(1985,1995,2005,2015)) %>% 
+  ggplot(aes(x=engine_hp,y=price)) + 
+  geom_point() + 
+  facet_wrap(~Year) + 
+  theme_minimal() + 
+  xlab("Horsepower") +
+  ylab("Price (in 1982 Dollars)")
+
+```
+
+This positive correlation is fairly consistent over time. Thus, while factors like horsepower may not be strong predictors of market share, they may still be correlated with price.
+
+
 
