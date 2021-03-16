@@ -1,0 +1,1929 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1"/>
+  <meta name="generator" content="distill" />
+
+  <style type="text/css">
+  /* Hide doc at startup (prevent jankiness while JS renders/transforms) */
+  body {
+    visibility: hidden;
+  }
+  </style>
+
+ <!--radix_placeholder_import_source-->
+ <!--/radix_placeholder_import_source-->
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css" data-origin="pandoc">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(title);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ad0000; } /* Alert */
+code span.an { color: #5e5e5e; } /* Annotation */
+code span.at { color: #20794d; } /* Attribute */
+code span.bn { color: #ad0000; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007ba5; } /* ControlFlow */
+code span.ch { color: #20794d; } /* Char */
+code span.cn { color: #8f5902; } /* Constant */
+code span.co { color: #5e5e5e; } /* Comment */
+code span.cv { color: #5e5e5e; font-style: italic; } /* CommentVar */
+code span.do { color: #5e5e5e; font-style: italic; } /* Documentation */
+code span.dt { color: #ad0000; } /* DataType */
+code span.dv { color: #ad0000; } /* DecVal */
+code span.er { color: #ad0000; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #ad0000; } /* Float */
+code span.fu { color: #4758ab; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #5e5e5e; } /* Information */
+code span.kw { color: #007ba5; } /* Keyword */
+code span.op { color: #5e5e5e; } /* Operator */
+code span.ot { color: #007ba5; } /* Other */
+code span.pp { color: #ad0000; } /* Preprocessor */
+code span.sc { color: #20794d; } /* SpecialChar */
+code span.ss { color: #20794d; } /* SpecialString */
+code span.st { color: #20794d; } /* String */
+code span.va { color: #111111; } /* Variable */
+code span.vs { color: #20794d; } /* VerbatimString */
+code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
+</style>
+
+  <!--radix_placeholder_meta_tags-->
+  <title>Estimating demand for retail stores</title>
+  
+  <meta property="description" itemprop="description" content="A short description of the post."/>
+  
+  
+  <!--  https://schema.org/Article -->
+  <meta property="article:published" itemprop="datePublished" content="2021-03-02"/>
+  <meta property="article:created" itemprop="dateCreated" content="2021-03-02"/>
+  <meta name="article:author" content="Hyoungjun Kang, Cung Hoang"/>
+  
+  <!--  https://developers.facebook.com/docs/sharing/webmasters#markup -->
+  <meta property="og:title" content="Estimating demand for retail stores"/>
+  <meta property="og:type" content="article"/>
+  <meta property="og:description" content="A short description of the post."/>
+  <meta property="og:locale" content="en_US"/>
+  
+  <!--  https://dev.twitter.com/cards/types/summary -->
+  <meta property="twitter:card" content="summary"/>
+  <meta property="twitter:title" content="Estimating demand for retail stores"/>
+  <meta property="twitter:description" content="A short description of the post."/>
+  
+  <!--/radix_placeholder_meta_tags-->
+  <!--radix_placeholder_rmarkdown_metadata-->
+  
+  <script type="text/json" id="radix-rmarkdown-metadata">
+  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","author","date","output"]}},"value":[{"type":"character","attributes":{},"value":["Estimating demand for retail stores"]},{"type":"character","attributes":{},"value":["A short description of the post.\n"]},{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","url"]}},"value":[{"type":"character","attributes":{},"value":["Hyoungjun Kang, Cung Hoang"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":[]}},"value":[]}]}]},{"type":"character","attributes":{},"value":["03-02-2021"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["self_contained"]}},"value":[{"type":"logical","attributes":{},"value":[false]}]}]}]}
+  </script>
+  <!--/radix_placeholder_rmarkdown_metadata-->
+  
+  <script type="text/json" id="radix-resource-manifest">
+  {"type":"character","attributes":{},"value":["ML_project_files/anchor-4.2.2/anchor.min.js","ML_project_files/bowser-1.9.3/bowser.min.js","ML_project_files/distill-2.2.21/template.v2.js","ML_project_files/figure-html5/load-1.png","ML_project_files/figure-html5/plot_for_data-1.png","ML_project_files/figure-html5/plot_for_data2-1.png","ML_project_files/figure-html5/pressure-1.png","ML_project_files/figure-html5/pressure2-1.png","ML_project_files/figure-html5/tree-1.png","ML_project_files/jquery-1.11.3/jquery.min.js","ML_project_files/popper-2.6.0/popper.min.js","ML_project_files/tippy-6.2.7/tippy-bundle.umd.min.js","ML_project_files/tippy-6.2.7/tippy-light-border.css","ML_project_files/tippy-6.2.7/tippy.css","ML_project_files/tippy-6.2.7/tippy.umd.min.js","ML_project_files/webcomponents-2.0.0/webcomponents.js"]}
+  </script>
+  <!--radix_placeholder_navigation_in_header-->
+  <!--/radix_placeholder_navigation_in_header-->
+  <!--radix_placeholder_distill-->
+  
+  <style type="text/css">
+  
+  body {
+    background-color: white;
+  }
+  
+  .pandoc-table {
+    width: 100%;
+  }
+  
+  .pandoc-table>caption {
+    margin-bottom: 10px;
+  }
+  
+  .pandoc-table th:not([align]) {
+    text-align: left;
+  }
+  
+  .pagedtable-footer {
+    font-size: 15px;
+  }
+  
+  d-byline .byline {
+    grid-template-columns: 2fr 2fr;
+  }
+  
+  d-byline .byline h3 {
+    margin-block-start: 1.5em;
+  }
+  
+  d-byline .byline .authors-affiliations h3 {
+    margin-block-start: 0.5em;
+  }
+  
+  .authors-affiliations .orcid-id {
+    width: 16px;
+    height:16px;
+    margin-left: 4px;
+    margin-right: 4px;
+    vertical-align: middle;
+    padding-bottom: 2px;
+  }
+  
+  d-title .dt-tags {
+    margin-top: 1em;
+    grid-column: text;
+  }
+  
+  .dt-tags .dt-tag {
+    text-decoration: none;
+    display: inline-block;
+    color: rgba(0,0,0,0.6);
+    padding: 0em 0.4em;
+    margin-right: 0.5em;
+    margin-bottom: 0.4em;
+    font-size: 70%;
+    border: 1px solid rgba(0,0,0,0.2);
+    border-radius: 3px;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+  
+  d-article table.gt_table td,
+  d-article table.gt_table th {
+    border-bottom: none;
+  }
+  
+  .html-widget {
+    margin-bottom: 2.0em;
+  }
+  
+  .l-screen-inset {
+    padding-right: 16px;
+  }
+  
+  .l-screen .caption {
+    margin-left: 10px;
+  }
+  
+  .shaded {
+    background: rgb(247, 247, 247);
+    padding-top: 20px;
+    padding-bottom: 20px;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  }
+  
+  .shaded .html-widget {
+    margin-bottom: 0;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+  }
+  
+  .shaded .shaded-content {
+    background: white;
+  }
+  
+  .text-output {
+    margin-top: 0;
+    line-height: 1.5em;
+  }
+  
+  .hidden {
+    display: none !important;
+  }
+  
+  d-article {
+    padding-top: 2.5rem;
+    padding-bottom: 30px;
+  }
+  
+  d-appendix {
+    padding-top: 30px;
+  }
+  
+  d-article>p>img {
+    width: 100%;
+  }
+  
+  d-article h2 {
+    margin: 1rem 0 1.5rem 0;
+  }
+  
+  d-article h3 {
+    margin-top: 1.5rem;
+  }
+  
+  d-article iframe {
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    margin-bottom: 2.0em;
+    width: 100%;
+  }
+  
+  /* Tweak code blocks */
+  
+  d-article div.sourceCode code,
+  d-article pre code {
+    font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+  }
+  
+  d-article pre,
+  d-article div.sourceCode,
+  d-article div.sourceCode pre {
+    overflow: auto;
+  }
+  
+  d-article div.sourceCode {
+    background-color: white;
+  }
+  
+  d-article div.sourceCode pre {
+    padding-left: 10px;
+    font-size: 12px;
+    border-left: 2px solid rgba(0,0,0,0.1);
+  }
+  
+  d-article pre {
+    font-size: 12px;
+    color: black;
+    background: none;
+    margin-top: 0;
+    text-align: left;
+    white-space: pre;
+    word-spacing: normal;
+    word-break: normal;
+    word-wrap: normal;
+    line-height: 1.5;
+  
+    -moz-tab-size: 4;
+    -o-tab-size: 4;
+    tab-size: 4;
+  
+    -webkit-hyphens: none;
+    -moz-hyphens: none;
+    -ms-hyphens: none;
+    hyphens: none;
+  }
+  
+  d-article pre a {
+    border-bottom: none;
+  }
+  
+  d-article pre a:hover {
+    border-bottom: none;
+    text-decoration: underline;
+  }
+  
+  d-article details {
+    grid-column: text;
+    margin-bottom: 0.8em;
+  }
+  
+  @media(min-width: 768px) {
+  
+  d-article pre,
+  d-article div.sourceCode,
+  d-article div.sourceCode pre {
+    overflow: visible !important;
+  }
+  
+  d-article div.sourceCode pre {
+    padding-left: 18px;
+    font-size: 14px;
+  }
+  
+  d-article pre {
+    font-size: 14px;
+  }
+  
+  }
+  
+  figure img.external {
+    background: white;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 1px 8px rgba(0, 0, 0, 0.1);
+    padding: 18px;
+    box-sizing: border-box;
+  }
+  
+  /* CSS for d-contents */
+  
+  .d-contents {
+    grid-column: text;
+    color: rgba(0,0,0,0.8);
+    font-size: 0.9em;
+    padding-bottom: 1em;
+    margin-bottom: 1em;
+    padding-bottom: 0.5em;
+    margin-bottom: 1em;
+    padding-left: 0.25em;
+    justify-self: start;
+  }
+  
+  @media(min-width: 1000px) {
+    .d-contents.d-contents-float {
+      height: 0;
+      grid-column-start: 1;
+      grid-column-end: 4;
+      justify-self: center;
+      padding-right: 3em;
+      padding-left: 2em;
+    }
+  }
+  
+  .d-contents nav h3 {
+    font-size: 18px;
+    margin-top: 0;
+    margin-bottom: 1em;
+  }
+  
+  .d-contents li {
+    list-style-type: none
+  }
+  
+  .d-contents nav > ul {
+    padding-left: 0;
+  }
+  
+  .d-contents ul {
+    padding-left: 1em
+  }
+  
+  .d-contents nav ul li {
+    margin-top: 0.6em;
+    margin-bottom: 0.2em;
+  }
+  
+  .d-contents nav a {
+    font-size: 13px;
+    border-bottom: none;
+    text-decoration: none
+    color: rgba(0, 0, 0, 0.8);
+  }
+  
+  .d-contents nav a:hover {
+    text-decoration: underline solid rgba(0, 0, 0, 0.6)
+  }
+  
+  .d-contents nav > ul > li > a {
+    font-weight: 600;
+  }
+  
+  .d-contents nav > ul > li > ul {
+    font-weight: inherit;
+  }
+  
+  .d-contents nav > ul > li > ul > li {
+    margin-top: 0.2em;
+  }
+  
+  
+  .d-contents nav ul {
+    margin-top: 0;
+    margin-bottom: 0.25em;
+  }
+  
+  .d-article-with-toc h2:nth-child(2) {
+    margin-top: 0;
+  }
+  
+  
+  /* Figure */
+  
+  .figure {
+    position: relative;
+    margin-bottom: 2.5em;
+    margin-top: 1.5em;
+  }
+  
+  .figure img {
+    width: 100%;
+  }
+  
+  .figure .caption {
+    color: rgba(0, 0, 0, 0.6);
+    font-size: 12px;
+    line-height: 1.5em;
+  }
+  
+  .figure img.external {
+    background: white;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 1px 8px rgba(0, 0, 0, 0.1);
+    padding: 18px;
+    box-sizing: border-box;
+  }
+  
+  .figure .caption a {
+    color: rgba(0, 0, 0, 0.6);
+  }
+  
+  .figure .caption b,
+  .figure .caption strong, {
+    font-weight: 600;
+    color: rgba(0, 0, 0, 1.0);
+  }
+  
+  /* Citations */
+  
+  d-article .citation {
+    color: inherit;
+    cursor: inherit;
+  }
+  
+  div.hanging-indent{
+    margin-left: 1em; text-indent: -1em;
+  }
+  
+  /* Citation hover box */
+  
+  .tippy-box[data-theme~=light-border] {
+    background-color: rgba(250, 250, 250, 0.95);
+  }
+  
+  .tippy-content > p {
+    margin-bottom: 0;
+    padding: 2px;
+  }
+  
+  
+  /* Tweak 1000px media break to show more text */
+  
+  @media(min-width: 1000px) {
+    .base-grid,
+    distill-header,
+    d-title,
+    d-abstract,
+    d-article,
+    d-appendix,
+    distill-appendix,
+    d-byline,
+    d-footnote-list,
+    d-citation-list,
+    distill-footer {
+      grid-template-columns: [screen-start] 1fr [page-start kicker-start] 80px [middle-start] 50px [text-start kicker-end] 65px 65px 65px 65px 65px 65px 65px 65px [text-end gutter-start] 65px [middle-end] 65px [page-end gutter-end] 1fr [screen-end];
+      grid-column-gap: 16px;
+    }
+  
+    .grid {
+      grid-column-gap: 16px;
+    }
+  
+    d-article {
+      font-size: 1.06rem;
+      line-height: 1.7em;
+    }
+    figure .caption, .figure .caption, figure figcaption {
+      font-size: 13px;
+    }
+  }
+  
+  @media(min-width: 1180px) {
+    .base-grid,
+    distill-header,
+    d-title,
+    d-abstract,
+    d-article,
+    d-appendix,
+    distill-appendix,
+    d-byline,
+    d-footnote-list,
+    d-citation-list,
+    distill-footer {
+      grid-template-columns: [screen-start] 1fr [page-start kicker-start] 60px [middle-start] 60px [text-start kicker-end] 60px 60px 60px 60px 60px 60px 60px 60px [text-end gutter-start] 60px [middle-end] 60px [page-end gutter-end] 1fr [screen-end];
+      grid-column-gap: 32px;
+    }
+  
+    .grid {
+      grid-column-gap: 32px;
+    }
+  }
+  
+  
+  /* Get the citation styles for the appendix (not auto-injected on render since
+     we do our own rendering of the citation appendix) */
+  
+  d-appendix .citation-appendix,
+  .d-appendix .citation-appendix {
+    font-size: 11px;
+    line-height: 15px;
+    border-left: 1px solid rgba(0, 0, 0, 0.1);
+    padding-left: 18px;
+    border: 1px solid rgba(0,0,0,0.1);
+    background: rgba(0, 0, 0, 0.02);
+    padding: 10px 18px;
+    border-radius: 3px;
+    color: rgba(150, 150, 150, 1);
+    overflow: hidden;
+    margin-top: -12px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+  
+  /* Include appendix styles here so they can be overridden */
+  
+  d-appendix {
+    contain: layout style;
+    font-size: 0.8em;
+    line-height: 1.7em;
+    margin-top: 60px;
+    margin-bottom: 0;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    color: rgba(0,0,0,0.5);
+    padding-top: 60px;
+    padding-bottom: 48px;
+  }
+  
+  d-appendix h3 {
+    grid-column: page-start / text-start;
+    font-size: 15px;
+    font-weight: 500;
+    margin-top: 1em;
+    margin-bottom: 0;
+    color: rgba(0,0,0,0.65);
+  }
+  
+  d-appendix h3 + * {
+    margin-top: 1em;
+  }
+  
+  d-appendix ol {
+    padding: 0 0 0 15px;
+  }
+  
+  @media (min-width: 768px) {
+    d-appendix ol {
+      padding: 0 0 0 30px;
+      margin-left: -30px;
+    }
+  }
+  
+  d-appendix li {
+    margin-bottom: 1em;
+  }
+  
+  d-appendix a {
+    color: rgba(0, 0, 0, 0.6);
+  }
+  
+  d-appendix > * {
+    grid-column: text;
+  }
+  
+  d-appendix > d-footnote-list,
+  d-appendix > d-citation-list,
+  d-appendix > distill-appendix {
+    grid-column: screen;
+  }
+  
+  /* Include footnote styles here so they can be overridden */
+  
+  d-footnote-list {
+    contain: layout style;
+  }
+  
+  d-footnote-list > * {
+    grid-column: text;
+  }
+  
+  d-footnote-list a.footnote-backlink {
+    color: rgba(0,0,0,0.3);
+    padding-left: 0.5em;
+  }
+  
+  
+  
+  /* Anchor.js */
+  
+  .anchorjs-link {
+    /*transition: all .25s linear; */
+    text-decoration: none;
+    border-bottom: none;
+  }
+  *:hover > .anchorjs-link {
+    margin-left: -1.125em !important;
+    text-decoration: none;
+    border-bottom: none;
+  }
+  
+  /* Social footer */
+  
+  .social_footer {
+    margin-top: 30px;
+    margin-bottom: 0;
+    color: rgba(0,0,0,0.67);
+  }
+  
+  .disqus-comments {
+    margin-right: 30px;
+  }
+  
+  .disqus-comment-count {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.4);
+    cursor: pointer;
+  }
+  
+  #disqus_thread {
+    margin-top: 30px;
+  }
+  
+  .article-sharing a {
+    border-bottom: none;
+    margin-right: 8px;
+  }
+  
+  .article-sharing a:hover {
+    border-bottom: none;
+  }
+  
+  .sidebar-section.subscribe {
+    font-size: 12px;
+    line-height: 1.6em;
+  }
+  
+  .subscribe p {
+    margin-bottom: 0.5em;
+  }
+  
+  
+  .article-footer .subscribe {
+    font-size: 15px;
+    margin-top: 45px;
+  }
+  
+  
+  .sidebar-section.custom {
+    font-size: 12px;
+    line-height: 1.6em;
+  }
+  
+  .custom p {
+    margin-bottom: 0.5em;
+  }
+  
+  /* Styles for listing layout (hide title) */
+  .layout-listing d-title, .layout-listing .d-title {
+    display: none;
+  }
+  
+  /* Styles for posts lists (not auto-injected) */
+  
+  
+  .posts-with-sidebar {
+    padding-left: 45px;
+    padding-right: 45px;
+  }
+  
+  .posts-list .description h2,
+  .posts-list .description p {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", Arial, sans-serif;
+  }
+  
+  .posts-list .description h2 {
+    font-weight: 700;
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+  
+  .posts-list h2.post-tag {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+    padding-bottom: 12px;
+  }
+  .posts-list {
+    margin-top: 60px;
+    margin-bottom: 24px;
+  }
+  
+  .posts-list .post-preview {
+    text-decoration: none;
+    overflow: hidden;
+    display: block;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    padding: 24px 0;
+  }
+  
+  .post-preview-last {
+    border-bottom: none !important;
+  }
+  
+  .posts-list .posts-list-caption {
+    grid-column: screen;
+    font-weight: 400;
+  }
+  
+  .posts-list .post-preview h2 {
+    margin: 0 0 6px 0;
+    line-height: 1.2em;
+    font-style: normal;
+    font-size: 24px;
+  }
+  
+  .posts-list .post-preview p {
+    margin: 0 0 12px 0;
+    line-height: 1.4em;
+    font-size: 16px;
+  }
+  
+  .posts-list .post-preview .thumbnail {
+    box-sizing: border-box;
+    margin-bottom: 24px;
+    position: relative;
+    max-width: 500px;
+  }
+  .posts-list .post-preview img {
+    width: 100%;
+    display: block;
+  }
+  
+  .posts-list .metadata {
+    font-size: 12px;
+    line-height: 1.4em;
+    margin-bottom: 18px;
+  }
+  
+  .posts-list .metadata > * {
+    display: inline-block;
+  }
+  
+  .posts-list .metadata .publishedDate {
+    margin-right: 2em;
+  }
+  
+  .posts-list .metadata .dt-authors {
+    display: block;
+    margin-top: 0.3em;
+    margin-right: 2em;
+  }
+  
+  .posts-list .dt-tags {
+    display: block;
+    line-height: 1em;
+  }
+  
+  .posts-list .dt-tags .dt-tag {
+    display: inline-block;
+    color: rgba(0,0,0,0.6);
+    padding: 0.3em 0.4em;
+    margin-right: 0.2em;
+    margin-bottom: 0.4em;
+    font-size: 60%;
+    border: 1px solid rgba(0,0,0,0.2);
+    border-radius: 3px;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+  
+  .posts-list img {
+    opacity: 1;
+  }
+  
+  .posts-list img[data-src] {
+    opacity: 0;
+  }
+  
+  .posts-more {
+    clear: both;
+  }
+  
+  
+  .posts-sidebar {
+    font-size: 16px;
+  }
+  
+  .posts-sidebar h3 {
+    font-size: 16px;
+    margin-top: 0;
+    margin-bottom: 0.5em;
+    font-weight: 400;
+    text-transform: uppercase;
+  }
+  
+  .sidebar-section {
+    margin-bottom: 30px;
+  }
+  
+  .categories ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .categories li {
+    color: rgba(0, 0, 0, 0.8);
+    margin-bottom: 0;
+  }
+  
+  .categories li>a {
+    border-bottom: none;
+  }
+  
+  .categories li>a:hover {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.4);
+  }
+  
+  .categories .active {
+    font-weight: 600;
+  }
+  
+  .categories .category-count {
+    color: rgba(0, 0, 0, 0.4);
+  }
+  
+  
+  @media(min-width: 768px) {
+    .posts-list .post-preview h2 {
+      font-size: 26px;
+    }
+    .posts-list .post-preview .thumbnail {
+      float: right;
+      width: 30%;
+      margin-bottom: 0;
+    }
+    .posts-list .post-preview .description {
+      float: left;
+      width: 45%;
+    }
+    .posts-list .post-preview .metadata {
+      float: left;
+      width: 20%;
+      margin-top: 8px;
+    }
+    .posts-list .post-preview p {
+      margin: 0 0 12px 0;
+      line-height: 1.5em;
+      font-size: 16px;
+    }
+    .posts-with-sidebar .posts-list {
+      float: left;
+      width: 75%;
+    }
+    .posts-with-sidebar .posts-sidebar {
+      float: right;
+      width: 20%;
+      margin-top: 60px;
+      padding-top: 24px;
+      padding-bottom: 24px;
+    }
+  }
+  
+  
+  /* Improve display for browsers without grid (IE/Edge <= 15) */
+  
+  .downlevel {
+    line-height: 1.6em;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", Arial, sans-serif;
+    margin: 0;
+  }
+  
+  .downlevel .d-title {
+    padding-top: 6rem;
+    padding-bottom: 1.5rem;
+  }
+  
+  .downlevel .d-title h1 {
+    font-size: 50px;
+    font-weight: 700;
+    line-height: 1.1em;
+    margin: 0 0 0.5rem;
+  }
+  
+  .downlevel .d-title p {
+    font-weight: 300;
+    font-size: 1.2rem;
+    line-height: 1.55em;
+    margin-top: 0;
+  }
+  
+  .downlevel .d-byline {
+    padding-top: 0.8em;
+    padding-bottom: 0.8em;
+    font-size: 0.8rem;
+    line-height: 1.8em;
+  }
+  
+  .downlevel .section-separator {
+    border: none;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+  }
+  
+  .downlevel .d-article {
+    font-size: 1.06rem;
+    line-height: 1.7em;
+    padding-top: 1rem;
+    padding-bottom: 2rem;
+  }
+  
+  
+  .downlevel .d-appendix {
+    padding-left: 0;
+    padding-right: 0;
+    max-width: none;
+    font-size: 0.8em;
+    line-height: 1.7em;
+    margin-bottom: 0;
+    color: rgba(0,0,0,0.5);
+    padding-top: 40px;
+    padding-bottom: 48px;
+  }
+  
+  .downlevel .footnotes ol {
+    padding-left: 13px;
+  }
+  
+  .downlevel .base-grid,
+  .downlevel .distill-header,
+  .downlevel .d-title,
+  .downlevel .d-abstract,
+  .downlevel .d-article,
+  .downlevel .d-appendix,
+  .downlevel .distill-appendix,
+  .downlevel .d-byline,
+  .downlevel .d-footnote-list,
+  .downlevel .d-citation-list,
+  .downlevel .distill-footer,
+  .downlevel .appendix-bottom,
+  .downlevel .posts-container {
+    padding-left: 40px;
+    padding-right: 40px;
+  }
+  
+  @media(min-width: 768px) {
+    .downlevel .base-grid,
+    .downlevel .distill-header,
+    .downlevel .d-title,
+    .downlevel .d-abstract,
+    .downlevel .d-article,
+    .downlevel .d-appendix,
+    .downlevel .distill-appendix,
+    .downlevel .d-byline,
+    .downlevel .d-footnote-list,
+    .downlevel .d-citation-list,
+    .downlevel .distill-footer,
+    .downlevel .appendix-bottom,
+    .downlevel .posts-container {
+    padding-left: 150px;
+    padding-right: 150px;
+    max-width: 900px;
+  }
+  }
+  
+  .downlevel pre code {
+    display: block;
+    border-left: 2px solid rgba(0, 0, 0, .1);
+    padding: 0 0 0 20px;
+    font-size: 14px;
+  }
+  
+  .downlevel code, .downlevel pre {
+    color: black;
+    background: none;
+    font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+    text-align: left;
+    white-space: pre;
+    word-spacing: normal;
+    word-break: normal;
+    word-wrap: normal;
+    line-height: 1.5;
+  
+    -moz-tab-size: 4;
+    -o-tab-size: 4;
+    tab-size: 4;
+  
+    -webkit-hyphens: none;
+    -moz-hyphens: none;
+    -ms-hyphens: none;
+    hyphens: none;
+  }
+  
+  .downlevel .posts-list .post-preview {
+    color: inherit;
+  }
+  
+  
+  
+  </style>
+  
+  <script type="application/javascript">
+  
+  function is_downlevel_browser() {
+    if (bowser.isUnsupportedBrowser({ msie: "12", msedge: "16"},
+                                   window.navigator.userAgent)) {
+      return true;
+    } else {
+      return window.load_distill_framework === undefined;
+    }
+  }
+  
+  // show body when load is complete
+  function on_load_complete() {
+  
+    // add anchors
+    if (window.anchors) {
+      window.anchors.options.placement = 'left';
+      window.anchors.add('d-article > h2, d-article > h3, d-article > h4, d-article > h5');
+    }
+  
+  
+    // set body to visible
+    document.body.style.visibility = 'visible';
+  
+    // force redraw for leaflet widgets
+    if (window.HTMLWidgets) {
+      var maps = window.HTMLWidgets.findAll(".leaflet");
+      $.each(maps, function(i, el) {
+        var map = this.getMap();
+        map.invalidateSize();
+        map.eachLayer(function(layer) {
+          if (layer instanceof L.TileLayer)
+            layer.redraw();
+        });
+      });
+    }
+  
+    // trigger 'shown' so htmlwidgets resize
+    $('d-article').trigger('shown');
+  }
+  
+  function init_distill() {
+  
+    init_common();
+  
+    // create front matter
+    var front_matter = $('<d-front-matter></d-front-matter>');
+    $('#distill-front-matter').wrap(front_matter);
+  
+    // create d-title
+    $('.d-title').changeElementType('d-title');
+  
+    // create d-byline
+    var byline = $('<d-byline></d-byline>');
+    $('.d-byline').replaceWith(byline);
+  
+    // create d-article
+    var article = $('<d-article></d-article>');
+    $('.d-article').wrap(article).children().unwrap();
+  
+    // move posts container into article
+    $('.posts-container').appendTo($('d-article'));
+  
+    // create d-appendix
+    $('.d-appendix').changeElementType('d-appendix');
+  
+    // flag indicating that we have appendix items
+    var appendix = $('.appendix-bottom').children('h3').length > 0;
+  
+    // replace footnotes with <d-footnote>
+    $('.footnote-ref').each(function(i, val) {
+      appendix = true;
+      var href = $(this).attr('href');
+      var id = href.replace('#', '');
+      var fn = $('#' + id);
+      var fn_p = $('#' + id + '>p');
+      fn_p.find('.footnote-back').remove();
+      var text = fn_p.html();
+      var dtfn = $('<d-footnote></d-footnote>');
+      dtfn.html(text);
+      $(this).replaceWith(dtfn);
+    });
+    // remove footnotes
+    $('.footnotes').remove();
+  
+    // move refs into #references-listing
+    $('#references-listing').replaceWith($('#refs'));
+  
+    $('h1.appendix, h2.appendix').each(function(i, val) {
+      $(this).changeElementType('h3');
+    });
+    $('h3.appendix').each(function(i, val) {
+      var id = $(this).attr('id');
+      $('.d-contents a[href="#' + id + '"]').parent().remove();
+      appendix = true;
+      $(this).nextUntil($('h1, h2, h3')).addBack().appendTo($('d-appendix'));
+    });
+  
+    // show d-appendix if we have appendix content
+    $("d-appendix").css('display', appendix ? 'grid' : 'none');
+  
+    // localize layout chunks to just output
+    $('.layout-chunk').each(function(i, val) {
+  
+      // capture layout
+      var layout = $(this).attr('data-layout');
+  
+      // apply layout to markdown level block elements
+      var elements = $(this).children().not('details, div.sourceCode, pre, script');
+      elements.each(function(i, el) {
+        var layout_div = $('<div class="' + layout + '"></div>');
+        if (layout_div.hasClass('shaded')) {
+          var shaded_content = $('<div class="shaded-content"></div>');
+          $(this).wrap(shaded_content);
+          $(this).parent().wrap(layout_div);
+        } else {
+          $(this).wrap(layout_div);
+        }
+      });
+  
+  
+      // unwrap the layout-chunk div
+      $(this).children().unwrap();
+    });
+  
+    // remove code block used to force  highlighting css
+    $('.distill-force-highlighting-css').parent().remove();
+  
+    // remove empty line numbers inserted by pandoc when using a
+    // custom syntax highlighting theme
+    $('code.sourceCode a:empty').remove();
+  
+    // load distill framework
+    load_distill_framework();
+  
+    // wait for window.distillRunlevel == 4 to do post processing
+    function distill_post_process() {
+  
+      if (!window.distillRunlevel || window.distillRunlevel < 4)
+        return;
+  
+      // hide author/affiliations entirely if we have no authors
+      var front_matter = JSON.parse($("#distill-front-matter").html());
+      var have_authors = front_matter.authors && front_matter.authors.length > 0;
+      if (!have_authors)
+        $('d-byline').addClass('hidden');
+  
+      // article with toc class
+      $('.d-contents').parent().addClass('d-article-with-toc');
+  
+      // strip links that point to #
+      $('.authors-affiliations').find('a[href="#"]').removeAttr('href');
+  
+      // add orcid ids
+      $('.authors-affiliations').find('.author').each(function(i, el) {
+        var orcid_id = front_matter.authors[i].orcidID;
+        if (orcid_id) {
+          var a = $('<a></a>');
+          a.attr('href', 'https://orcid.org/' + orcid_id);
+          var img = $('<img></img>');
+          img.addClass('orcid-id');
+          img.attr('alt', 'ORCID ID');
+          img.attr('src','data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo1N0NEMjA4MDI1MjA2ODExOTk0QzkzNTEzRjZEQTg1NyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDozM0NDOEJGNEZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDozM0NDOEJGM0ZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IE1hY2ludG9zaCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkZDN0YxMTc0MDcyMDY4MTE5NUZFRDc5MUM2MUUwNEREIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjU3Q0QyMDgwMjUyMDY4MTE5OTRDOTM1MTNGNkRBODU3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+84NovQAAAR1JREFUeNpiZEADy85ZJgCpeCB2QJM6AMQLo4yOL0AWZETSqACk1gOxAQN+cAGIA4EGPQBxmJA0nwdpjjQ8xqArmczw5tMHXAaALDgP1QMxAGqzAAPxQACqh4ER6uf5MBlkm0X4EGayMfMw/Pr7Bd2gRBZogMFBrv01hisv5jLsv9nLAPIOMnjy8RDDyYctyAbFM2EJbRQw+aAWw/LzVgx7b+cwCHKqMhjJFCBLOzAR6+lXX84xnHjYyqAo5IUizkRCwIENQQckGSDGY4TVgAPEaraQr2a4/24bSuoExcJCfAEJihXkWDj3ZAKy9EJGaEo8T0QSxkjSwORsCAuDQCD+QILmD1A9kECEZgxDaEZhICIzGcIyEyOl2RkgwAAhkmC+eAm0TAAAAABJRU5ErkJggg==');
+          a.append(img);
+          $(this).append(a);
+        }
+      });
+  
+      // hide elements of author/affiliations grid that have no value
+      function hide_byline_column(caption) {
+        $('d-byline').find('h3:contains("' + caption + '")').parent().css('visibility', 'hidden');
+      }
+  
+      // affiliations
+      var have_affiliations = false;
+      for (var i = 0; i<front_matter.authors.length; ++i) {
+        var author = front_matter.authors[i];
+        if (author.affiliation !== "&nbsp;") {
+          have_affiliations = true;
+          break;
+        }
+      }
+      if (!have_affiliations)
+        $('d-byline').find('h3:contains("Affiliations")').css('visibility', 'hidden');
+  
+      // published date
+      if (!front_matter.publishedDate)
+        hide_byline_column("Published");
+  
+      // document object identifier
+      var doi = $('d-byline').find('h3:contains("DOI")');
+      var doi_p = doi.next().empty();
+      if (!front_matter.doi) {
+        // if we have a citation and valid citationText then link to that
+        if ($('#citation').length > 0 && front_matter.citationText) {
+          doi.html('Citation');
+          $('<a href="#citation"></a>')
+            .text(front_matter.citationText)
+            .appendTo(doi_p);
+        } else {
+          hide_byline_column("DOI");
+        }
+      } else {
+        $('<a></a>')
+           .attr('href', "https://doi.org/" + front_matter.doi)
+           .html(front_matter.doi)
+           .appendTo(doi_p);
+      }
+  
+       // change plural form of authors/affiliations
+      if (front_matter.authors.length === 1) {
+        var grid = $('.authors-affiliations');
+        grid.children('h3:contains("Authors")').text('Author');
+        grid.children('h3:contains("Affiliations")').text('Affiliation');
+      }
+  
+      // remove d-appendix and d-footnote-list local styles
+      $('d-appendix > style:first-child').remove();
+      $('d-footnote-list > style:first-child').remove();
+  
+      // move appendix-bottom entries to the bottom
+      $('.appendix-bottom').appendTo('d-appendix').children().unwrap();
+      $('.appendix-bottom').remove();
+  
+      // hoverable references
+      $('span.citation[data-cites]').each(function() {
+        var refHtml = $('#ref-' + $(this).attr('data-cites')).html();
+        window.tippy(this, {
+          allowHTML: true,
+          content: refHtml,
+          maxWidth: 500,
+          interactive: true,
+          interactiveBorder: 10,
+          theme: 'light-border',
+          placement: 'bottom-start'
+        });
+      });
+  
+      // clear polling timer
+      clearInterval(tid);
+  
+      // show body now that everything is ready
+      on_load_complete();
+    }
+  
+    var tid = setInterval(distill_post_process, 50);
+    distill_post_process();
+  
+  }
+  
+  function init_downlevel() {
+  
+    init_common();
+  
+     // insert hr after d-title
+    $('.d-title').after($('<hr class="section-separator"/>'));
+  
+    // check if we have authors
+    var front_matter = JSON.parse($("#distill-front-matter").html());
+    var have_authors = front_matter.authors && front_matter.authors.length > 0;
+  
+    // manage byline/border
+    if (!have_authors)
+      $('.d-byline').remove();
+    $('.d-byline').after($('<hr class="section-separator"/>'));
+    $('.d-byline a').remove();
+  
+    // remove toc
+    $('.d-contents').remove();
+  
+    // move appendix elements
+    $('h1.appendix, h2.appendix').each(function(i, val) {
+      $(this).changeElementType('h3');
+    });
+    $('h3.appendix').each(function(i, val) {
+      $(this).nextUntil($('h1, h2, h3')).addBack().appendTo($('.d-appendix'));
+    });
+  
+  
+    // inject headers into references and footnotes
+    var refs_header = $('<h3></h3>');
+    refs_header.text('References');
+    $('#refs').prepend(refs_header);
+  
+    var footnotes_header = $('<h3></h3');
+    footnotes_header.text('Footnotes');
+    $('.footnotes').children('hr').first().replaceWith(footnotes_header);
+  
+    // move appendix-bottom entries to the bottom
+    $('.appendix-bottom').appendTo('.d-appendix').children().unwrap();
+    $('.appendix-bottom').remove();
+  
+    // remove appendix if it's empty
+    if ($('.d-appendix').children().length === 0)
+      $('.d-appendix').remove();
+  
+    // prepend separator above appendix
+    $('.d-appendix').before($('<hr class="section-separator" style="clear: both"/>'));
+  
+    // trim code
+    $('pre>code').each(function(i, val) {
+      $(this).html($.trim($(this).html()));
+    });
+  
+    // move posts-container right before article
+    $('.posts-container').insertBefore($('.d-article'));
+  
+    $('body').addClass('downlevel');
+  
+    on_load_complete();
+  }
+  
+  
+  function init_common() {
+  
+    // jquery plugin to change element types
+    (function($) {
+      $.fn.changeElementType = function(newType) {
+        var attrs = {};
+  
+        $.each(this[0].attributes, function(idx, attr) {
+          attrs[attr.nodeName] = attr.nodeValue;
+        });
+  
+        this.replaceWith(function() {
+          return $("<" + newType + "/>", attrs).append($(this).contents());
+        });
+      };
+    })(jQuery);
+  
+    // prevent underline for linked images
+    $('a > img').parent().css({'border-bottom' : 'none'});
+  
+    // mark non-body figures created by knitr chunks as 100% width
+    $('.layout-chunk').each(function(i, val) {
+      var figures = $(this).find('img, .html-widget');
+      if ($(this).attr('data-layout') !== "l-body") {
+        figures.css('width', '100%');
+      } else {
+        figures.css('max-width', '100%');
+        figures.filter("[width]").each(function(i, val) {
+          var fig = $(this);
+          fig.css('width', fig.attr('width') + 'px');
+        });
+  
+      }
+    });
+  
+    // auto-append index.html to post-preview links in file: protocol
+    // and in rstudio ide preview
+    $('.post-preview').each(function(i, val) {
+      if (window.location.protocol === "file:")
+        $(this).attr('href', $(this).attr('href') + "index.html");
+    });
+  
+    // get rid of index.html references in header
+    if (window.location.protocol !== "file:") {
+      $('.distill-site-header a[href]').each(function(i,val) {
+        $(this).attr('href', $(this).attr('href').replace("index.html", "./"));
+      });
+    }
+  
+    // add class to pandoc style tables
+    $('tr.header').parent('thead').parent('table').addClass('pandoc-table');
+    $('.kable-table').children('table').addClass('pandoc-table');
+  
+    // add figcaption style to table captions
+    $('caption').parent('table').addClass("figcaption");
+  
+    // initialize posts list
+    if (window.init_posts_list)
+      window.init_posts_list();
+  
+    // implmement disqus comment link
+    $('.disqus-comment-count').click(function() {
+      window.headroom_prevent_pin = true;
+      $('#disqus_thread').toggleClass('hidden');
+      if (!$('#disqus_thread').hasClass('hidden')) {
+        var offset = $(this).offset();
+        $(window).resize();
+        $('html, body').animate({
+          scrollTop: offset.top - 35
+        });
+      }
+    });
+  }
+  
+  document.addEventListener('DOMContentLoaded', function() {
+    if (is_downlevel_browser())
+      init_downlevel();
+    else
+      window.addEventListener('WebComponentsReady', init_distill);
+  });
+  
+  </script>
+  
+  <!--/radix_placeholder_distill-->
+  <script src="ML_project_files/jquery-1.11.3/jquery.min.js"></script>
+  <script src="ML_project_files/popper-2.6.0/popper.min.js"></script>
+  <link href="ML_project_files/tippy-6.2.7/tippy.css" rel="stylesheet" />
+  <link href="ML_project_files/tippy-6.2.7/tippy-light-border.css" rel="stylesheet" />
+  <script src="ML_project_files/tippy-6.2.7/tippy.umd.min.js"></script>
+  <script src="ML_project_files/anchor-4.2.2/anchor.min.js"></script>
+  <script src="ML_project_files/bowser-1.9.3/bowser.min.js"></script>
+  <script src="ML_project_files/webcomponents-2.0.0/webcomponents.js"></script>
+  <script src="ML_project_files/distill-2.2.21/template.v2.js"></script>
+  <!--radix_placeholder_site_in_header-->
+  <!--/radix_placeholder_site_in_header-->
+
+
+</head>
+
+<body>
+
+<!--radix_placeholder_front_matter-->
+
+<script id="distill-front-matter" type="text/json">
+{"title":"Estimating demand for retail stores","description":"A short description of the post.","authors":[{"author":"Hyoungjun Kang, Cung Hoang","authorURL":{},"affiliation":"&nbsp;","affiliationURL":"#","orcidID":""}],"publishedDate":"2021-03-02T00:00:00.000+09:00","citationText":"Hoang, 2021"}
+</script>
+
+<!--/radix_placeholder_front_matter-->
+<!--radix_placeholder_navigation_before_body-->
+<!--/radix_placeholder_navigation_before_body-->
+<!--radix_placeholder_site_before_body-->
+<!--/radix_placeholder_site_before_body-->
+
+<div class="d-title">
+<h1>Estimating demand for retail stores</h1>
+<!--radix_placeholder_categories-->
+<!--/radix_placeholder_categories-->
+<p><p>A short description of the post.</p></p>
+</div>
+
+<div class="d-byline">
+  Hyoungjun Kang, Cung Hoang true 
+  
+<br/>03-02-2021
+</div>
+
+<div class="d-article">
+<h2 id="question-of-interest">Question of interest</h2>
+<p>First, We want to estimate demand for retail stores. What factors are most important for sales of retail stores? How is this different for different types of stores?</p>
+<p>After estimating demands, we want to focus on predicting prosperity of business district. Does a business district will prosper or collapse? why? what factors are the most important to estimate long-term success of a business district? How can we predict the success of newly developed business district?</p>
+<h2 id="data">Data</h2>
+<div class="layout-chunk" data-layout="l-body">
+<div class="figure"><span id="fig:pressure"></span>
+<img src="C:/Users/Administrator/Desktop/2021%20Spring/Nonpara%20and%20ML/bd_map.jpg" alt="example of a business district" width="50%" />
+<p class="caption">
+Figure 1: example of a business district
+</p>
+</div>
+</div>
+<p><a href="https://golmok.seoul.go.kr/fixedAreaAnalysis.do" class="uri">https://golmok.seoul.go.kr/fixedAreaAnalysis.do</a></p>
+<p>This is retail sales data of business districts in Seoul. Each observation represents the total sales of a specific category in a specific commercial district on a quarterly basis. In the picture above, I picked 3 business district as examples. The area is 113,805, 140,820, 262,527 squared meters. We can see that thea area is quite small.</p>
+<p>In estimates_sales_year files, there are sales, number of transactions, percentage and amount of sales on weekdays and weekends and each day of the week, percentage and amount of sales generated in each time slot(00-06, 06-11, 11-14, 14-17, 17-21, 21-24), percentage and amount of sales generated by men, women and age groups, and number of transaction classified according to the above creteria, and number of stores.</p>
+<p>Also, for other datasets, there are related variables like worker population(by age groups and sex), worker population for hinterland, floating population by sex, age, day of the week, and time slot, average operating month of a district and operated month for closed stores, number of nearby apartment complex and apartments classified by squared meters and price groups, average income and expenditure by sectors for hinterland dwellers.</p>
+<h1 id="import-the-data">import the data</h1>
+<div class="layout-chunk" data-layout="l-body">
+
+</div>
+<div class="layout-chunk" data-layout="l-body">
+<pre><code>      year         quarter      bd_class_code bd_class_codename
+ Min.   :2020   Min.   :1.000   A:63920       골목상권:63920   
+ 1st Qu.:2020   1st Qu.:1.000   D:22191       관광특구:  844   
+ Median :2020   Median :2.000   R:12599       발달상권:22191   
+ Mean   :2020   Mean   :1.998   U:  844       전통시장:12599   
+ 3rd Qu.:2020   3rd Qu.:3.000                                  
+ Max.   :2020   Max.   :3.000                                  
+                                                               
+ district_code                                     district_name  
+ Min.   :1000001   종로?청계 관광특구                     :  169  
+ 1st Qu.:1000415   명동 남대문 북창동 다동 무교동 관광특구:  167  
+ Median :1000815   신사동 가로수길                        :  162  
+ Mean   :1000777   홍익대학교 주변                        :  155  
+ 3rd Qu.:1001131   강남구 논현역_2                        :  154  
+ Max.   :1001496   압구정 로데오거리_2                    :  153  
+                   (Other)                                :98594  
+  category_code         category_name       sales          
+ CS100001: 4320   한식음식점   : 4320   Min.   :5.300e+01  
+ CS200028: 3931   미용실       : 3931   1st Qu.:2.366e+07  
+ CS300002: 3536   편의점       : 3536   Median :9.053e+07  
+ CS100010: 3510   커피-음료    : 3510   Mean   :5.641e+08  
+ CS100009: 3427   호프-간이주점: 3427   3rd Qu.:3.349e+08  
+ CS300001: 3415   슈퍼마켓     : 3415   Max.   :4.806e+11  
+ (Other) :77415   (Other)      :77415                      
+ number_of_transactions sales_weekday_ratio sales_weekend_ratio
+ Min.   :      1        Min.   :  0.00      Min.   :  0.00     
+ 1st Qu.:    447        1st Qu.: 69.00      1st Qu.: 12.00     
+ Median :   2442        Median : 77.00      Median : 23.00     
+ Mean   :  22419        Mean   : 77.51      Mean   : 22.57     
+ 3rd Qu.:  13175        3rd Qu.: 88.00      3rd Qu.: 31.00     
+ Max.   :4451470        Max.   :100.00      Max.   :100.00     
+                                                               
+ sales_monday_ratio sales_tuesday_ratio sales_wednesday_ratio
+ Min.   :  0.00     Min.   :  0.00      Min.   :  0.00       
+ 1st Qu.: 11.00     1st Qu.: 11.00      1st Qu.: 12.00       
+ Median : 14.00     Median : 15.00      Median : 15.00       
+ Mean   : 15.37     Mean   : 15.37      Mean   : 15.44       
+ 3rd Qu.: 18.00     3rd Qu.: 18.00      3rd Qu.: 18.00       
+ Max.   :100.00     Max.   :100.00      Max.   :100.00       
+                                                             
+ sales_thursday_ratio sales_friday_ratio sales_saturday_ratio
+ Min.   :  0.00       Min.   :  0.00     Min.   :  0.00      
+ 1st Qu.: 12.00       1st Qu.: 13.00     1st Qu.:  9.00      
+ Median : 15.00       Median : 16.00     Median : 15.00      
+ Mean   : 15.41       Mean   : 16.11     Mean   : 14.44      
+ 3rd Qu.: 18.00       3rd Qu.: 18.00     3rd Qu.: 18.00      
+ Max.   :100.00       Max.   :100.00     Max.   :100.00      
+                                                             
+ sales_sunday_ratio time_00.06_sales_ratio time_06.11_sales_ratio
+ Min.   :  0.000    Min.   :  0.00         Min.   :  0.00        
+ 1st Qu.:  0.000    1st Qu.:  0.00         1st Qu.:  0.00        
+ Median :  7.000    Median :  0.00         Median :  4.00        
+ Mean   :  8.166    Mean   :  4.15         Mean   :  7.83        
+ 3rd Qu.: 14.000    3rd Qu.:  1.00         3rd Qu.: 12.00        
+ Max.   :100.000    Max.   :100.00         Max.   :100.00        
+                                                                 
+ time_11.14_sales_ratio time_14.17_sales_ratio time_17.21_sales_ratio
+ Min.   :  0.00         Min.   :  0.00         Min.   :  0.00        
+ 1st Qu.: 11.00         1st Qu.: 13.00         1st Qu.: 20.00        
+ Median : 22.00         Median : 24.00         Median : 31.00        
+ Mean   : 22.66         Mean   : 24.78         Mean   : 31.06        
+ 3rd Qu.: 31.00         3rd Qu.: 33.00         3rd Qu.: 41.00        
+ Max.   :100.00         Max.   :100.00         Max.   :100.00        
+                                                                     
+ time_21.24_sales_ratio male_sales_ratio female_sales_ratio
+ Min.   :  0.000        Min.   :  0.00   Min.   :  0.00    
+ 1st Qu.:  0.000        1st Qu.: 41.00   1st Qu.: 33.00    
+ Median :  2.000        Median : 54.00   Median : 47.00    
+ Mean   :  9.731        Mean   : 53.47   Mean   : 46.62    
+ 3rd Qu.: 15.000        3rd Qu.: 67.00   3rd Qu.: 59.00    
+ Max.   :100.000        Max.   :100.00   Max.   :100.00    
+                                                           
+ age10_sales_ratio age20_sales_ratio age30_sales_ratio
+ Min.   :  0.000   Min.   :  0.00    Min.   :  0.00   
+ 1st Qu.:  0.000   1st Qu.:  4.00    1st Qu.: 11.00   
+ Median :  0.000   Median : 13.00    Median : 19.00   
+ Mean   :  1.109   Mean   : 17.27    Mean   : 20.14   
+ 3rd Qu.:  1.000   3rd Qu.: 26.00    3rd Qu.: 27.00   
+ Max.   :100.000   Max.   :100.00    Max.   :100.00   
+                                                      
+ age40_sales_ratio age50_sales_ratio ageover60_sales_ratio
+ Min.   :  0.00    Min.   :  0.00    Min.   :  0.00       
+ 1st Qu.: 14.00    1st Qu.: 12.00    1st Qu.:  4.00       
+ Median : 21.00    Median : 20.00    Median : 11.00       
+ Mean   : 23.67    Mean   : 21.92    Mean   : 16.13       
+ 3rd Qu.: 28.00    3rd Qu.: 28.00    3rd Qu.: 23.00       
+ Max.   :100.00    Max.   :100.00    Max.   :100.00       
+                                                          
+ weekday_sales_amount weekend_sales_amount monday_sales_amount
+ Min.   :0.000e+00    Min.   :0.000e+00    Min.   :0.000e+00  
+ 1st Qu.:1.773e+07    1st Qu.:3.194e+06    1st Qu.:2.542e+06  
+ Median :6.822e+07    Median :1.785e+07    Median :1.204e+07  
+ Mean   :4.342e+08    Mean   :1.298e+08    Mean   :8.326e+07  
+ 3rd Qu.:2.556e+08    3rd Qu.:7.201e+07    3rd Qu.:4.783e+07  
+ Max.   :4.329e+11    Max.   :1.447e+11    Max.   :8.812e+10  
+                                                              
+ tuesday_sales_amount wednesday_sales_amount thursday_sales_amount
+ Min.   :0.000e+00    Min.   :0.000e+00      Min.   :0.000e+00    
+ 1st Qu.:2.653e+06    1st Qu.:2.746e+06      1st Qu.:2.751e+06    
+ Median :1.239e+07    Median :1.271e+07      Median :1.251e+07    
+ Mean   :8.674e+07    Mean   :8.563e+07      Mean   :8.546e+07    
+ 3rd Qu.:4.928e+07    3rd Qu.:4.936e+07      3rd Qu.:4.883e+07    
+ Max.   :1.071e+11    Max.   :8.723e+10      Max.   :8.442e+10    
+                                                                  
+ friday_sales_amount saturday_sales_amount sunday_sales_amount
+ Min.   :0.000e+00   Min.   :0.000e+00     Min.   :0.000e+00  
+ 1st Qu.:2.936e+06   1st Qu.:2.066e+06     1st Qu.:0.000e+00  
+ Median :1.364e+07   Median :1.164e+07     Median :3.358e+06  
+ Mean   :9.313e+07   Mean   :8.144e+07     Mean   :4.840e+07  
+ 3rd Qu.:5.315e+07   3rd Qu.:4.625e+07     3rd Qu.:2.348e+07  
+ Max.   :8.452e+10   Max.   :8.959e+10     Max.   :5.509e+10  
+                                                              
+ time_00.06_sales_amount time_06.11_sales_amount
+ Min.   :0.000e+00       Min.   :0.000e+00      
+ 1st Qu.:0.000e+00       1st Qu.:0.000e+00      
+ Median :0.000e+00       Median :2.224e+06      
+ Mean   :1.884e+07       Mean   :5.754e+07      
+ 3rd Qu.:1.634e+06       3rd Qu.:2.093e+07      
+ Max.   :6.445e+10       Max.   :8.009e+10      
+                                                
+ time_11.14_sales_amount time_14.17_sales_amount
+ Min.   :0.000e+00       Min.   :0.000e+00      
+ 1st Qu.:2.230e+06       1st Qu.:3.593e+06      
+ Median :1.586e+07       Median :1.764e+07      
+ Mean   :1.403e+08       Mean   :1.470e+08      
+ 3rd Qu.:7.023e+07       3rd Qu.:6.866e+07      
+ Max.   :1.478e+11       Max.   :1.959e+11      
+                                                
+ time_17.21_sales_amount time_21.24_sales_amount male_sales_amount  
+ Min.   :0.000e+00       Min.   :0.000e+00       Min.   :0.000e+00  
+ 1st Qu.:5.521e+06       1st Qu.:0.000e+00       1st Qu.:9.960e+06  
+ Median :2.487e+07       Median :1.775e+06       Median :4.200e+07  
+ Mean   :1.549e+08       Mean   :4.546e+07       Mean   :2.624e+08  
+ 3rd Qu.:9.467e+07       3rd Qu.:2.089e+07       3rd Qu.:1.592e+08  
+ Max.   :1.156e+11       Max.   :1.669e+10       Max.   :2.342e+11  
+                                                                    
+ female_sales_amount age10_sales_amount  age20_sales_amount 
+ Min.   :0.000e+00   Min.   :0.000e+00   Min.   :0.000e+00  
+ 1st Qu.:7.961e+06   1st Qu.:0.000e+00   1st Qu.:7.627e+05  
+ Median :3.595e+07   Median :3.406e+04   Median :7.260e+06  
+ Mean   :2.389e+08   Mean   :3.060e+06   Mean   :8.244e+07  
+ 3rd Qu.:1.383e+08   3rd Qu.:1.171e+06   3rd Qu.:3.964e+07  
+ Max.   :1.093e+11   Max.   :3.492e+09   Max.   :3.836e+10  
+                                                            
+ age30_sales_amount  age40_sales_amount  age50_sales_amount 
+ Min.   :0.000e+00   Min.   :0.000e+00   Min.   :0.000e+00  
+ 1st Qu.:2.333e+06   1st Qu.:3.893e+06   1st Qu.:3.612e+06  
+ Median :1.347e+07   Median :1.809e+07   Median :1.650e+07  
+ Mean   :1.037e+08   Mean   :1.177e+08   Mean   :1.083e+08  
+ 3rd Qu.:5.752e+07   3rd Qu.:6.851e+07   3rd Qu.:6.262e+07  
+ Max.   :6.184e+10   Max.   :1.047e+11   Max.   :7.192e+10  
+                                                            
+ ageover60_sales_amount transaction_number_weekday
+ Min.   :0.000e+00      Min.   :      0           
+ 1st Qu.:1.425e+06      1st Qu.:    343           
+ Median :8.530e+06      Median :   1828           
+ Mean   :8.607e+07      Mean   :  17036           
+ 3rd Qu.:3.872e+07      3rd Qu.:   9932           
+ Max.   :8.148e+10      Max.   :3009961           
+                                                  
+ transaction_number_weekend transaction_number_monday
+ Min.   :      0            Min.   :     0           
+ 1st Qu.:     74            1st Qu.:    59           
+ Median :    522            Median :   340           
+ Mean   :   5382            Mean   :  3331           
+ 3rd Qu.:   2956            3rd Qu.:  1932           
+ Max.   :2111539            Max.   :588427           
+                                                     
+ transaction_number_tuesday transaction_number_wednesday
+ Min.   :     0             Min.   :     0              
+ 1st Qu.:    61             1st Qu.:    62              
+ Median :   351             Median :   362              
+ Mean   :  3360             Mean   :  3385              
+ 3rd Qu.:  1963             3rd Qu.:  1959              
+ Max.   :609313             Max.   :574001              
+                                                        
+ transaction_number_thursday transaction_number_friday
+ Min.   :     0              Min.   :     0           
+ 1st Qu.:    62              1st Qu.:    67           
+ Median :   358              Median :   391           
+ Mean   :  3394              Mean   :  3567           
+ 3rd Qu.:  1975              3rd Qu.:  2114           
+ Max.   :588859              Max.   :758619           
+                                                      
+ transaction_number_saturday transaction_number_sunday
+ Min.   :      0             Min.   :     0           
+ 1st Qu.:     51             1st Qu.:     0           
+ Median :    351             Median :   101           
+ Mean   :   3138             Mean   :  2244           
+ 3rd Qu.:   1830             3rd Qu.:  1033           
+ Max.   :1251941             Max.   :859598           
+                                                      
+ time_00.06_transaction time_06.11_transaction time_11.14_transaction
+ Min.   :      0        Min.   :      0        Min.   :      0       
+ 1st Qu.:      0        1st Qu.:      0        1st Qu.:     48       
+ Median :      0        Median :     69        Median :    467       
+ Mean   :   1021        Mean   :   2965        Mean   :   5453       
+ 3rd Qu.:     50        3rd Qu.:    835        3rd Qu.:   3153       
+ Max.   :1085353        Max.   :1379259        Max.   :1500024       
+                                                                     
+ time_14.17_transaction time_17.21_transaction time_21.24_transaction
+ Min.   :      0        Min.   :      0        Min.   :     0        
+ 1st Qu.:     83        1st Qu.:    116        1st Qu.:     0        
+ Median :    509        Median :    701        Median :    40        
+ Mean   :   4607        Mean   :   6162        Mean   :  2210        
+ 3rd Qu.:   2729        3rd Qu.:   3820        3rd Qu.:   709        
+ Max.   :1269383        Max.   :1492452        Max.   :389631        
+                                                                     
+ male_transaction  female_transaction age10_transaction 
+ Min.   :      0   Min.   :      0    Min.   :     0.0  
+ 1st Qu.:    210   1st Qu.:    162    1st Qu.:     0.0  
+ Median :   1226   Median :    997    Median :     5.0  
+ Mean   :  11690   Mean   :   9878    Mean   :   353.1  
+ 3rd Qu.:   6498   3rd Qu.:   5657    3rd Qu.:    95.0  
+ Max.   :2603209   Max.   :1829525    Max.   :140639.0  
+                                                        
+ age20_transaction age30_transaction age40_transaction
+ Min.   :      0   Min.   :     0    Min.   :     0   
+ 1st Qu.:     28   1st Qu.:    59    1st Qu.:    88   
+ Median :    284   Median :   419    Median :   497   
+ Mean   :   5792   Mean   :  5097    Mean   :  4204   
+ 3rd Qu.:   2220   3rd Qu.:  2520    3rd Qu.:  2514   
+ Max.   :1184669   Max.   :894029    Max.   :837748   
+                                                      
+ age50_transaction ageover60_transaction number_of_stores   
+ Min.   :     0    Min.   :      0       Min.   :    0.000  
+ 1st Qu.:    81    1st Qu.:     38       1st Qu.:    2.000  
+ Median :   473    Median :    259       Median :    3.000  
+ Mean   :  3572    Mean   :   2549       Mean   :    8.258  
+ 3rd Qu.:  2304    3rd Qu.:   1389       3rd Qu.:    7.000  
+ Max.   :965348    Max.   :1385663       Max.   :11203.000  
+                                                            </code></pre>
+</div>
+<h2 id="including-plots">Including Plots</h2>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dplyr.tidyverse.org'>dplyr</a></span><span class='op'>)</span>
+
+<span class='co'># number of stores in one business district.</span>
+<span class='va'>summary_data</span> <span class='op'>&lt;-</span> <span class='va'>estimated_sales_2020</span> <span class='op'>%&gt;%</span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/group_by.html'>group_by</a></span><span class='op'>(</span><span class='va'>year</span>,<span class='va'>quarter</span>,<span class='va'>district_code</span><span class='op'>)</span> <span class='op'>%&gt;%</span> 
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/summarise.html'>summarise</a></span><span class='op'>(</span>sum <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span><span class='op'>(</span><span class='va'>number_of_stores</span><span class='op'>)</span>,
+            n <span class='op'>=</span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/context.html'>n</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>
+
+<span class='va'>summary_data</span>
+</code></pre>
+</div>
+<pre><code># A tibble: 4,455 x 5
+# Groups:   year, quarter [3]
+    year quarter district_code   sum     n
+   &lt;int&gt;   &lt;int&gt;         &lt;int&gt; &lt;int&gt; &lt;int&gt;
+ 1  2020       1       1000001   117    18
+ 2  2020       1       1000002    60    13
+ 3  2020       1       1000003   188    24
+ 4  2020       1       1000004    77    16
+ 5  2020       1       1000005    40    11
+ 6  2020       1       1000006    24    10
+ 7  2020       1       1000007   163    18
+ 8  2020       1       1000008    69     9
+ 9  2020       1       1000009   106    13
+10  2020       1       1000010   111    22
+# ... with 4,445 more rows</code></pre>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://rdrr.io/r/graphics/hist.html'>hist</a></span><span class='op'>(</span><span class='va'>summary_data</span><span class='op'>$</span><span class='va'>sum</span>,breaks<span class='op'>=</span><span class='fl'>1000</span>,xlim <span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0</span>,<span class='fl'>2000</span><span class='op'>)</span><span class='op'>)</span>
+</code></pre>
+</div>
+<p><img src="ML_project_files/figure-html5/plot_for_data-1.png" width="624" /></p>
+</div>
+<p>As we can see, the business district usually consists of 0~100 stores. As we have seen in the picture, the area is quite small.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='co'># number of stores in one business district, by category</span>
+<span class='va'>summary_data2</span> <span class='op'>&lt;-</span> <span class='va'>estimated_sales_2020</span> <span class='op'>%&gt;%</span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/group_by.html'>group_by</a></span><span class='op'>(</span><span class='va'>year</span>,<span class='va'>quarter</span>,<span class='va'>district_code</span>,<span class='va'>category_code</span><span class='op'>)</span> <span class='op'>%&gt;%</span> 
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/summarise.html'>summarise</a></span><span class='op'>(</span>sum <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span><span class='op'>(</span><span class='va'>number_of_stores</span><span class='op'>)</span>,
+            n <span class='op'>=</span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/context.html'>n</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>
+<span class='va'>summary_data2</span>
+</code></pre>
+</div>
+<pre><code># A tibble: 99,554 x 6
+# Groups:   year, quarter, district_code [4,455]
+    year quarter district_code category_code   sum     n
+   &lt;int&gt;   &lt;int&gt;         &lt;int&gt; &lt;fct&gt;         &lt;int&gt; &lt;int&gt;
+ 1  2020       1       1000001 CS100001         19     1
+ 2  2020       1       1000001 CS100002          1     1
+ 3  2020       1       1000001 CS100003          3     1
+ 4  2020       1       1000001 CS100004          3     1
+ 5  2020       1       1000001 CS100005          4     1
+ 6  2020       1       1000001 CS100006          2     1
+ 7  2020       1       1000001 CS100008          8     1
+ 8  2020       1       1000001 CS100010         23     1
+ 9  2020       1       1000001 CS200001          3     1
+10  2020       1       1000001 CS200008          1     1
+# ... with 99,544 more rows</code></pre>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://rdrr.io/r/graphics/hist.html'>hist</a></span><span class='op'>(</span><span class='va'>summary_data2</span><span class='op'>$</span><span class='va'>sum</span>,breaks<span class='op'>=</span><span class='fl'>20000</span>,xlim <span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0</span>,<span class='fl'>100</span><span class='op'>)</span><span class='op'>)</span>
+</code></pre>
+</div>
+<p><img src="ML_project_files/figure-html5/plot_for_data2-1.png" width="624" /></p>
+</div>
+<p>number of stores in a certain category in one business district.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>merge_test</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/merge.html'>merge</a></span><span class='op'>(</span><span class='va'>estimated_sales_2020</span>,<span class='va'>Businessdistrict_apartment</span>,by<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"year"</span>,<span class='st'>"quarter"</span>,<span class='st'>"bd_class_code"</span>,<span class='st'>"bd_class_codename"</span>,<span class='st'>"district_code"</span>,<span class='st'>"district_name"</span><span class='op'>)</span><span class='op'>)</span>
+<span class='va'>merge_test</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/merge.html'>merge</a></span><span class='op'>(</span><span class='va'>merge_test</span>,<span class='va'>Businessdistrict_changeindex</span>,by<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"year"</span>,<span class='st'>"quarter"</span>,<span class='st'>"bd_class_code"</span>,<span class='st'>"bd_class_codename"</span>,<span class='st'>"district_code"</span>,<span class='st'>"district_name"</span><span class='op'>)</span><span class='op'>)</span>
+<span class='va'>merge_test</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/merge.html'>merge</a></span><span class='op'>(</span><span class='va'>merge_test</span>,<span class='va'>Businessdistrict_worker_population</span>,by<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"year"</span>,<span class='st'>"quarter"</span>,<span class='st'>"bd_class_code"</span>,<span class='st'>"bd_class_codename"</span>,<span class='st'>"district_code"</span>,<span class='st'>"district_name"</span><span class='op'>)</span><span class='op'>)</span>
+<span class='va'>merge_test</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/merge.html'>merge</a></span><span class='op'>(</span><span class='va'>merge_test</span>,<span class='va'>Hinterland_income_consumption</span>,by<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"year"</span>,<span class='st'>"quarter"</span>,<span class='st'>"bd_class_code"</span>,<span class='st'>"bd_class_codename"</span>,<span class='st'>"district_code"</span>,<span class='st'>"district_name"</span><span class='op'>)</span><span class='op'>)</span>
+<span class='va'>merge_test</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/merge.html'>merge</a></span><span class='op'>(</span><span class='va'>merge_test</span>,<span class='va'>Hinterland_worker_population</span>,by<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"year"</span>,<span class='st'>"quarter"</span>,<span class='st'>"bd_class_code"</span>,<span class='st'>"bd_class_codename"</span>,<span class='st'>"district_code"</span>,<span class='st'>"district_name"</span><span class='op'>)</span><span class='op'>)</span>
+
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://rsample.tidymodels.org'>rsample</a></span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dplyr.tidyverse.org'>dplyr</a></span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://github.com/bethatkinson/rpart'>rpart</a></span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='http://www.milbo.org/rpart-plot/index.html'>rpart.plot</a></span><span class='op'>)</span>
+
+
+<span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span><span class='op'>(</span><span class='fl'>123</span><span class='op'>)</span>
+<span class='va'>ames_split</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rsample.tidymodels.org/reference/initial_split.html'>initial_split</a></span><span class='op'>(</span><span class='va'>merge_test</span>, prop <span class='op'>=</span> <span class='fl'>.7</span><span class='op'>)</span>
+<span class='va'>ames_train</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rsample.tidymodels.org/reference/initial_split.html'>training</a></span><span class='op'>(</span><span class='va'>ames_split</span><span class='op'>)</span>
+<span class='va'>ames_test</span>  <span class='op'>&lt;-</span> <span class='fu'><a href='https://rsample.tidymodels.org/reference/initial_split.html'>testing</a></span><span class='op'>(</span><span class='va'>ames_split</span><span class='op'>)</span>
+
+<span class='co'># grid for tuning parameters</span>
+<span class='va'>hyper_grid</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/expand.grid.html'>expand.grid</a></span><span class='op'>(</span>
+  minsplit <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='fl'>5</span>,<span class='fl'>20</span>,<span class='fl'>1</span><span class='op'>)</span>,
+  maxdepth <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='fl'>8</span>,<span class='fl'>15</span>,<span class='fl'>1</span><span class='op'>)</span>
+<span class='op'>)</span>
+
+<span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span><span class='op'>(</span><span class='va'>hyper_grid</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>  minsplit maxdepth
+1        5        8
+2        6        8
+3        7        8
+4        8        8
+5        9        8
+6       10        8</code></pre>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>models</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span><span class='op'>)</span>
+
+<span class='kw'>for</span> <span class='op'>(</span><span class='va'>i</span> <span class='kw'>in</span> <span class='fl'>1</span><span class='op'>:</span><span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span><span class='op'>(</span><span class='va'>hyper_grid</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>{</span>
+  
+  <span class='co'># get minsplit, maxdepth values at row i</span>
+  <span class='va'>minsplit</span> <span class='op'>&lt;-</span> <span class='va'>hyper_grid</span><span class='op'>$</span><span class='va'>minsplit</span><span class='op'>[</span><span class='va'>i</span><span class='op'>]</span>
+  <span class='va'>maxdepth</span> <span class='op'>&lt;-</span> <span class='va'>hyper_grid</span><span class='op'>$</span><span class='va'>maxdepth</span><span class='op'>[</span><span class='va'>i</span><span class='op'>]</span>
+  
+  <span class='co'># train a model and store in the list</span>
+  <span class='co'># print("minsplit, maxdepth is")</span>
+  <span class='co'># print(minsplit)</span>
+  <span class='co'># print(maxdepth)</span>
+  <span class='va'>models</span><span class='op'>[[</span><span class='va'>i</span><span class='op'>]</span><span class='op'>]</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/rpart/man/rpart.html'>rpart</a></span><span class='op'>(</span>
+    formula <span class='op'>=</span> <span class='va'>sales</span> <span class='op'>~</span> <span class='va'>.</span>,
+    data    <span class='op'>=</span> <span class='va'>ames_train</span>,
+    method  <span class='op'>=</span> <span class='st'>"anova"</span>,
+    control <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>minsplit <span class='op'>=</span> <span class='va'>minsplit</span>, maxdepth <span class='op'>=</span> <span class='va'>maxdepth</span><span class='op'>)</span>
+  <span class='op'>)</span>
+<span class='op'>}</span>
+
+<span class='co'># function to get optimal cp</span>
+<span class='va'>get_cp</span> <span class='op'>&lt;-</span> <span class='kw'>function</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span> <span class='op'>{</span>
+  <span class='va'>min</span>    <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/which.min.html'>which.min</a></span><span class='op'>(</span><span class='va'>x</span><span class='op'>$</span><span class='va'>cptable</span><span class='op'>[</span>, <span class='st'>"xerror"</span><span class='op'>]</span><span class='op'>)</span>
+  <span class='va'>cp</span> <span class='op'>&lt;-</span> <span class='va'>x</span><span class='op'>$</span><span class='va'>cptable</span><span class='op'>[</span><span class='va'>min</span>, <span class='st'>"CP"</span><span class='op'>]</span> 
+<span class='op'>}</span>
+
+<span class='co'># function to get minimum error</span>
+<span class='va'>get_min_error</span> <span class='op'>&lt;-</span> <span class='kw'>function</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span> <span class='op'>{</span>
+  <span class='va'>min</span>    <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/which.min.html'>which.min</a></span><span class='op'>(</span><span class='va'>x</span><span class='op'>$</span><span class='va'>cptable</span><span class='op'>[</span>, <span class='st'>"xerror"</span><span class='op'>]</span><span class='op'>)</span>
+  <span class='va'>xerror</span> <span class='op'>&lt;-</span> <span class='va'>x</span><span class='op'>$</span><span class='va'>cptable</span><span class='op'>[</span><span class='va'>min</span>, <span class='st'>"xerror"</span><span class='op'>]</span> 
+<span class='op'>}</span>
+
+<span class='va'>hyper_grid</span> <span class='op'>%&gt;%</span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>
+    cp    <span class='op'>=</span> <span class='fu'>purrr</span><span class='fu'>::</span><span class='fu'><a href='https://purrr.tidyverse.org/reference/map.html'>map_dbl</a></span><span class='op'>(</span><span class='va'>models</span>, <span class='va'>get_cp</span><span class='op'>)</span>,
+    error <span class='op'>=</span> <span class='fu'>purrr</span><span class='fu'>::</span><span class='fu'><a href='https://purrr.tidyverse.org/reference/map.html'>map_dbl</a></span><span class='op'>(</span><span class='va'>models</span>, <span class='va'>get_min_error</span><span class='op'>)</span>
+  <span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/arrange.html'>arrange</a></span><span class='op'>(</span><span class='va'>error</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/top_n.html'>top_n</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>5</span>, wt <span class='op'>=</span> <span class='va'>error</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>  minsplit maxdepth   cp      error
+1       10        8 0.01 0.07446340
+2       14       10 0.01 0.07463052
+3        6       15 0.01 0.07506488
+4        9       15 0.01 0.07605839
+5        5        8 0.01 0.07645298</code></pre>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>optimal_tree</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/rpart/man/rpart.html'>rpart</a></span><span class='op'>(</span>
+  formula <span class='op'>=</span> <span class='va'>sales</span> <span class='op'>~</span> <span class='va'>.</span>,
+  data    <span class='op'>=</span> <span class='va'>ames_train</span>,
+  method  <span class='op'>=</span> <span class='st'>"anova"</span>,
+  control <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>minsplit <span class='op'>=</span> <span class='fl'>10</span>, maxdepth <span class='op'>=</span> <span class='fl'>8</span>, cp <span class='op'>=</span> <span class='fl'>0.01</span><span class='op'>)</span>
+<span class='op'>)</span>
+
+<span class='va'>pred</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/predict.html'>predict</a></span><span class='op'>(</span><span class='va'>optimal_tree</span>, newdata <span class='op'>=</span> <span class='va'>ames_test</span><span class='op'>)</span>
+<span class='va'>p_error</span> <span class='op'>&lt;-</span> <span class='fu'>Metrics</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/Metrics/man/rmse.html'>rmse</a></span><span class='op'>(</span>actual <span class='op'>=</span> <span class='va'>ames_test</span><span class='op'>$</span><span class='va'>sales</span>, predicted <span class='op'>=</span> <span class='va'>pred</span><span class='op'>)</span>
+<span class='va'>p_error</span>
+</code></pre>
+</div>
+<pre><code>[1] 164402097</code></pre>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://rdrr.io/pkg/rpart.plot/man/rpart.plot.html'>rpart.plot</a></span><span class='op'>(</span><span class='va'>optimal_tree</span>,cex<span class='op'>=</span><span class='fl'>0.5</span><span class='op'>)</span>
+</code></pre>
+</div>
+<p><img src="ML_project_files/figure-html5/tree-1.png" width="624" /></p>
+</div>
+<p>The above plot is a result for tree method. It doesn’t seem to have predictive power. I think I have to estimate demands for each category.</p>
+<h2 id="things-to-proceed">Things to proceed</h2>
+<p>RF method</p>
+<ol type="1">
+<li>vary the hyperparameters and RMSE</li>
+<li>list the most important variables based on impurity or permutation based importance</li>
+</ol>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<!--radix_placeholder_article_footer-->
+<!--/radix_placeholder_article_footer-->
+</div>
+
+<div class="d-appendix">
+</div>
+
+
+<!--radix_placeholder_site_after_body-->
+<!--/radix_placeholder_site_after_body-->
+<!--radix_placeholder_appendices-->
+<div class="appendix-bottom"></div>
+<!--/radix_placeholder_appendices-->
+<!--radix_placeholder_navigation_after_body-->
+<!--/radix_placeholder_navigation_after_body-->
+
+</body>
+
+</html>
