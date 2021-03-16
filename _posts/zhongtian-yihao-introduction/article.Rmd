@@ -7,7 +7,8 @@ author:
   - name: Yihao Yuan
     url: https://github.com/yihao-yuan
     affiliation: The University of Pennsylvania
-date: "`r Sys.Date()`"
+date: February 28, 2021
+bibliography: postbib.bib
 output: 
   distill::distill_article
 toc: false
@@ -27,9 +28,9 @@ library(Hmisc)
 
 ## Research Question
 
-Price dispersion has long been central to a range of economic questions. For example, DellaVigna and Gentzkow (2019) investigated how uniform pricing within store chains affect store profits and inequality. However, most papers only focused on price dispersion over stores (e.g., DellaVigna and Gentzkow, 2019) or products (e.g., Hitsch, Hortacsu and Lin, 2021). Few has looked into price dispersion over time, though it is documented that more than 50% of the variations in transaction prices cannot be explained by differences in stores or products (Kaplan and Menzio, 2015). Important exceptions to the lack of studies on price dispersions over time are literatures on intertemporal price discrimination (e.g., Hendel and Nevo, 2013), where stores use cyclical price changes to discriminate between searchers and non-searchers.
+Price dispersion has long been central to a range of economic questions. For example, @dellavigna2019uniform investigated how uniform pricing within store chains affect store profits and social inequality. However, most papers only focused on price dispersion over stores (e.g., @dellavigna2019uniform) or products (e.g., @hitsch2019prices). Though more than 50% of the variations in transaction prices cannot be explained by differences in stores or products (@kaplan2015morphology), few have looked into price dispersion over time. Important exceptions to the lack of studies on price dispersion over time are literatures on intertemporal price discrimination (e.g., @hendel2013intertemporal), where stores use cyclical price changes to discriminate between searchers and non-searchers.
 
-In this project, we would like to add to the literatures above by providing patterns of price dispersions over time. Moreover, we want to explain the reasons for a striking pattern presented in our data, that in nearly half of the promotions, the stores discounted prices below their costs. This contradicts the assumptions implied by intertemporal price discrimination, where stores earn positive but quantitatively different profits from different groups of consumers. We plan to investigate other possibilities, such as loss leader strategy and inventory management, to explain the negative margins. In the end, we want to optimize the stores' pricing strategies, and predict profit gains from the new strategies.
+In this project, we would like to add to the literatures above by providing patterns of price dispersions over time. Moreover, we want to explain the reasons for a striking pattern presented in our data, that in nearly half of the promotions, the stores discounted prices below their costs. We plan to investigate existing theoretical explanations, including intertemporal price discrimination, loss leader strategy and inventory management, to explain price dispersion over time, especially the negative margins. In the end, we want to optimize the stores' pricing strategies, and predict profit gains from the new strategies.
 
 ## Data
 
@@ -101,12 +102,3 @@ truncHist(df$margin[df$discount==1], main="Margin rates for discounted product-p
 * Explore the possibilities of some other explanations to negative margins, including but not limited to:
   + Loss leader strategy. Stores may want to offer deep promotions on some products to attract consumers to the store to shop for other products, and maximize the overall profit. We may need to investigate transaction data to confirm whether it is true.
   + Inventory management. Some products are perishable, and stores may want to sell them before they perish. Inventory information is available, but more work is needed to investigate whether inventory management is a reason for deep discounts.
-
-## References 
-DellaVigna, S. and Gentzkow, M., 2019. Uniform pricing in us retail chains. *The Quarterly Journal of Economics*, 134(4), pp.2011-2084.
-
-Hendel, I. and Nevo, A., 2013. Intertemporal price discrimination in storable goods markets. *American Economic Review*, 103(7), pp.2722-51.
-
-Hitsch, G.J., Hortacsu, A. and Lin, X., 2021. Prices and promotions in us retail markets: Evidence from big data. *Quantitative Marketing and Economics*, forthcoming.
-
-Kaplan, G. and Menzio, G., 2015. The morphology of price dispersion. *International Economic Review*, 56(4), pp.1165-1206.
