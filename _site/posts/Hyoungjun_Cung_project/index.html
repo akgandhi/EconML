@@ -115,7 +115,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <!--/radix_placeholder_rmarkdown_metadata-->
   
   <script type="text/json" id="radix-resource-manifest">
-  {"type":"character","attributes":{},"value":["bd_map.jpg","ML_project_files/anchor-4.2.2/anchor.min.js","ML_project_files/bowser-1.9.3/bowser.min.js","ML_project_files/distill-2.2.21/template.v2.js","ML_project_files/figure-html5/load-1.png","ML_project_files/figure-html5/plot_for_data-1.png","ML_project_files/figure-html5/plot_for_data2-1.png","ML_project_files/figure-html5/plot_for_data3-1.png","ML_project_files/figure-html5/pressure-1.png","ML_project_files/figure-html5/pressure2-1.png","ML_project_files/figure-html5/Random Forest-1.png","ML_project_files/figure-html5/tree-1.png","ML_project_files/jquery-1.11.3/jquery.min.js","ML_project_files/popper-2.6.0/popper.min.js","ML_project_files/tippy-6.2.7/tippy-bundle.umd.min.js","ML_project_files/tippy-6.2.7/tippy-light-border.css","ML_project_files/tippy-6.2.7/tippy.css","ML_project_files/tippy-6.2.7/tippy.umd.min.js","ML_project_files/webcomponents-2.0.0/webcomponents.js"]}
+  {"type":"character","attributes":{},"value":["bd_map.jpg","ML_project_files/anchor-4.2.2/anchor.min.js","ML_project_files/bowser-1.9.3/bowser.min.js","ML_project_files/distill-2.2.21/template.v2.js","ML_project_files/figure-html5/load-1.png","ML_project_files/figure-html5/plot_for_data-1.png","ML_project_files/figure-html5/plot_for_data2-1.png","ML_project_files/figure-html5/plot_for_data3-1.png","ML_project_files/figure-html5/pressure-1.png","ML_project_files/figure-html5/pressure2-1.png","ML_project_files/figure-html5/Random Forest-1.png","ML_project_files/figure-html5/tree-1.png","ML_project_files/jquery-1.11.3/jquery.min.js","ML_project_files/pagedtable-1.1/css/pagedtable.css","ML_project_files/pagedtable-1.1/js/pagedtable.js","ML_project_files/popper-2.6.0/popper.min.js","ML_project_files/tippy-6.2.7/tippy-bundle.umd.min.js","ML_project_files/tippy-6.2.7/tippy-light-border.css","ML_project_files/tippy-6.2.7/tippy.css","ML_project_files/tippy-6.2.7/tippy.umd.min.js","ML_project_files/webcomponents-2.0.0/webcomponents.js"]}
   </script>
   <!--radix_placeholder_navigation_in_header-->
 <meta name="distill:offset" content="../.."/>
@@ -2496,7 +2496,7 @@ Figure 1: example of a business district
 10  2020       1       1000010   111    22
 # ... with 4,445 more rows</code></pre>
 <div class="sourceCode">
-<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://rdrr.io/r/graphics/hist.html'>hist</a></span><span class='op'>(</span><span class='va'>summary_data</span><span class='op'>$</span><span class='va'>sum</span>,breaks<span class='op'>=</span><span class='fl'>1000</span>,xlim <span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0</span>,<span class='fl'>2000</span><span class='op'>)</span><span class='op'>)</span>
+<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://rdrr.io/r/graphics/hist.html'>hist</a></span><span class='op'>(</span><span class='va'>summary_data</span><span class='op'>$</span><span class='va'>sum</span>,breaks<span class='op'>=</span><span class='fl'>1000</span>,xlim <span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0</span>,<span class='fl'>2000</span><span class='op'>)</span>,main<span class='op'>=</span><span class='st'>"Number of stores in a business district"</span><span class='op'>)</span>
 </code></pre>
 </div>
 <p><img src="ML_project_files/figure-html5/plot_for_data-1.png" width="624" /></p>
@@ -2528,22 +2528,12 @@ Figure 1: example of a business district
 10  2020       1       1000001 CS200008          1     1
 # ... with 99,544 more rows</code></pre>
 <div class="sourceCode">
-<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://rdrr.io/r/graphics/hist.html'>hist</a></span><span class='op'>(</span><span class='va'>summary_data2</span><span class='op'>$</span><span class='va'>sum</span>,breaks<span class='op'>=</span><span class='fl'>20000</span>,xlim <span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0</span>,<span class='fl'>100</span><span class='op'>)</span><span class='op'>)</span>
+<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://rdrr.io/r/graphics/hist.html'>hist</a></span><span class='op'>(</span><span class='va'>summary_data2</span><span class='op'>$</span><span class='va'>sum</span>,breaks<span class='op'>=</span><span class='fl'>20000</span>,xlim <span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0</span>,<span class='fl'>100</span><span class='op'>)</span>,main<span class='op'>=</span><span class='st'>"Number of stores in a certain category"</span><span class='op'>)</span>
 </code></pre>
 </div>
 <p><img src="ML_project_files/figure-html5/plot_for_data2-1.png" width="624" /></p>
 </div>
 <p>This is a plot for number of stores in a certain category in one business district.</p>
-<div class="layout-chunk" data-layout="l-body">
-<div class="sourceCode">
-<pre class="sourceCode r"><code class="sourceCode r"><span class='co'># making histogram for each category.</span>
-<span class='va'>diamonds</span> <span class='op'>%&gt;%</span>
-  <span class='fu'>ggplot</span><span class='op'>(</span><span class='fu'>aes</span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>cut</span>, y <span class='op'>=</span> <span class='va'>carat</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
-  <span class='fu'>stat_summary_bin</span><span class='op'>(</span>fun.y <span class='op'>=</span> <span class='st'>'mean'</span>, geom <span class='op'>=</span> <span class='st'>'bar'</span><span class='op'>)</span>
-</code></pre>
-</div>
-<p><img src="ML_project_files/figure-html5/plot_for_data3-1.png" width="624" /></p>
-</div>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://rsample.tidymodels.org'>rsample</a></span><span class='op'>)</span>
@@ -2615,11 +2605,11 @@ Figure 1: example of a business district
 </code></pre>
 </div>
 <pre><code>  minsplit maxdepth   cp     error
-1       11       12 0.01 0.3852357
-2       18        9 0.01 0.3858072
-3        6       14 0.01 0.3907951
-4       15       14 0.01 0.3928489
-5        9       13 0.01 0.3939878</code></pre>
+1       11       12 0.01 0.3850649
+2       19        9 0.01 0.3918467
+3        9       13 0.01 0.3948523
+4        6       14 0.01 0.3997129
+5        8       15 0.01 0.4080982</code></pre>
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='va'>optimal_tree</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/rpart/man/rpart.html'>rpart</a></span><span class='op'>(</span>
   formula <span class='op'>=</span> <span class='va'>sales</span> <span class='op'>~</span> <span class='va'>.</span>,
@@ -2633,7 +2623,7 @@ Figure 1: example of a business district
 <span class='va'>p_error</span>
 </code></pre>
 </div>
-<pre><code>[1] 440186687</code></pre>
+<pre><code>[1] 439892473</code></pre>
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://rdrr.io/pkg/rpart.plot/man/rpart.plot.html'>rpart.plot</a></span><span class='op'>(</span><span class='va'>optimal_tree</span>,cex<span class='op'>=</span><span class='fl'>0.5</span><span class='op'>)</span>
 </code></pre>
@@ -2641,7 +2631,7 @@ Figure 1: example of a business district
 <p><img src="ML_project_files/figure-html5/tree-1.png" width="624" /></p>
 </div>
 <p>The above plot is a result for tree method. It doesn’t seem to have predictive power. I think I have to estimate demands for each category.</p>
-<h2 id="things-to-proceed">Things to proceed</h2>
+<h2 id="random-forest-method">Random Forest Method</h2>
 <p>Now, proceed to the RF method.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
@@ -2671,12 +2661,15 @@ Figure 1: example of a business district
   respect.unordered.factors <span class='op'>=</span> <span class='st'>"order"</span>,
   seed <span class='op'>=</span> <span class='fl'>123</span>
 <span class='op'>)</span>
-
-<span class='co'># get OOB RMSE</span>
+</code></pre>
+</div>
+<pre><code>Growing trees.. Progress: 85%. Estimated remaining time: 5 seconds.</code></pre>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='co'># get OOB RMSE</span>
 <span class='op'>(</span><span class='va'>default_rmse</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/MathFun.html'>sqrt</a></span><span class='op'>(</span><span class='va'>ames_rf1</span><span class='op'>$</span><span class='va'>prediction.error</span><span class='op'>)</span><span class='op'>)</span>
 </code></pre>
 </div>
-<pre><code>[1] 418967294</code></pre>
+<pre><code>[1] 445798199</code></pre>
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='co'># create hyperparameter grid</span>
 <span class='va'>hyper_grid</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/expand.grid.html'>expand.grid</a></span><span class='op'>(</span>
@@ -2714,16 +2707,16 @@ Figure 1: example of a business district
 </code></pre>
 </div>
 <pre><code>   mtry min.node.size replace sample.fraction      rmse perc_gain
-1    27             1   FALSE             0.8 396171612  5.440922
-2    35             1   FALSE             0.8 397607232  5.098265
-3    27             3   FALSE             0.8 400595230  4.385083
-4    35             3   FALSE             0.8 400813054  4.333092
-5    43             1   FALSE             0.8 402616940  3.902537
-6    16             1   FALSE             0.8 403271360  3.746339
-7    43             3   FALSE             0.8 403877983  3.601549
-8    27             5   FALSE             0.8 405133715  3.301828
-9    35             5   FALSE             0.8 405692018  3.168571
-10   43             5   FALSE             0.8 406662992  2.936817</code></pre>
+1   253             1   FALSE             0.8 418916350  6.030049
+2   253             3   FALSE             0.8 420534261  5.667124
+3   211             1   FALSE             0.8 421991221  5.340304
+4   211             3   FALSE             0.8 423039751  5.105101
+5   253             5   FALSE             0.8 424238093  4.836293
+6   158             1   FALSE             0.8 428283708  3.928794
+7   211             5   FALSE             0.8 428621480  3.853026
+8   158             3   FALSE             0.8 431703083  3.161771
+9   253            10   FALSE             0.8 435274179  2.360714
+10  158             5   FALSE             0.8 435411622  2.329883</code></pre>
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='co'># re-run model with impurity-based variable importance</span>
 <span class='va'>rf_impurity</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/ranger/man/ranger.html'>ranger</a></span><span class='op'>(</span>
@@ -2762,13 +2755,10 @@ Figure 1: example of a business district
 </div>
 <p><img src="ML_project_files/figure-html5/Random%20Forest-1.png" width="624" /></p>
 </div>
-<ol type="1">
-<li>vary the hyperparameters and RMSE</li>
-<li>list the most important variables based on impurity or permutation based importance</li>
-</ol>
+<p>The result tells us that number of transactions are the most important, and number of stores also.</p>
+<h2 id="things-to-proceed">Things to proceed</h2>
 <p>we have to do with t-1 data for sales_ratio or sales_amount.</p>
-<p>sdfsdf</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>

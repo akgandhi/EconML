@@ -44,7 +44,7 @@ Also, for other datasets, there are related variables like worker population(by 
 # echo = FALSE : not show the data
 
 # web version. takes too long, so I will work locally and update.
-dropbox = TRUE
+dropbox = FALSE
 if (dropbox){
   estimated_sales_2020 <- read.csv("https://www.dropbox.com/s/kiysg9cnw8kokbo/estimated_sales_2020.csv?dl=1")
   
@@ -87,13 +87,17 @@ if (!dropbox){
   Hinterland_worker_population <- read.csv("C:/Users/Administrator/Desktop/2021 Spring/Nonpara and ML/Hinterland_worker_population.csv")
 }
  
-merge_test <- merge(estimated_sales_2020,Businessdistrict_apartment,by=c("year","quarter","bd_class_code","bd_class_codename","district_code","district_name"))
-merge_test <- merge(merge_test,Businessdistrict_changeindex,by=c("year","quarter","bd_class_code","bd_class_codename","district_code","district_name"))
-merge_test <- merge(merge_test,Businessdistrict_worker_population,by=c("year","quarter","bd_class_code","bd_class_codename","district_code","district_name"))
-merge_test <- merge(merge_test,Hinterland_income_consumption,by=c("year","quarter","bd_class_code","bd_class_codename","district_code","district_name"))
-merge_test <- merge(merge_test,Hinterland_worker_population,by=c("year","quarter","bd_class_code","bd_class_codename","district_code","district_name"))
+merge_data <- merge(estimated_sales_2020,Businessdistrict_apartment,by=c("year","quarter","bd_class_code","bd_class_codename","district_code","district_name"))
+merge_data <- merge(merge_data,Businessdistrict_changeindex,by=c("year","quarter","bd_class_code","bd_class_codename","district_code","district_name"))
+merge_data <- merge(merge_data,Businessdistrict_worker_population,by=c("year","quarter","bd_class_code","bd_class_codename","district_code","district_name"))
+merge_data <- merge(merge_data,Hinterland_income_consumption,by=c("year","quarter","bd_class_code","bd_class_codename","district_code","district_name"))
+merge_data <- merge(merge_data,Hinterland_worker_population,by=c("year","quarter","bd_class_code","bd_class_codename","district_code","district_name"))
+merge_data <- merge(merge_data,Businessdistrict_estimated_floatingpopulation,by=c("year","quarter","bd_class_code","bd_class_codename","district_code","district_name"))
 
-ML_test_data <- merge_test[,append(c(1:33), 80:155)]
+
+# data without sales_amount, to get rid of multicolinearity
+
+ML_test_data <- merge_data[,append(c(1:33), 80:681)]
 merge_test <- ML_test_data
 ```
 
@@ -146,7 +150,7 @@ summary_data <- estimated_sales_2020 %>%
 
 summary_data
 
-hist(summary_data$sum,breaks=1000,xlim =c(0,2000))
+hist(summary_data$sum,breaks=1000,xlim =c(0,2000),main="Number of stores in a business district")
 ```
 
 As we can see, \textbf{the business district usually consists of 0~100 stores}. As we have seen in the picture, the area is quite small. 
@@ -158,18 +162,12 @@ summary_data2 <- estimated_sales_2020 %>%
   summarise(sum = sum(number_of_stores),
             n = n())
 summary_data2
-hist(summary_data2$sum,breaks=20000,xlim =c(0,100))
+hist(summary_data2$sum,breaks=20000,xlim =c(0,100),main="Number of stores in a certain category")
 ```
 
 This is a plot for number of stores in a certain category in one business district.
 
-```{r plot_for_data3}
 
-# making histogram for each category.
-diamonds %>%
-  ggplot(aes(x = cut, y = carat)) +
-  stat_summary_bin(fun.y = 'mean', geom = 'bar')
-```
 
 ```{r tree}
 library(rsample)
@@ -352,9 +350,12 @@ p2 <- vip::vip(rf_permutation, num_features = 25, bar = FALSE)
 gridExtra::grid.arrange(p1, p2, nrow = 1)
 ```
 
-1) vary the hyperparameters and RMSE
-2) list the most important variables based on impurity or permutation based importance
+The result tells us that number of transactions are the most important, and number of stores also. 
+
+## Things to proceed
+
+
 
 we have to do with t-1 data for sales_ratio or sales_amount.
 
-sdfsdf
+
