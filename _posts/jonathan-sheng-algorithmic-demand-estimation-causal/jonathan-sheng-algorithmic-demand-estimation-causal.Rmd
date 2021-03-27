@@ -1,0 +1,224 @@
+---
+title: "jonathan-sheng-algorithmic-demand-estimation-causal"
+description: |
+  Causal Inference from Algorithmic and Structural Models
+author:
+  - Jonathan Arnold 
+  - Sheng Chao Ho
+date: 03-27-2021
+output:
+  distill::distill_article:
+    self_contained: false
+categories: "Jonathan and Sheng"
+---
+
+<!-- i followed https://cran.r-project.org/web/packages/BLPestimatoR/vignettes/blp_intro.html for using BLPestimatoR -->
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r load packages, include=FALSE}
+library(tidyverse)
+library(BLPestimatoR)
+```
+
+
+```{r load data}
+df_raw <- haven::read_dta("Model_panel_cleaned.dta", encoding = "ASCII")
+```
+
+```{r process data}
+df<- df_raw %>% 
+  select(-trim_name,-starts_with("log_"),
+         -model_age,-body_original,-transmission_id,-drivetype_id,
+         -starts_with("income_"), -cpi,-gas_nominal,-gas_real,
+         -korea,-mexico,-netherlands,-spain,-italy,-germany,
+         -france,-uk,-sweden,-japan,-indian,-china,-canada,
+         -nationality1,-nationality2,-MY_id,-count_trim,
+         -starts_with("I_"),-suv_class,-nb_bodystyle
+         ) %>%
+  mutate(nationality=case_when(nationality%in%
+                                 c("Italy/US","Germany/US") ~ "US",
+                                  nationality == "" ~ "US",
+                                  TRUE ~ nationality)) %>%
+  mutate_if(is.character,as.factor) %>%
+  mutate(share=sales/(nb_hh*1000)) %>%
+  group_by(Year) %>%
+  mutate(own_mkt_price_ratio=price/((sum(price)-price)/(n()-1))) %>%
+  group_by(class) %>%
+  mutate(own_class_price_ratio=price/((sum(price)-price)/(n()-1))) %>%
+  ungroup %>%
+  select(-sales,-nb_hh) %>%
+  #get price into scale consistent with BLP
+  mutate(price = price/1000) %>% 
+  drop_na()
+
+#I'm wondering if some car models with really low market shares are causing problems for the delta contraction mapping which tries to match market shares (because the algorithm throws out NANs for the delta contraction mapping step quite often)
+number_of_low_shares <- 
+  df %>% 
+  mutate(low_share = (share<1e-5)) %>% 
+  group_by(Year) %>% 
+  summarise(across(low_share, sum))
+#But anyway, we're not removing a lot of observations - on average less than 10 per year
+df <- df %>% filter(share>1e-5)
+
+
+# df <- df %>% 
+#   mutate(nationality = fct_lump_n(nationality, n = 4),
+#          class = fct_lump_n(class, n = 4),
+#          company = fct_lump_n(company, n = 5),) 
+
+
+```
+
+
+
+```{r blp model}
+# formula is as follows: linear | exogenous | random coefficients | IVs
+  
+blp_model <- as.formula("share ~ 
+                        price + car_size + mpg_combined + dpm_combined + 
+                        engine_hp + hp_to_weight |
+                        car_size + mpg_combined + dpm_combined + 
+                        engine_hp + hp_to_weight |
+                        price + car_size + mpg_combined + dpm_combined + 
+                        engine_hp + hp_to_weight |
+                        0 + car_size + mpg_combined + dpm_combined + 
+                        engine_hp + hp_to_weight +
+                        BLP2_car_size + BLP2_mpg_combined + BLP2_dpm_combined +
+                        BLP2_engine_hp + BLP2_hp_to_weight +
+                        BLP3_car_size + BLP3_mpg_combined + BLP3_engine_hp +
+                        BLP3_hp_to_weight
+                        ") 
+
+rc <- c("(Intercept)", "price", "car_size","mpg_combined", "dpm_combined",
+        "engine_hp", "hp_to_weight")
+
+blp_instruments <- 
+  c("car_size", "mpg_combined", "dpm_combined", "engine_hp", "hp_to_weight")
+```
+
+```{r create instruments}
+
+#BLP2 corresponds to the sum of the same characteristic of the firm's other products in each year
+#BLP3 corresponds to the sum of the same characteristic of rival firms' products in each year
+
+df_instrument <- df %>% 
+  group_by(Year,company) %>% 
+  mutate(across(blp_instruments, ~ sum(.x) - .x, .names = "BLP2_{.col}" )) %>% 
+  ungroup %>% group_by(Year) %>% 
+  mutate(BLP3_car_size = sum(car_size) - car_size - BLP2_car_size,
+         BLP3_mpg_combined = sum(mpg_combined) - mpg_combined - BLP2_mpg_combined,
+         BLP3_dpm_combined = sum(dpm_combined) - dpm_combined - BLP2_dpm_combined,
+         BLP3_engine_hp = sum(engine_hp) - engine_hp - BLP2_engine_hp,
+         BLP3_hp_to_weight = sum(hp_to_weight) - hp_to_weight - BLP2_hp_to_weight
+  ) %>% 
+  ungroup
+         
+```
+
+```{r basic_blp}
+#this section is used to get starting guesses for the unobserved heterogeneities and deltas in the model with observed heterogeneities
+#Not much problems with convergence in the algorithm over here
+
+blp_basic_data <-  BLP_data(
+  model = blp_model,
+  market_identifier = "Year",
+  product_identifier = "Model_id",
+  productData = df_instrument,
+  blp_inner_tol = 1e-9, blp_inner_maxit = 5000,
+  integration_method = "MLHS",
+  integration_accuracy = 40,
+  integration_seed = 1
+  )
+
+blp_basic_est <- estimateBLP(
+  blp_data = blp_basic_data,
+  solver_method = "BFGS", solver_maxit = 1000, solver_reltol = 1e-9,
+  standardError = "heteroskedastic",
+  extremumCheck = FALSE,
+  printLevel = 1
+)
+
+#Store the estimated unobserved heterogeneities' standard deviations and 
+#the deltas for subsequent use as starting guess
+unobs_sd <- blp_basic_est$theta_rc %>% matrix(ncol=1)
+df_instrument <- df_instrument %>% mutate(delta = blp_basic_est$delta)
+```
+
+```{r draws for observed and unobserved heterogeneities}
+df_income <- 
+  df %>% 
+  distinct(Year, .keep_all = TRUE) %>% 
+  select(Year,starts_with("real")) %>% 
+  arrange(Year)
+nYears <- nrow(df_income)
+
+#This part uses the real income percentiles to find the best fitting lognormal distribution for each year. (BLP used the mean and standard deviation to get the lognormal distributions. But i believe the resulting log normal distributions aren't very different at all)
+ofn <- function(x,q) {
+  sum(abs(q-qlnorm(c(0.2,0.4,0.6,0.8,0.95),x[1],x[2]))^2) 
+}
+para = matrix(0,nrow = nYears, ncol = 2)
+colnames(para) <- c("mu","sigma")
+for (i in 1:nYears) {
+  para[i,] <- optim(c(9,0.8),ofn, q = df_income[i,2:6],
+                    method = "L-BFGS-B",lower  = c(0,0))$par
+} 
+df_income <- bind_cols(df_income,as_tibble(para))
+
+
+#The rest of this code chunk gets the observed and unobserved heterogeneity draws into the format used by BLPestimatoR
+#Using the estimated lognormal distributions for each year, generate draws for income
+N_draws <- 100
+#Use log(income) as the income variable
+obs_draws_income = map2_dfr(pull(df_income,mu),pull(df_income,sigma), 
+                        ~ rlnorm(N_draws,meanlog = .x, sdlog = .y) %>% 
+                          log %>% matrix(nrow=1) %>% as_tibble) %>%
+  bind_cols(select(df_income,Year),.)
+
+obs_draws = list(income = obs_draws_income)
+
+
+#This part generates the unobserved heterogeneities from a SND 
+unobs_draws <- map(rc,
+                   ~ rnorm(N_draws*nYears) %>% 
+                     matrix(ncol=N_draws) %>% as_tibble %>% 
+                     bind_cols(select(df_income,Year),.)
+                   )
+names(unobs_draws) <- rc
+```
+
+```{r last step of data prep}
+blp_data <-  BLP_data(
+  model = blp_model,
+  market_identifier = "Year",
+  par_delta = "delta",
+  product_identifier = "Model_id",
+  productData = df_instrument,
+  blp_inner_tol = 1e-9, blp_inner_maxit = 5000,
+  demographic_draws = obs_draws,
+  integration_draws = unobs_draws,
+  integration_weights = rep(1 / N_draws, N_draws)
+)
+```
+
+```{r estimate blp}
+#Estimating the BLP model with observed heterogeneities results in a very unstable algorithm for most combinations of variables that i've tried.
+starting_guess <- cbind(unobs_sd,0.0)
+colnames(starting_guess) <- c("unobs_sd","income")
+rownames(starting_guess) <- rc
+
+
+blp_est <- estimateBLP(
+  blp_data = blp_data,
+  par_theta2 = starting_guess,
+  solver_method = "BFGS", solver_maxit = 1000, solver_reltol = 1e-6,
+  standardError = "heteroskedastic",
+  extremumCheck = FALSE,
+  printLevel = 1
+)
+```
+
+
+
