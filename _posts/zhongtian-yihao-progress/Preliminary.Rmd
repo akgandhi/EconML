@@ -1,0 +1,197 @@
+---
+title: "Pricing Strategies of Retailers"
+description: |
+  Description of a subsample
+author:
+  - name: Zhongtian Chen
+  - name: Yihao Yuan
+    url: https://github.com/yihao-yuan
+    affiliation: The University of Pennsylvania
+date: "`r Sys.Date()`"
+header-includes:
+  - \usepackage{dcolumn}  
+bibliography: postbib.bib
+output: 
+  distill::distill_article
+toc: false
+categories: Zhongtian and Yihao's project
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(tidyverse)
+library(lubridate)
+library(janitor)
+library(dplyr)
+library(tidyr)
+library(jmuOutlier)
+library(Hmisc)
+library(car)
+library(TTR)
+
+library(knitr)
+knitr::opts_chunk$set(tidy=FALSE, 
+               fig.width=10,
+               fig.height=5,
+               fig.align='left',
+               warning=FALSE,
+               message=FALSE,
+               echo=TRUE)
+options(width = 120)
+library(ggplot2)
+library(colorspace)
+library(gridExtra)
+library(plm)
+library(lmtest)
+library(sandwich)
+library(lfe)
+library(DescTools)
+library(stargazer)
+```
+  
+## Descriptive Analyses
+
+We start with assortment data on six categories of products: coconut water, corn, cups and straws, deo men roll-on and stick, greek yogurt, and soda and tonic water. We focus on these six categories because the detailed product information of other products are encrypted by the stores. This reduces the number of product-package-days to 19,750,749. We exclude observations where prices or costs are zero (1,014,003, 5.13%), as well as those whose regular price equal to (1,923,812, 9.74%) or less than (738,321, 3.74%) cost. It further reduces the number of observations to 16,812,934 (85.13%).
+
+```{r, include = FALSE, echo = FALSE, message = FALSE, warning=FALSE}
+df <- read.csv('https://www.dropbox.com/s/8kk3nab4s8133z9/assortment_matched.csv?dl=1', 
+               header = TRUE, sep = ",")
+
+# A product is on discount if its promotion price is nonzero and is smaller than the regular price
+df$discount <- ifelse(df$price_promotion<df$price_regular & df$price_promotion!=0, 1, 0)
+df$price <- df$discount*df$price_promotion + (1-df$discount)*df$price_regular
+df$discount_rate <- 1 - df$price/df$price_regular
+
+# Clean dataset
+sprintf("The share of obs with both zero cost and price: %f", sum(df$cost==df$price)/nrow(df))
+sprintf("The share of sales with both zero cost and price: %f", 
+        sum((df$cost==df$price)*df$sales_quantity)/sum(df$sales_quantity))
+sprintf("The share of obs with cost equal to regular price: %f", sum(df$cost==df$price_regular)/nrow(df))
+sprintf("The share of sales with both zero cost and price: %f", 
+        sum((df$cost==df$price_regular)*df$sales_quantity)/sum(df$sales_quantity))
+df <- subset(df, cost>0 & price>0 & cost < price_regular)
+
+# Compute Margin = (price-cost)/price
+df$margin = (df$price - df$cost)/df$price
+```
+
+```{r, include = FALSE, echo = FALSE, message = FALSE, warning=FALSE}
+sprintf("The share of product-days in discount: %f", sum(df$discount ==1)/nrow(df))
+sprintf("The share of sales with negative margins: %f", 
+        sum((df$discount ==1)*df$sales_quantity)/sum(df$sales_quantity))
+sprintf("The share of product-days with negative margins: %f", sum(df$margin < 0)/nrow(df))
+sprintf("The share of sales with negative margins: %f", 
+        sum((df$margin<0)*df$sales_quantity)/sum(df$sales_quantity))
+sprintf("The share of product-days in discount with negative margins: %f", 
+        sum(df$margin < 0 & df$discount==1)/sum(df$discount == 1))
+sprintf("The share of sales in discount with negative margins: %f", 
+        sum((df$margin<0 & df$discount==1)*df$sales_quantity)/sum((df$discount == 1)*df$sales_quantity))
+```
+
+We define discount as a product-package-day-level dummy variable, which equals to 1 if the daily sales price of a product-package lower than its regular price in a day. Both daily sales price and regular price are provided in the assortment data. 1.76% of the product-packages-days (6.87% of the sales) were at a discount, suggesting consumers are price sensitive. 
+
+We compute margins of each product-package-day as $Margin = \frac{P-C}{P}$. Strikingly, 44.63% of the discounted product-packages (56.79% of the sales at a discount) were sold with negative margins. Another 12.46% of the discounted product-packages (8.96% of the sales at a discount) were sold exactly at the cost level. The histograms of margins for all and discounted product-packages are presented below.
+
+```{r, echo = FALSE, message = FALSE, warning=FALSE}
+truncHist(df$margin, main="Margin rates for all product-packages", xmin=-0.1, xmax=0.4, 
+          xlab="Margin rate", density = FALSE, breaks = 30)
+truncHist(df$margin[df$discount==1], main="Margin rates for discounted product-packages", 
+          xmin=-1, xmax=0.5,  xlab="Margin rate", density = FALSE, breaks = 30)
+```
+
+The heat plots on discounted product-packages below show some patterns in stores' discounting strategies. The y-axes in both graphs are the discount rates. The x-axis in the left graph is the margin rates of the discounted prices, and that in the right graph is the margin rates of the regular prices. We find it common for stores to discount the products to their costs. In addition, stores tend to give discount rates around 10% and 20%, even for product-packages with small margins, which drives the margin rates negative.
+
+```{r, echo = FALSE, message = FALSE, warning=FALSE, preview=TRUE}
+p = ggplot(subset(df, discount==1 & margin > -1 & margin < 0.5)) + aes(x=margin, y=discount_rate) + 
+  xlab("Margin rates (discounted prices)") + ylab("Discount rates")
+p1 = p + geom_point(alpha = 0.01, colour="orange") + geom_density2d() +theme_bw()
+q = ggplot(subset(df, discount==1 & margin > -1 & margin < 0.5)) + 
+  aes(x=(price_regular-cost)/price_regular, y=discount_rate) + 
+  xlab("Margin rates (original prices)") + ylab("Discount rates")
+q1 = q + geom_point(alpha = 0.01, colour="purple") + geom_density2d() +theme_bw()
+grid.arrange(p1,q1,ncol=2)
+```
+
+## Possible Explanations
+
+### Intertemporal price discrimination
+
+The theory of intertemporal price discrimination suggests that retailers charge low prices to attract searchers, who are more price sensitive; meanwhile, they charge high prices to non-searchers, who are less price sensitive (@hendel2013intertemporal). This theory implies that retailers should always charge prices greater than costs because they have the market power for price discrimination. This contradicts the findings above, which suggest that almost 2/3 of the discounted sales have negative margins.
+
+### Inventory Management
+
+Because some products are perishable, and stores may want to sell before they perish. To investigate whether this is an explanation for negative margins, we firstly regress the binary variable discount and the continuous variable discount rate on the logged mean of stock quantities in the past 8 to 28 days. The nearest 7 days are excluded when constructing the variable because it is likely that stores make preparations for the promotions, and start stockpiling days before promotions. In order to prevent the outliers with extremely large amount of stocks to affect the regressions overwhelmingly, we take the logarithm of the stock quantities in analyses. Store and product fixed effects are controlled in all specifications. 
+
+Column (1) and (2) of the table below shows that the moving average is positively associated with both the probability and rate of the discount. However, as column (3) shows, among the discounted product-packages, higher stock quantity is not significantly correlated with higher likelihood of negative margins. The results suggest inventory management may not be the main reason of negative margins, though it can be correlated with the probability of discount.
+
+```{r, echo = FALSE, message = FALSE, warning=FALSE, include=FALSE}
+# Compute one-week moving average of sales quantity
+df2 <- df %>% group_by(store_key, item_key) %>% filter(n() >= 28) %>% ungroup
+df2$stock_quantity <- Winsorize(df2$stock_quantity, probs=c(0.01,0.99))
+df2 <- df2 %>% 
+  group_by(store_key, item_key) %>% 
+  mutate(stock_1wma = runMean(stock_quantity, n=7),
+         stock_1mma = runMean(stock_quantity, n=28))
+df2$margin_regular <- (df2$price_regular - df2$cost)/df2$price_regular
+df2$negative_margin <- ifelse(df2$margin<0, 1, 0)
+df2$stock_1mma <- (df2$stock_1mma*28 - df2$stock_1wma*7)/21
+df2$stock_1mma <- log(ifelse(df2$stock_1mma>0,df2$stock_1mma,0) + 1)
+im1 <- felm(discount ~ stock_1mma | store_key + item_key | 0 | store_key + item_key,
+            data=subset(df2,stock_1mma > 0 & stock_quantity>0))
+im2 <- felm(discount_rate ~ stock_1mma | store_key + item_key | 0 | store_key + item_key,
+            data=subset(df2,stock_1mma > 0 & stock_quantity>0))
+im3 <- felm(negative_margin ~ stock_1mma | store_key + item_key | 0 | store_key + item_key,
+            data=subset(df2, discount==1 & stock_1mma > 0))
+rm(df2)
+```
+<div align="center">
+```{r, echo = FALSE, message = FALSE, warning=FALSE, results='asis'}
+stargazer(im1,im2,im3, title="Regression Results: Inventory Management", align=TRUE, no.space=TRUE,
+          covariate.labels = "Log(stock quantity)", omit.stat=c("LL","ser","f"), 
+          dep.var.labels=c("Discount","Discount rate","Negative margin"), type="html",
+          star.char = c("+","*", "**", "***"), star.cutoffs = c(.1, .05, .01, .001), notes.append=FALSE,
+          notes = c("+p<0.1; <sup>&sstarf;</sup>p<0.05; <sup>&sstarf;&sstarf;</sup>p<0.01; <sup>&sstarf;&sstarf;&sstarf;</sup>p<0.001"))
+```
+</div>
+
+### Loss Leader
+
+Stores may want to offer deep promotions on some products to attract consumers to the store to shop for other products, and maximize the overall profit. For example, @li2013price built up a Hotelling model and empirically showed that book sellers are more likely to promote best sellers, and book sellers that have wider ranges of books are more likely to adopt loss leader strategy. Applying their conclusions, we investigate if more popular products are more likely to be discounted and have negative margins. We use the moving average of the sales quantity in past 28 days to measure popularity. Days with discounted prices are excluded from the computation of moving average to avoid spurious positive correlation between popularity and discount probability. For example, some products may have been discounted for days, such that they have large moving averages of sales quantities. Though these numbers cannot reflect the popularity of the products without price promotions, falsefully using them in analyses may result misleading finding that product-packages with higher sales quantities are more likely to be promoted.
+
+The table below shows that popularity is negatively correlated with the likelihood and the rate of discount, though no significance is found in column (2). In addition, popularity is not significantly correlated with the likelihood of negative margins for discounted product-packages. Without using logarithm of sales quantities as the dependent variable will turn all coefficients positive, though no significance will be found (results are not presented). In sum, loss leader may not be the main reason for either price promotion or negative margins.
+
+```{r, echo = FALSE, message = FALSE, warning=FALSE, include=FALSE}
+df3 <- df
+# Rule out the days with promotions when computing the popularity of products
+df3 <- df3 %>% group_by(store_key, item_key) %>% filter(n() >= 28) %>% ungroup
+df3 <- df3 %>% 
+  group_by(store_key, item_key) %>% 
+  mutate(sales_1wma = runSum(sales_quantity, n=7),
+         sales_1mma = runSum(sales_quantity, n=28),
+         sales_1mma_promotion = runSum(sales_quantity*discount, n=28),
+         discount_1mma = runSum(discount, n=28))
+df3$sales_1mma_np <- (df3$sales_1mma - df3$sales_1mma_promotion)/(28-df3$discount_1mma)
+df3$sales_1mma_np <- log(ifelse(df3$sales_1mma_np>0, df3$sales_1mma_np, 0) + 1)
+df3$negative_margin <- ifelse(df3$margin<0, 1, 0)
+ll1 <- felm(discount ~ sales_1mma_np | store_key + item_key | 0 | store_key + item_key,
+            data=subset(df3, stock_quantity>0))
+ll2 <- felm(discount_rate ~ sales_1mma_np | store_key + item_key | 0 | store_key + item_key,
+            data=subset(df3, stock_quantity>0))
+ll3 <- felm(negative_margin ~ sales_1mma_np | store_key + item_key | 0 | store_key + item_key,
+            data=subset(df3, discount==1 & stock_quantity>0))
+rm(df3)
+```
+
+```{r, echo = FALSE, message = FALSE, warning=FALSE, results='asis'}
+stargazer(ll1,ll2,ll3, title="Regression Results: Loss Leader", align=TRUE, no.space=TRUE,
+          covariate.labels = "Log(sales quantity)", omit.stat=c("LL","ser","f"), 
+          dep.var.labels=c("Discount","Discount rate","Negative margin"), type="html",
+          star.char = c("+","*", "**", "***"), star.cutoffs = c(.1, .05, .01, .001), notes.append=FALSE,
+          notes = c("+p<0.1; <sup>&sstarf;</sup>p<0.05; <sup>&sstarf;&sstarf;</sup>p<0.01; <sup>&sstarf;&sstarf;&sstarf;</sup>p<0.001"))
+```
+
+## Next Steps
+
+* Full data are being merged and compressed into one single csv.gz file. Future work will be conducted on Amazon cloud.
+* Look for other explanations of discounts and negative margins, and use linear models to investigate their explanatory powers.
+* Use unsupervised machine learning methods to explore the factors to explain the remaining variations of dependent variables.

@@ -1,0 +1,18 @@
+.theorem {
+  display: block;
+  font-style: italic;
+  font-size: 24px;
+  font-family: "Times New Roman";
+  color: black;
+}
+.theorem::before {
+  content: "Theorem. ";
+  font-weight: bold;
+  font-style: normal;
+}
+.theorem[text]::before {
+  content: "Theorem (" attr(text) ") ";
+}
+.theorem p {
+  display: inline;
+}

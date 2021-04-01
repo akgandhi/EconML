@@ -1,0 +1,111 @@
+---
+title: "Predicting Hospital Exit"
+description: |
+  Data description 
+author:
+  - name: Catherine Ishitani
+  - name: Gi Kim
+    affiliation: Wharton
+date: "March 15, 2021"
+output:
+  distill::distill_article:
+    self_contained: true
+toc: false 
+categories: Catherine and Gi's project
+editor_options: 
+  chunk_output_type: console
+preview: https://patientengagementhit.com/images/sized/rural_hospital-121d13579ca8677ccaacfae5d62f3c8e.png
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+In this post, we wrangle our hospital data a bit and then describe it, focusing on:
+
+1) characteristics of exiting hospitals and
+
+2) elements of our data that may warrant additional consideration in standard ML models. 
+
+## Data
+We've added another five years to our data: we now observe the population of U.S. hospitals (~6,300) from 2003-2017. 
+
+Our predictor variables are drawn from five categories: 
+
+- hospital characteristics: such as number of beds, admissions, total and technological services; non-profit & teaching status; Medicaid share; market share; age
+
+- market: population, poverty rate, number of hospitals, and each hospitals' distance from the nearest 100 bed hospital
+
+- ownership structure: whether the hospital is owned by a system or vertically integrated
+
+- financial: revenue, growth, profit margins, uncompensated care costs, cash, debt    
+
+- lagged variables: outcome, ownership, and financial history     
+
+```{r,echo=FALSE}
+library(ggplot2)
+library(usmap)
+library(gganimate)
+library(gifski)
+library(png)
+library(haven)
+library(janitor)
+library(skimr)
+library(dplyr)
+library(kableExtra)
+library(caret)
+library(tidyverse)
+library(maptools)
+library(rgdal)
+library(magick)
+library(glue)
+library(corrgram)
+
+#our hospital data
+hcris <- read_dta("gandhi_hcris_2.dta") %>%  clean_names() %>% remove_empty()
+```
+
+## Wrangling
+
+Our data is already tidy, but we spend some time cleaning up the financial variables. HCRIS data are extracted from unaudited financial records submitted to the Centers for Medicare & Medicaid Services (CMS). They're the most complete source of provider financial data but noisy. Prior literature typically winsorizes outliers and unreasonable values. We also create a net debt and financial growth variables.    
+
+```{r,echo=FALSE}
+#drop unreasonable values
+cleaned <- mutate(hcris,
+  liquid     = replace(liquid,(liquid>10)        | (liquid<-1),NA),
+  uncomp     = replace(uncomp,(uncomp_mgn>1)     | (uncomp_mgn<-1),NA),
+  capex      = replace(capex,(capex_mgn>1)       | (capex_mgn<-1),NA),
+  ptnt_mgn   = replace(ptnt_mgn,(ptnt_mgn>1)     | (ptnt_mgn<-1),NA),
+  ni_mgn     = replace(ni_mgn,(ni_mgn>1)         | (ni_mgn<-1),NA),
+  uncomp_mgn = replace(uncomp_mgn,(uncomp_mgn>1) | (uncomp_mgn<-1),NA),
+  levg       = replace(levg,(levg>10)            | (levg<-10),NA),
+  capex_mgn  = replace(capex_mgn,(capex_mgn>1)   | (capex_mgn<-1),NA))
+#CI: I don't think this code is working.
+
+#create lagged vars (of all outcome & non-fixed predictor variables) 
+# if you have the list of variables, you can do this as:
+# cleaned <- cleaned %>% mutate(across(c( varlist ), list(lag=~lag(.x))))
+
+```
+
+```{r,echo=TRUE}
+#winsorize outliers outside the 1st and 99th percentiles
+var_vec = c('ptnt_mgn', 'ni_mgn', 'liquid', 'uncomp', 'uncomp_mgn', 'capex', 'capex_mgn', 'rev_adm', 'tot_assets', 'ptnt_opex', 'oth_costs', 'tot_costs','levg')
+clean_p1_p99 <- cleaned %>% group_by(year) %>% summarise_at(vars('ptnt_mgn', 'ni_mgn', 'liquid', 'uncomp', 'uncomp_mgn', 'capex', 'capex_mgn', 'rev_adm', 'tot_assets', 'ptnt_opex', 'oth_costs', 'tot_costs','levg'), .funs=list(p1=~quantile(.,.01,na.rm=TRUE),p99=~quantile(.,.99,na.rm=TRUE)))
+clean_p1_p99_merged <- inner_join(cleaned,clean_p1_p99,by='year')
+
+for(varname in var_vec) {
+  cleaned$rmflag = (cleaned[{varname}] < clean_p1_p99_merged[glue('{varname}_p1')] | 
+                     cleaned[{varname}] > clean_p1_p99_merged[glue('{varname}_p99')] |  
+                      is.na(cleaned[{varname}]))
+}
+
+cleaned <- cleaned %>% filter(!rmflag)
+
+#create a net debt variable
+cleaned <- mutate(hcris, netdebt = debt - cash)
+
+#create growth variables
+cleaned <- cleaned %>% group_by(num_prvdr_num) %>% mutate(across(c(rev_tot,rev_netptnt,admtot,net_income,ptnt_income,exptot), list(ch=~(.x-lag(.x))/.x)))
+
+```

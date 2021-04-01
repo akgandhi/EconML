@@ -1,0 +1,544 @@
+---
+title: "Portrait of Welfare Recipients"
+description: |
+  Some descriptive statistics about recipients of welfare.
+author:
+  - name: Ornella Darova
+  - name: Ozgur Seker
+date: 03-10-2021
+output:
+  distill::distill_article:
+    self_contained: false
+categories: Ornella and Ozgur's project
+---
+
+# Data
+
+We have a rich dataset from the CPS IPUMS that has observations collected from 2009 to 2020 and has 183 variables. We are going to complement this dataset with additional information at the county or state level, as it might be relevant for the analysis we plan to conduct.
+
+You can downlod the whole dataset at this [link](https://www.dropbox.com/s/04fjy1ucc2in106/cps_00005.dta?dl=0), or a sample dataset at this [link](https://www.dropbox.com/s/7r0a2t00gify7ay/sampleData.dta?dl=1).
+
+# Exploratory Analysis
+
+Our goal in this post is to conduct an exploratory analysis of our data, and moreover to add other sources of information to the main CPS dataset.
+
+```{r setup, include=FALSE,echo=FALSE}
+library(tidyverse)
+library(haven)
+library(janitor)
+library(expss)
+
+readCountyData <- function(){
+  countyData <- read_csv("~/Dropbox/Penn/ML/Predicting Take-Up Rate/CountyLevelData/CAINC1/CAINC1__ALL_AREAS_1969_2019.csv")
+  countyData = countyData[1:9528,]
+  return(countyData)
+}
+
+
+cd <- readCountyData()
+cols <- names(cd)[9:length(names(cd))]
+cd <- cd %>% mutate_at(cols, as.numeric)
+
+prepCountyData <- function(data, year = 2019, newColNames = c("Income", "Pop", "PerCapInc"), colsNeeded = c("GeoFIPS", "GeoName", "Region") ){
+  
+  groups <- unique(data$LineCode)
+  dataNew <- data %>% filter(LineCode == groups[1])
+  dataNew[, paste0(year,"_",newColNames[1])] <- dataNew[, paste(year)]
+  
+  yourCols <- c(colsNeeded, paste0(year,"_",newColNames[1]))
+  
+  for (i in 2:length(groups)){
+    grp <- groups[i]
+    colnam <- newColNames[i]
+    dataTemp <- data %>% filter(LineCode == grp) 
+    newName <- paste0(year,"_",newColNames[i]) 
+    yourCols <- c(yourCols, newName)
+    dataNew[,newName] <- dataTemp[,paste(year)]
+  }
+  
+  return(dataNew[,yourCols])
+  
+}
+
+cd <- prepCountyData(cd)
+cd$GeoFIPS  <- as.numeric(cd$GeoFIPS)
+
+head(cd)
+```
+
+
+```{r, include=FALSE,echo=FALSE}
+
+CreateMissingDataFrame <- function(){
+  MissingValsDF <- data.frame( Var = "faminc", Val = 995 )
+  MissingValsDF <- MissingValsDF %>% add_row(Var = "faminc", Val = 997)
+  MissingValsDF <- MissingValsDF %>% add_row(Var = "metarea", Val = 9999)
+  MissingValsDF <- MissingValsDF %>% add_row(Var = "statefip", Val = 99)
+  MissingValsDF <- MissingValsDF %>% add_row(Var = "faminc", Val = 999)
+  MissingValsDF <- MissingValsDF %>% add_row(Var = "race", Val = 999)
+  MissingValsDF <- MissingValsDF %>% add_row(Var = "famsize", Val = 0)
+  MissingValsDF <- MissingValsDF %>% add_row(Var = "mbpl", Val = 96000)
+  MissingValsDF <- MissingValsDF %>% add_row(Var = "nativity", Val = 0)
+  MissingValsDF <- MissingValsDF %>% add_row(Var = "hispan", Val = 901)
+  MissingValsDF <- MissingValsDF %>% add_row(Var = "uhrsworkt", Val = 997)
+  MissingValsDF <- MissingValsDF %>% add_row(Var = "wnlook", Val = 997)
+  MissingValsDF <- MissingValsDF %>% add_row(Var = "migrate1", Val = 9)
+  MissingValsDF <- MissingValsDF %>% add_row(Var = "paidhour", Val = 7)
+  write_csv(MissingValsDF, file = "missingValues.csv")
+}
+
+CreateRefusedDataFrame <- function(){
+  RefusadValsDF <- data.frame( Var = "faminc", Val = 996 )
+  RefusadValsDF <- RefusadValsDF %>% add_row(Var = "empstat", Val = 0)
+  RefusadValsDF <- RefusadValsDF %>% add_row(Var = "paidhour", Val = 6)
+  write_csv(RefusadValsDF, file = "refusedValues.csv")
+}
+
+CreateNiuDataFrame <- function(){
+  NiuValsDF <- data.frame( Var = "vetstat", Val = 0 )
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "empstat", Val = 0)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "metarea", Val = 9998)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "ownershp", Val = 0)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "pubhous", Val = 0)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "rentsub", Val = 0)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "heatsub", Val = 0)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "foodstmp", Val = 0)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "stmpmo", Val = 0)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "atelunch", Val = 99)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "empstat", Val = 0)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "lunchsub", Val = 0)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "frelunch", Val = 98)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "frelunch", Val = 99)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "unitsstr", Val = 0)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "phone", Val = 0)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "sex", Val = 9)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "marst", Val = 9)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "eldch", Val = 99)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "yngch", Val = 9)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "bpl", Val = 99999)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "yrimmig", Val = 0)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "citizen", Val = 9)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "mbpl", Val = 99999)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "labforce", Val = 0)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "uhrsworkt", Val = 999)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "durunem2", Val = 99)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "whyunemp", Val = 0)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "wnlook", Val = 999)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "wkstat", Val = 99)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "educ", Val = 1)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "educ", Val = 0)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "diffany", Val = 0)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "pension", Val = 0)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "firmsize", Val = 0)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "payifabs", Val = 0)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "srceduc", Val = 0)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "srcunemp", Val = 9)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "srcwelfr", Val = 0)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "srcwkcom", Val = 0)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "ssikid", Val = 0)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "sskid", Val = 0)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "whyss1", Val = 0)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "whyss2", Val = 0)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "whyssi1", Val = 0)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "whyssi2", Val = 0)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "gotvdisa", Val = 0)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "gotveduc", Val = 0)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "gotvothe", Val = 0)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "gotvpens", Val = 0)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "gotsurv", Val = 0)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "migsta1", Val = 0)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "migsta5", Val = 0)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "whymove", Val = 0)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "migrate1", Val = 0)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "disabwrk", Val = 0)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "quitsick", Val = 0)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "inclugh", Val = 0)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "paidgh", Val = 0)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "hichamp", Val = 9)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "phinsur", Val = 0)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "phiown", Val = 0)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "caidly", Val = 9)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "carely", Val = 9)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "schiply", Val = 0)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "hinelig1", Val = 99)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "hinelig2", Val = 99)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "hinelig3", Val = 99)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "hinelig4", Val = 99)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "hinelig5", Val = 99)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "kidpriv", Val = 0)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "kidcaid", Val = 0)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "gotwic", Val = 0)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "paidhour", Val = 0)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "union", Val = 0)
+  NiuValsDF <- NiuValsDF %>% add_row(Var = "heatval", Val = 0)
+  
+  write_csv(NiuValsDF, file = "NIUValues.csv")
+}
+
+# CreateMissingDataFrame()
+# CreateRefusedDataFrame()
+# CreateNiuDataFrame()
+```
+
+```{r, include=FALSE,echo=FALSE}
+
+#cpsSample <- read_dta("~/Dropbox/Penn/ML/Predicting Take-Up Rate/sampleData.dta") # Sample
+cpsSample <- read_dta("~/Dropbox/Penn/ML/Predicting Take-Up Rate/cps_00005.dta") # Original dataset
+
+missingDF <- read_csv(file = "~/Dropbox/Penn/ML/Predicting Take-Up Rate/missingValues.csv")
+niuDF <- read_csv(file = "~/Dropbox/Penn/ML/Predicting Take-Up Rate/NIUValues.csv")
+refusedDF <- read_csv(file = "~/Dropbox/Penn/ML/Predicting Take-Up Rate/refusedValues.csv")
+
+
+orderedVars <- c("heatval", "stampmo", "atelunch", "frelunch", "faminc", "unitsstr", 
+                 "age", "famsize", "nchild", "nchlt5", "famunit", "eldch", "yngch", "durunem2",
+                 "uhrsworkt", "educ", "firmsize", "health")
+
+ncps <- cpsSample %>% left_join(cd%>%select(GeoFIPS, "2019_Income", "2019_Pop", "2019_PerCapInc"), by= c("county" = "GeoFIPS"))
+
+cor(ncps$health, ncps$hhincome, use = "complete.obs")
+cor(ncps$health, ncps$faminc, use = "complete.obs")
+cor(ncps$health, ncps$hhincome, use = "complete.obs")
+
+#ncps <- ncps %>% filter(county != 0)
+#cor(ncps$famsize, ncps$`2019_PerCapInc`, use = "complete.obs")
+#cor(ncps$hhincome, ncps$`2019_PerCapInc`, use = "complete.obs")
+#cor(ncps$heatsub, ncps$`2019_PerCapInc`, use = "complete.obs")
+#cor(ncps$health, ncps$`2019_PerCapInc`, use = "complete.obs")
+
+# rm(cd)
+# rm(cpsSample)
+# rm(cols)
+# rm(prepCountyData)
+# rm(readCountyData)
+
+```
+
+## Take-Up Rate Below the SPM
+
+We now analyze the take-up rate of different social programs among individuals living in household units below the Supplemental Poverty Measure.
+
+First of all, we try to understand, among those who are deemed to be in the universe of possible participants to social welfare, how many actually participate.
+
+```{r, include=TRUE,echo=FALSE}
+
+library(ggplot2)
+library(pdp)
+
+NoYes <- c("No", "Yes")
+cpsSamplePov <- subset(cpsSample, cpsSample$spmpov==1)
+
+p1 <- ggplot(as.data.frame(subset(cpsSamplePov,cpsSamplePov$pubhous!=0)), 
+       aes(x=as.factor(subset(cpsSamplePov$pubhous,cpsSamplePov$pubhous!=0)))) + 
+       geom_bar(alpha = .2, aes(fill=..count..)) +
+       scale_fill_gradient("count", low="green", high="red") + 
+       scale_x_discrete(labels= NoYes) + 
+       ylab("Living in Public Housing") + 
+       theme(legend.position="none", axis.title.x=element_blank())
+
+p2 <- ggplot(as.data.frame(subset(cpsSamplePov,cpsSamplePov$rentsub!=0)), 
+       aes(x=as.factor(subset(cpsSamplePov$rentsub,cpsSamplePov$rentsub!=0)))) + 
+       geom_bar(alpha = .2, aes(fill=..count..)) +
+       scale_fill_gradient("count", low="green", high="red") + 
+       scale_x_discrete(labels= NoYes) + 
+       ylab("Government Rent Subsidy Recipient") + 
+       theme(legend.position="none", axis.title.x=element_blank())
+
+p3 <- ggplot(as.data.frame(subset(cpsSamplePov,cpsSamplePov$heatsub!=0)), 
+       aes(x=as.factor(subset(cpsSamplePov$heatsub,cpsSamplePov$heatsub!=0)))) + 
+       geom_bar(alpha = .2, aes(fill=..count..)) +
+       scale_fill_gradient("count", low="green", high="red") + 
+       scale_x_discrete(labels= NoYes) + 
+       ylab("Government Heat Subsidy Recipient") + 
+       theme(legend.position="none", axis.title.x=element_blank())
+
+p4 <- ggplot(as.data.frame(subset(cpsSamplePov,cpsSamplePov$foodstmp!=0)), 
+       aes(x=as.factor(subset(cpsSamplePov$foodstmp,cpsSamplePov$foodstmp!=0)))) + 
+       geom_bar(alpha = .2, aes(fill=..count..)) +
+       scale_fill_gradient("count", low="green", high="red") + 
+       scale_x_discrete(labels= NoYes) + 
+       ylab("Government Food Stamps Recipient") + 
+       theme(legend.position="none", axis.title.x=element_blank())
+
+p5 <- ggplot(as.data.frame(subset(cpsSamplePov,cpsSamplePov$lunchsub!=0)), 
+       aes(x=as.factor(subset(cpsSamplePov$lunchsub,cpsSamplePov$lunchsub!=0)))) + 
+       geom_bar(alpha = .2, aes(fill=..count..)) +
+       scale_fill_gradient("count", low="green", high="red") + 
+       scale_x_discrete(labels= NoYes) + 
+       ylab("Government Lunch Subsidy Recipient") + 
+       theme(legend.position="none", axis.title.x=element_blank())
+
+grid.arrange(p1,p2,p3,nrow=1)
+grid.arrange(p4,p5,nrow=1)
+
+```
+
+We can thus observe how a large part of these individuals below the poverty threshold do not actually receive social programs benefits.
+
+## Income Distribution
+
+Now, keeping our discussion around individuals whose household is below the poverty line, we are going to observe,  what is the distribution of income according to the participation to the previously discussed social programs.
+
+```{r, include=TRUE,echo=FALSE}
+
+p1 <- ggplot(as.data.frame(cpsSamplePov), aes(x=as.factor(cpsSamplePov$faminc))) +
+      geom_bar(aes(fill=as.factor(cpsSamplePov$pubhous)), 
+      position = "identity", alpha=0.3) + theme(axis.text.x = element_blank()) + 
+      ylab("Living in Public Housing") + xlab("Household Income") + 
+      scale_fill_discrete(name = "Public Housing", labels = c("Not in Universe", "No", "Yes"))
+
+p2 <- ggplot(as.data.frame(cpsSamplePov), aes(x=as.factor(cpsSamplePov$faminc))) +
+      geom_bar(aes(fill=as.factor(cpsSamplePov$rentsub)), 
+      position = "identity", alpha=0.3) + theme(axis.text.x = element_blank()) + 
+      ylab("Government Rent Subsidy Recipient") + xlab("Household Income") + 
+      scale_fill_discrete(name = "Rent Subsidy Recipient", labels = c("Not in Universe", "No", "Yes"))
+
+p3 <- ggplot(as.data.frame(cpsSamplePov), aes(x=as.factor(cpsSamplePov$faminc))) +
+      geom_bar(aes(fill=as.factor(cpsSamplePov$heatsub)), 
+      position = "identity", alpha=0.3) + theme(axis.text.x = element_blank()) + 
+      ylab("Government Heat Subsidy Recipient") + xlab("Household Income") + 
+      scale_fill_discrete(name = "Heat Subsidy Recipient", labels = c("Not in Universe", "No", "Yes"))
+
+p4 <- ggplot(as.data.frame(cpsSamplePov), aes(x=as.factor(cpsSamplePov$faminc))) +
+      geom_bar(aes(fill=as.factor(cpsSamplePov$foodstmp)), 
+      position = "identity", alpha=0.3) + theme(axis.text.x = element_blank()) + 
+      ylab("Government Food Stamps Recipient") + xlab("Household Income") + 
+      scale_fill_discrete(name = "Food Stamps Recipient", labels = c("Not in Universe", "No", "Yes"))
+
+p5 <- ggplot(as.data.frame(cpsSamplePov), aes(x=as.factor(cpsSamplePov$faminc))) +
+      geom_bar(aes(fill=as.factor(cpsSamplePov$lunchsub)), 
+      position = "identity", alpha=0.3) + theme(axis.text.x = element_blank()) + 
+      ylab("Government Lunch Subsidy Recipient") + xlab("Household Income") + 
+      scale_fill_discrete(name = "Lunch Subsidy Recipient", labels = c("Not in Universe", "No", "Yes"))
+
+p1
+p2
+p5
+
+```
+
+## Ethnicity and Race
+
+We are now going to explore the ethnic distribution of those who apply to social programs.
+
+```{r, include=TRUE,echo=FALSE}
+
+cpsSamplePovRace <- subset(cpsSamplePov,race==100|race==200|race==300|race==651)
+Race <- c("White","Black","American Indian","Asian")
+
+p1 <- ggplot(as.data.frame(cpsSamplePovRace), aes(x=as.factor(cpsSamplePovRace$race))) +
+      geom_bar(aes(fill=as.factor(cpsSamplePovRace$pubhous)), 
+      position = "identity", alpha=0.3) + scale_x_discrete(labels= Race) +
+      ylab("Living in Public Housing") + xlab("Race") + 
+      scale_fill_discrete(name = "Public Housing", labels = c("Not in Universe", "No", "Yes"))
+
+p2 <- ggplot(as.data.frame(cpsSamplePovRace), aes(x=as.factor(cpsSamplePovRace$race))) +
+      geom_bar(aes(fill=as.factor(cpsSamplePovRace$rentsub)), 
+      position = "identity", alpha=0.3) + scale_x_discrete(labels= Race) +
+      ylab("Government Rent Subsidy Recipient") + xlab("Race") + 
+      scale_fill_discrete(name = "Rent Subsidy Recipient", labels = c("Not in Universe", "No", "Yes"))
+
+p5 <- ggplot(as.data.frame(cpsSamplePovRace), aes(x=as.factor(cpsSamplePovRace$race))) +
+      geom_bar(aes(fill=as.factor(cpsSamplePovRace$lunchsub)), 
+      position = "identity", alpha=0.3) + scale_x_discrete(labels= Race) +
+      ylab("Government Lunch Subsidy Recipient") + xlab("Race") + 
+      scale_fill_discrete(name = "Lunch Subsidy Recipient", labels = c("Not in Universe", "No", "Yes"))
+
+p1
+p2
+p5
+```
+
+
+## Migration Status
+
+Finally, we look at the migration status of welfare recipients.
+
+```{r, include=TRUE,echo=FALSE}
+
+cpsSamplePovNativity <- subset(cpsSamplePov,nativity==1|nativity==4|nativity==5)
+Nativity <- c("Native parents","Foreign parents","Foreign born")
+
+p1 <- ggplot(as.data.frame(cpsSamplePovNativity), aes(x=as.factor(cpsSamplePovNativity$nativity))) +
+      geom_bar(aes(fill=as.factor(cpsSamplePovNativity$pubhous)), 
+      position = "identity", alpha=0.3) + scale_x_discrete(labels= Nativity) +
+      ylab("Living in Public Housing") + xlab("Nativity") + 
+      scale_fill_discrete(name = "Public Housing", labels = c("Not in Universe", "No", "Yes"))
+
+p2 <- ggplot(as.data.frame(cpsSamplePovNativity), aes(x=as.factor(cpsSamplePovNativity$nativity))) +
+      geom_bar(aes(fill=as.factor(cpsSamplePovNativity$rentsub)), 
+      position = "identity", alpha=0.3) + scale_x_discrete(labels= Nativity) +
+      ylab("Government Rent Subsidy Recipient") + xlab("Nativity") + 
+      scale_fill_discrete(name = "Rent Subsidy Recipient", labels = c("Not in Universe", "No", "Yes"))
+
+p5 <- ggplot(as.data.frame(cpsSamplePovNativity), aes(x=as.factor(cpsSamplePovNativity$nativity))) +
+      geom_bar(aes(fill=as.factor(cpsSamplePovNativity$lunchsub)), 
+      position = "identity", alpha=0.3) + scale_x_discrete(labels= Nativity) +
+      ylab("Government Lunch Subsidy Recipient") + xlab("Nativity") + 
+      scale_fill_discrete(name = "Lunch Subsidy Recipient", labels = c("Not in Universe", "No", "Yes"))
+
+p1
+p2
+p5
+```
+
+## Participation to multiple social programs
+
+Moreover, we observe whether the participation to some social program is correlated with the participation to other programs too.
+
+```{r, include=TRUE,echo=FALSE}
+
+mydata <- cbind(cpsSamplePov$pubhous,cpsSamplePov$rentsub,cpsSamplePov$heatsub,cpsSamplePov$foodstmp,cpsSamplePov$lunchsub)
+cormat <- round(cor(mydata),2)
+
+# Get upper triangle of the correlation matrix
+get_upper_tri <- function(cormat){
+    cormat[lower.tri(cormat)]<- NA
+    return(cormat)
+  }
+upper_tri <- get_upper_tri(cormat)
+
+library(reshape2)
+melted_cormat <- melt(upper_tri, na.rm = TRUE)
+# Heatmap
+ggplot(data = melted_cormat, aes(Var2, Var1, fill = value))+
+ geom_tile(color = "white")+
+ scale_fill_gradient2(low = "blue", high = "red", mid = "white", space = "Lab", 
+   name="Pearson\nCorrelation") +
+  theme_minimal()+ 
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, 
+    size = 12, hjust = 1),axis.title.y=element_blank(),
+    axis.title.x=element_blank())+
+ coord_fixed() +
+  geom_text(aes(label = value), color = "black", size = 3) + 
+  scale_x_continuous(breaks = c(1, 2, 3, 4, 5),
+                   labels = c("Public Housing","Rent Subsidy","Heat Subsidy","Food Stamps","Lunch Subsidy"))
+  
+# Generate a variable for all social programs
+
+cpsSamplePov$social <- 0
+cpsSamplePov$social <- ifelse(cpsSamplePov$pubhous==2,cpsSamplePov$social+1,cpsSamplePov$social)
+cpsSamplePov$social <- ifelse(cpsSamplePov$rentsub==2,cpsSamplePov$social+1,cpsSamplePov$social)
+cpsSamplePov$social <- ifelse(cpsSamplePov$heatsub==2,cpsSamplePov$social+1,cpsSamplePov$social)
+cpsSamplePov$social <- ifelse(cpsSamplePov$foodstmp==2,cpsSamplePov$social+1,cpsSamplePov$social)
+cpsSamplePov$social <- ifelse(cpsSamplePov$lunchsub==2,cpsSamplePov$social+1,cpsSamplePov$social)
+
+g <- ggplot(cpsSamplePov, aes(social))
+g + geom_bar(alpha=0.8,fill="lightblue") + 
+    labs(x = "# of Social Programs participating to",
+         fill="# Social Programs")
+
+g <- ggplot(cpsSamplePov, aes(as.factor(faminc), social))
+g + geom_violin(alpha=0.4,fill="lightblue") + theme(axis.text.x = element_blank()) +
+  labs(x="Household Income",
+       y="# of Social Programs participating to")
+
+```
+
+## Time Dimension
+
+Finally, we observe whether the participation to some social program changed over time, from 2010 to 2020.
+
+```{r, include=TRUE,echo=FALSE}
+
+g <- ggplot(cpsSamplePov, aes(as.factor(year), social))
+g + geom_violin(alpha=0.4,fill="lightblue") +
+  labs(x="Year",
+       y="# of Social Programs participating to")
+```
+
+
+# Medicaid and Medicare
+
+We now investigate the take-up rate of health related programs, notably Medicaid and Medicare.
+
+```{r, include=TRUE,echo=FALSE}
+
+p1 <- ggplot(as.data.frame(subset(cpsSamplePov,cpsSamplePov$caidly!=9)), 
+       aes(x=as.factor(subset(cpsSamplePov$caidly,cpsSamplePov$caidly!=9)))) + 
+       geom_bar(alpha = .2, aes(fill=..count..)) +
+       scale_fill_gradient("count", low="green", high="red") + 
+       scale_x_discrete(labels= NoYes) + 
+       ylab("Covered by Medicaid last year") + 
+       theme(legend.position="none", axis.title.x=element_blank())
+
+p2 <- ggplot(as.data.frame(subset(cpsSamplePov,cpsSamplePov$carely!=9)), 
+       aes(x=as.factor(subset(cpsSamplePov$carely,cpsSamplePov$carely!=9)))) + 
+       geom_bar(alpha = .2, aes(fill=..count..)) +
+       scale_fill_gradient("count", low="green", high="red") + 
+       scale_x_discrete(labels= NoYes) + 
+       ylab("Covered by Medicare last year") + 
+       theme(legend.position="none", axis.title.x=element_blank())
+
+grid.arrange(p1,p2,nrow=1)
+
+```
+
+## Household Income
+
+```{r, include=TRUE,echo=FALSE}
+
+p1 <- ggplot(as.data.frame(cpsSamplePov), aes(x=as.factor(cpsSamplePov$faminc))) +
+      geom_bar(aes(fill=as.factor(cpsSamplePov$caidly)), 
+      position = "identity", alpha=0.3) + theme(axis.text.x = element_blank()) + 
+      ylab("Covered by Medicaid last year") + xlab("Household Income") + 
+      scale_fill_discrete(name = "Medicaid", labels = c("No", "Yes","Not in Universe"))
+
+p2 <- ggplot(as.data.frame(cpsSamplePov), aes(x=as.factor(cpsSamplePov$faminc))) +
+      geom_bar(aes(fill=as.factor(cpsSamplePov$carely)), 
+      position = "identity", alpha=0.3) + theme(axis.text.x = element_blank()) + 
+      ylab("Covered by Medicare last year") + xlab("Household Income") + 
+      scale_fill_discrete(name = "Medicare", labels = c("No", "Yes","Not in Universe"))
+
+p1
+p2
+
+```
+
+## Ethnicity and Race
+
+```{r, include=TRUE,echo=FALSE}
+
+cpsSamplePovRace <- subset(cpsSamplePov,race==100|race==200|race==300|race==651)
+Race <- c("White","Black","American Indian","Asian")
+
+p1 <- ggplot(as.data.frame(cpsSamplePovRace), aes(x=as.factor(cpsSamplePovRace$race))) +
+      geom_bar(aes(fill=as.factor(cpsSamplePovRace$caidly)), 
+      position = "identity", alpha=0.3) + scale_x_discrete(labels= Race) +
+      ylab("Covered by Medicaid last year") + xlab("Race") + 
+      scale_fill_discrete(name = "Medicaid", labels = c("No", "Yes","Not in Universe"))
+
+p2 <- ggplot(as.data.frame(cpsSamplePovRace), aes(x=as.factor(cpsSamplePovRace$race))) +
+      geom_bar(aes(fill=as.factor(cpsSamplePovRace$carely)), 
+      position = "identity", alpha=0.3) + scale_x_discrete(labels= Race) +
+      ylab("Covered by Medicare last year") + xlab("Race") + 
+      scale_fill_discrete(name = "Medicare", labels = c("No", "Yes","Not in Universe"))
+
+p1
+p2
+```
+
+
+## Migration Status
+
+```{r, include=TRUE,echo=FALSE}
+
+cpsSamplePovNativity <- subset(cpsSamplePov,nativity==1|nativity==4|nativity==5)
+Nativity <- c("Native parents","Foreign parents","Foreign born")
+
+p1 <- ggplot(as.data.frame(cpsSamplePovNativity), aes(x=as.factor(cpsSamplePovNativity$nativity))) +
+      geom_bar(aes(fill=as.factor(cpsSamplePovNativity$caidly)), 
+      position = "identity", alpha=0.3) + scale_x_discrete(labels= Nativity) +
+      ylab("Covered by Medicaid last year") + xlab("Nativity") + 
+      scale_fill_discrete(name = "Medicaid", labels = c("No", "Yes","Not in Universe"))
+
+p2 <- ggplot(as.data.frame(cpsSamplePovNativity), aes(x=as.factor(cpsSamplePovNativity$nativity))) +
+      geom_bar(aes(fill=as.factor(cpsSamplePovNativity$carely)), 
+      position = "identity", alpha=0.3) + scale_x_discrete(labels= Nativity) +
+      ylab("Covered by Medicare last year") + xlab("Nativity") + 
+      scale_fill_discrete(name = "Medicare", labels = c("No", "Yes","Not in Universe"))
+
+p1
+p2
+```
+
