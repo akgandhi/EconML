@@ -1,7 +1,7 @@
 ---
-title: "jonathan-sheng-algorithmic-demand-estimation-causal"
+title: "Price Elasticities from Algorithmic and Structural Models"
 description: |
-  Causal Inference from Algorithmic and Structural Models
+  Statistical Inference and Machine Learning
 author:
   - Jonathan Arnold 
   - Sheng Chao Ho
@@ -10,6 +10,10 @@ output:
   distill::distill_article:
     self_contained: false
 categories: "Jonathan and Sheng"
+preview: preview_image.jpeg
+header-includes:
+- \usepackage{caption}
+- \usepackage{dcolumn}
 ---
 
 <!-- i followed https://cran.r-project.org/web/packages/BLPestimatoR/vignettes/blp_intro.html for using BLPestimatoR -->
@@ -21,27 +25,71 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r load packages, include=FALSE}
 library(tidyverse)
 library(BLPestimatoR)
+library(fastDummies)
+library(AER)
+library(tidyverse)
+library(ggplot2)
+library(ggrepel)
+library(skimr)
+library(ranger)
+library(vip)
+library(tidymodels)
+library(usemodels)
+library(doParallel)
+library(rmarkdown)
+library(rpart.plot)
+library(viridis)
+library(kableExtra)
+library(stargazer)
 ```
 
+## Introduction
 
-```{r load data}
-df_raw <- haven::read_dta("Model_panel_cleaned.dta", encoding = "ASCII")
-```
+In our last post, we analyzed the predictive accuracy of four algorithmic models of automobile demand: LASSO, CART, Random Forest, and XGBoost. What we found was mediocre predictive performance from LASSO, better performance from CART, and exceptional performance from Random Forest and XGBoost. Random Forest emerged as the clear victor in terms of predictive accuracy, with an $R^2$ of above 0.9 and a very low RMSE to match. 
 
-```{r process data}
+But we immediately saw issues with interpretability, even with the relatively interpretable CART algorithm. What we want to address in this post is how we can try to analyze the output of these models in a more economic way: what do they tell us about own-price elasticities of demand for these automobiles, if anything? Does the exceptional predictive performance of Random Forest transfer over to producing "good" estimates for elasticities?
+
+In addition, we will compare the results of these models from this economic perspective to those from more traditional structural models of demand. Specifically, we will estimate various logit and IV logit models of demand, and finish off by attempting an estimation of the RC logit model in the style of BLP. We'll compare the own-price elasticities resulting from these models, and see which of the models has the most desirable properties.
+
+## Algorithmic Models
+
+Algorithmic models don't generally have analytical formulas for partial effects, which we would need in order to calculate the own-price elasticities of demand resulting from these models. Instead, we will approximate these effects numerically. 
+
+Each algorithmic model will give us a function $s(p,X)$, where the $p$ is the price, $X$ is a vector of features or covariates, and the function $s(\cdot)$ outputs a market share. Thus, letting $j$ be the car model and $t$ be the market, we can approximate the implied own-price elasticity of demand from an algorithmic model as follows:
+\begin{align*}
+\varepsilon_{jt} = \frac{\partial s(p_{jt},X_{jt})}{\partial p_{jt}} \frac{p_{jt}}{s(p_{jt},X_{jt})} \approx \frac{s(p_{jt}+500,X_{jt})-s(p_{jt}-500,X_{jt})}{1000}\frac{p_{jt}}{s(p_{jt},X_{jt})}
+\end{align*}
+You might ask, why are we using such a large step size to approximate the derivative? Well, the majority of the algorithmic models we're using are tree-based, meaning that they approximate the function $s(p,X)$ with a piecewise-constant function. Thus, if we make the step size too small, the derivative will always be exactly zero. 
+
+# LASSO
+
+We'll start off as usual with LASSO. First, we need to load and process the data:
+
+
+```{r load and process data, echo=TRUE}
+# Load data
+df_raw <- haven::read_dta("Model_panel_cleaned.dta")
+
+# Clean and process
 df<- df_raw %>% 
-  select(-trim_name,-starts_with("log_"),
-         -model_age,-body_original,-transmission_id,-drivetype_id,
-         -starts_with("income_"), -cpi,-gas_nominal,-gas_real,
+  select(-starts_with("I_"),-count_trim,-Model_id,-MY_id,
+         -nationality1,-nationality2,
          -korea,-mexico,-netherlands,-spain,-italy,-germany,
          -france,-uk,-sweden,-japan,-indian,-china,-canada,
-         -nationality1,-nationality2,-MY_id,-count_trim,
-         -starts_with("I_"),-suv_class,-nb_bodystyle
-         ) %>%
+         -starts_with("income_"),-gas_nominal,-gas_real,
+         -car_size,-car_volume,-hp_to_cyl,-hp_to_weight,
+         -transmission_id,-drivetype_id,-body_original,
+         -model_age,-engine_hp,-mpg_combined,-dpm_combined,
+         -curb_weight_lbs,-trim_name,-cpi,-log_mpg_combined) %>%
+  mutate(log_mpg_city=log(mpg_city)) %>%
+  mutate(log_mpg_hwy=log(mpg_hwy)) %>%
+  mutate(log_dpm_city=log(dpm_city)) %>%
+  mutate(log_dpm_hwy=log(dpm_hwy)) %>%
   mutate(nationality=case_when(nationality%in%
                                  c("Italy/US","Germany/US") ~ "US",
                                   nationality == "" ~ "US",
                                   TRUE ~ nationality)) %>%
+  select(-c(mpg_city,mpg_hwy,dpm_city,dpm_hwy)) %>%
   mutate_if(is.character,as.factor) %>%
   mutate(share=sales/(nb_hh*1000)) %>%
   group_by(Year) %>%
@@ -50,64 +98,489 @@ df<- df_raw %>%
   mutate(own_class_price_ratio=price/((sum(price)-price)/(n()-1))) %>%
   ungroup %>%
   select(-sales,-nb_hh) %>%
-  #get price into scale consistent with BLP
-  mutate(price = price/1000) %>% 
   drop_na()
 
-#I'm wondering if some car models with really low market shares are causing problems for the delta contraction mapping which tries to match market shares (because the algorithm throws out NANs for the delta contraction mapping step quite often)
-number_of_low_shares <- 
-  df %>% 
-  mutate(low_share = (share<1e-5)) %>% 
-  group_by(Year) %>% 
-  summarise(across(low_share, sum))
-#But anyway, we're not removing a lot of observations - on average less than 10 per year
-df <- df %>% filter(share>1e-5)
+# Convert to data frame for better compatibility
+df<- as.data.frame(df)
 
+# Create dataframes with adjusted prices
+df_minus<- df %>% mutate(price=price-500)
+df_plus<- df %>% mutate(price=price+500)
+# Original prices
+prices<- df$price
 
-# df <- df %>% 
-#   mutate(nationality = fct_lump_n(nationality, n = 4),
-#          class = fct_lump_n(class, n = 4),
-#          company = fct_lump_n(company, n = 5),) 
+```
+
+Now we split into test and training sets, and created the cross-validation sets. 
+
+```{r Data_splitting, echo=TRUE}
+set.seed(123)
+df_split <- initial_split(df, strata = share)
+df_train <- training(df_split)
+df_test <- testing(df_split)
+df_folds <- vfold_cv(df_train, strata = share)
+```
+
+```{r,echo=FALSE}
+doParallel::registerDoParallel()
+```
+
+And, we create a recipe to be used in the models. 
+
+```{r, echo=TRUE}
+demand_recipe<- recipe(formula= share ~., data=df_train) %>%
+  update_role(Year, new_role="Market") %>%
+  step_other(company,threshold=0.05) %>%
+  step_other(brand,nationality,suv_class,threshold=0.02) %>%
+  step_other(model,threshold=0.0045) %>%
+  step_dummy(all_nominal())
+```
+
+Now, we fit the LASSO model to the training data.
+
+```{r LASSO_workflow, echo=TRUE}
+
+glmnet_recipe <- 
+  recipe(formula= share ~., data=df_train) %>%
+  update_role(Year, new_role="Market") %>%
+  step_other(company,threshold=0.05) %>%
+  step_other(brand,nationality,suv_class,threshold=0.02) %>%
+  step_other(model,threshold=0.0045) %>%
+  step_normalize(all_predictors(), -all_nominal()) %>%
+  step_dummy(all_nominal())
+
+glmnet_prep<- prep(glmnet_recipe)
+glmnet_bake_minus<- bake(glmnet_prep,new_data=df_minus)
+glmnet_bake_plus<- bake(glmnet_prep,new_data=df_plus)
+glmnet_bake<- bake(glmnet_prep,new_data=df)
+
+glmnet_spec <- 
+  linear_reg(penalty = 2.037462e-10, mixture = 1) %>% 
+  set_mode("regression") %>% 
+  set_engine("glmnet") 
+
+glmnet_workflow <- 
+  workflow() %>% 
+  add_recipe(glmnet_recipe) %>% 
+  add_model(glmnet_spec) %>%
+  fit(df_train)
+
+```
+
+We're not quite done. In order to calculate the elasticities, we run the fitted model on the original data, and on the data with altered prices. Then we calculate the approximation formula, and take medians for each model across markets. 
+
+```{r,echo=TRUE}
+
+glmnet_predictions_minus<- predict(glmnet_workflow$fit$fit,glmnet_bake_minus)
+glmnet_predictions_plus<- predict(glmnet_workflow$fit$fit,glmnet_bake_plus)
+glmnet_predictions<- predict(glmnet_workflow$fit$fit,glmnet_bake)
+
+glmnet_elasticities<- data.frame(company=df$company,brand=df$brand,
+                                 model=df$model,Year=df$Year,
+                                 elasticity=((glmnet_predictions_plus[[1]]-
+                                                glmnet_predictions_minus[[1]])/1000)*
+                                   (prices/glmnet_predictions[[1]])) %>% 
+  group_by(company, brand, model) %>%
+  summarize(elasticity=median(elasticity))
+
+```
+
+Let's take a look at the results. 
+
+```{r}
+
+glmnet_elasticities %>% ggplot(aes(x=company,y=elasticity)) + geom_boxplot() +
+  xlab("Company") + ylab("Median Elasticity") + ylim(-25,25)+
+  scale_color_viridis(discrete=T,guide=F) + coord_flip() + theme_minimal()
+
+```
+
+These results are, to put it bluntly, pretty bad. Most of the own-price elasticities coming from LASSO are positive, which is not what we should expect from economic theory. In addition, there is quite a wide spread, in both the positive and negative directions - and we even excluded some of the larger values! 
+
+In short, the LASSO regression approach does not seem to produce very reasonable results for statistical inference in this problem. Reasons for this could be simultaneity issues or other endogeneity problems with the price coefficient. 
+
+# CART
+
+Let's try this same type of analysis on CART. We'll fit the CART model to the training data first (code echoing is suppressed because the procedure is mostly the same as before). 
+
+```{r CART_workflow, echo=FALSE}
+
+cart_recipe <- 
+  demand_recipe
+
+cart_prep<- prep(cart_recipe)
+cart_bake_minus<- bake(cart_prep,new_data=df_minus)
+cart_bake_plus<- bake(cart_prep,new_data=df_plus)
+cart_bake<- bake(cart_prep,new_data=df)
+
+cart_spec <- 
+  decision_tree(cost_complexity = 2.022630e-09, tree_depth = 12, min_n = 12) %>% 
+  set_mode("regression") %>% 
+  set_engine("rpart") 
+
+cart_workflow <- 
+  workflow() %>% 
+  add_recipe(cart_recipe) %>% 
+  add_model(cart_spec) %>%
+  fit(df_train)
+
+cart_predictions_minus<- predict(cart_workflow$fit$fit,cart_bake_minus)
+cart_predictions_plus<- predict(cart_workflow$fit$fit,cart_bake_plus)
+cart_predictions<- predict(cart_workflow$fit$fit,cart_bake)
+
+cart_elasticities<- data.frame(company=df$company,brand=df$brand,model=df$model,Year=df$Year,elasticity=((cart_predictions_plus[[1]]-cart_predictions_minus[[1]])/1000)*(prices/cart_predictions[[1]])) %>% group_by(company, brand, model) %>% summarize(elasticity=median(elasticity))
+
+```
+
+Then, we calculate the resulting elasticities. We plot them in the same way below:
+
+```{r,echo=FALSE}
+
+cart_elasticities %>% ggplot(aes(x=company,y=elasticity)) + geom_boxplot() + xlab("Company") + ylab("Median Elasticity") + ylim(-25,25)+ scale_color_viridis(discrete=T,guide=F) + coord_flip() + theme_minimal()
 
 
 ```
 
+This is in some ways even worse than LASSO, but shouldn't be unexpected. CART will have the most piecewise-constant functional form out of all the models, and so even with a price shift of 1000 dollars, it isn't enough to change the predicted share for most of the vehicles in the data. For those that have a non-zero elasticity, the elasticity is negative, which is better than what we saw from LASSO.
+
+# Random Forest
+
+Now we repeat the same process for random forest: fit the model to the training data, and evaluate it on all the data and the price-shifted data, and calculate the resulting elasticities.
+
+```{r rf_workflow, echo=FALSE}
+
+rf_recipe <- 
+  demand_recipe
+
+rf_prep<- prep(rf_recipe)
+rf_bake_minus<- bake(rf_prep,new_data=df_minus)
+rf_bake_plus<- bake(rf_prep,new_data=df_plus)
+rf_bake<- bake(rf_prep,new_data=df)
+
+rf_spec <- 
+  rand_forest(mtry = 42, min_n = 3, trees = 500) %>% 
+  set_mode("regression") %>% 
+  set_engine("ranger") 
+
+rf_workflow <- 
+  workflow() %>% 
+  add_recipe(rf_recipe) %>% 
+  add_model(rf_spec) %>%
+  fit(df_train)
+
+rf_predictions_minus<- predict(rf_workflow$fit$fit,rf_bake_minus)
+rf_predictions_plus<- predict(rf_workflow$fit$fit,rf_bake_plus)
+rf_predictions<- predict(rf_workflow$fit$fit,rf_bake)
+
+rf_elasticities<- data.frame(company=df$company,brand=df$brand,model=df$model,Year=df$Year,elasticity=((rf_predictions_plus[[1]]-rf_predictions_minus[[1]])/1000)*(prices/rf_predictions[[1]])) %>% group_by(company, brand, model) %>% summarize(elasticity=median(elasticity))
+
+```
+
+We plot the results below.
+
+```{r,echo=FALSE}
+
+rf_elasticities %>% ggplot(aes(x=company,y=elasticity)) + geom_boxplot() + xlab("Company") + ylab("Median Elasticity") + ylim(-5,5)+ scale_color_viridis(discrete=T,guide=F) + coord_flip() + theme_minimal()
 
 
-```{r blp model}
-# formula is as follows: linear | exogenous | random coefficients | IVs
-  
-blp_model <- as.formula("share ~ 
-                        price + car_size + mpg_combined + dpm_combined + 
-                        engine_hp + hp_to_weight |
-                        car_size + mpg_combined + dpm_combined + 
-                        engine_hp + hp_to_weight |
-                        price + car_size + mpg_combined + dpm_combined + 
-                        engine_hp + hp_to_weight |
-                        0 + car_size + mpg_combined + dpm_combined + 
-                        engine_hp + hp_to_weight +
-                        BLP2_car_size + BLP2_mpg_combined + BLP2_dpm_combined +
-                        BLP2_engine_hp + BLP2_hp_to_weight +
-                        BLP3_car_size + BLP3_mpg_combined + BLP3_engine_hp +
-                        BLP3_hp_to_weight
-                        ") 
+```
 
-rc <- c("(Intercept)", "price", "car_size","mpg_combined", "dpm_combined",
-        "engine_hp", "hp_to_weight")
+The results are quite impressive: almost all the elasticities fall within the -2 to 0 range. There are a few outlying positive estimates, but they are relatively uncommon. The only major issue with these results is that the implication is that most firms are pricing on the inelastic portion of the demand curve. We would expect instead that such firms would want to increase their prices and thus increase profits. So it may be the case the while the Random Forest elasticities are better than the others, they are biased towards zero; some sort of shrinkage is happening. It may be still due to the piecewise-constant functional form of regression tree models, or it could be more econometric issues with endogeneity.
+
+# XGBoost
+
+Finally, we repeat the procedure on the XGBoost model. 
+
+```{r xgb_workflow, echo=FALSE}
+
+xgb_recipe <- 
+  demand_recipe
+
+xgb_prep<- prep(xgb_recipe)
+xgb_bake_minus<- bake(xgb_prep,new_data=df_minus) %>% select(-Year,-share)
+xgb_bake_plus<- bake(xgb_prep,new_data=df_plus) %>% select(-Year,-share)
+xgb_bake<- bake(xgb_prep,new_data=df) %>% select(-Year,-share)
+
+xgb_spec <- 
+  boost_tree(trees = 1968, min_n = 36, tree_depth = 8, 
+                   learn_rate = 0.006525845, loss_reduction = 1.135571e-07, sample_size = 0.6979129) %>% 
+  set_mode("regression") %>% 
+  set_engine("xgboost") 
+
+xgb_workflow <- 
+  workflow() %>% 
+  add_recipe(xgb_recipe) %>% 
+  add_model(xgb_spec) %>%
+  fit(df_train)
+
+xgb_predictions_minus<- predict(xgb_workflow$fit$fit,xgb_bake_minus)
+xgb_predictions_plus<- predict(xgb_workflow$fit$fit,xgb_bake_plus)
+xgb_predictions<- predict(xgb_workflow$fit$fit,xgb_bake)
+
+xgb_elasticities<- data.frame(company=df$company,brand=df$brand,model=df$model,Year=df$Year,elasticity=((xgb_predictions_plus[[1]]-xgb_predictions_minus[[1]])/1000)*(prices/xgb_predictions[[1]])) %>% group_by(company, brand, model) %>% summarize(elasticity=median(elasticity))
+
+```
+
+Below, we plot the results. 
+
+```{r,echo=FALSE}
+
+xgb_elasticities %>% ggplot(aes(x=company,y=elasticity)) + geom_boxplot() + xlab("Company") + ylab("Median Elasticity") + ylim(-5,5)+ scale_color_viridis(discrete=T,guide=F) + coord_flip() + theme_minimal()
+
+
+```
+
+XGBoost also produces much more reasonable estimates than LASSO and CART, and almost all of them are negative. However, XGBoost does seem to suffer from a shrinkage issue slightly more than Random Forest does. If we look at the data underlying the above plot, we do see indeed that many estimates are simply zero, corresponding to flat portions of the estimated demand function. 
+
+What's important to note here is that the two models that perform the best predictively also seem to perform the best in terms of statistical inference. Perhaps the two are not altogether disconnected, but we will see in the next section how these impressively accurate algorithmic models compare with some data models in terms of statistical inference.
+
+## Structural Models of Demand
+
+# The Logit Model
+
+For the logit model, we assume that consumers $i$ choose among products $j$ in market $t$ to maximize the following utility function:
+\begin{align*}
+u_{ijt} = X_{jt} \beta + \alpha p_{jt} + \xi_{jt} + \epsilon_{ijt}
+\end{align*}
+where $X_{jt}$ is a vector of product-specific covariates, $\xi_{jt}$ captures unobserved heterogeneity at the product level, and $\epsilon_{ijt}$ is an individual and product-specific shock. In the logit model, we assume that the $\epsilon_{ijt}$ shocks are Type 1 extreme value so that we can use the convenient logit form of the conditional choice probabilities. 
+
+Now we will write $\delta_{jt} = X_{jt} \beta + \alpha p_{jt} + \xi_{jt}$, the mean utility from product $j$ in market $t$. Note that the mean utility for the outside good, $j=0$, is normalized to 0. Thus, the form for the utility function becomes $u_{ijt} = \delta_{jt} + \epsilon_{ijt}$, and we can easily apply the logit choice probability formula to obtain:
+\begin{align*}
+s_{jt} = \frac{e^{\delta_{jt}}}{1+\sum_{k>0} e^{\delta_{kt}}}
+\end{align*}
+The outside good share is:
+\begin{align*}
+s_{0t} = \frac{1}{1+\sum_{k>0} e^{\delta_{kt}}}
+\end{align*}
+Taking logs:
+\begin{align*}
+\log s_{jt} &= \delta_{jt}- \log(1+\sum_{k>0} e^{\delta_{kt}}) \\
+\log s_{0t} &= -\log(1+\sum_{k>0} e^{\delta_{kt}})
+\end{align*}
+Thus, we can subtract the two equations and substitute in the functional form of $\delta_{jt}$ to find:
+\begin{align*}
+\log s_{jt} - \log s_{0t} = X_{jt} \beta + \alpha p_{jt} + \xi_{jt}
+\end{align*}
+This last equation is something we can estimate quite easily using OLS. 
+
+Finally, we need to know what this model predicts for elasticities. It can be easily derived that the own-price elasticity of demand for product $j$ in market $t$ resulting from this model is as follows:
+\begin{align*}
+\varepsilon_{jt} = \frac{p_{jt}}{s_{jt}} (\alpha s_{jt}(1-s_{jt}))
+\end{align*}
+
+Now for the estimation procedure. First, we clean the data slightly differently relative to the algorithmic models. We scale price by 1000 to put it into more friendly units, and add in the dummy variables for all categorical predictors. 
+
+```{r process data}
+df_struct<- df_raw %>% 
+  select(-trim_name,-starts_with("log_"),
+         -model_age,-body_original,-transmission_id,-drivetype_id,
+         -starts_with("income_"), -cpi,-gas_nominal,-gas_real,
+         -korea,-mexico,-netherlands,-spain,-italy,-germany,
+         -france,-uk,-sweden,-japan,-indian,-china,-canada,
+         -nationality1,-nationality2,-MY_id,-Model_id,-count_trim,
+         -starts_with("I_"),-suv_class,-nb_bodystyle,-mpg_city,-mpg_hwy,
+         -dpm_city,-dpm_hwy
+         ) %>%
+  mutate(nationality=case_when(nationality%in%
+                                 c("Italy/US","Germany/US") ~ "US",
+                                  nationality == "" ~ "US",
+                                  TRUE ~ nationality)) %>%
+  mutate_if(is.character,as.factor) %>%
+  mutate(share=sales/(nb_hh*1000)) %>%
+  select(-sales,-nb_hh) %>%
+  #get price into scale consistent with BLP
+  mutate(price = price/1000) %>% 
+  drop_na() %>%
+  dummy_cols(select_columns=c("engine_fuel","nationality","drivetype",
+                              "transmission","class")) %>%
+  select(-c(engine_fuel,engine_fuel_Gas,nationality,
+            nationality_US,drivetype,drivetype_FWD,
+            transmission,transmission_A,class, class_Sedan))
+
+for (i in 1:ncol(df_struct)) {
+  attr(df_struct[[i]],"label")<- NULL
+  attr(df_struct[[i]],"format.stata")<- NULL
+}
+
+```
+
+Then, we need to calculate the differences between the log shares and the log of the outside share.
+
+```{r}
+
+df_struct<- df_struct %>% 
+  group_by(Year) %>% 
+  mutate(outside_share=1-sum(share)) %>% 
+  ungroup %>%
+  mutate(log_share=log(share)-log(outside_share))
+
+```
+
+Now we're ready to estimate the model. We actually estimate three models: one with no product or brand dummies, a second with brand dummies, and a third with model dummies. This will give us an idea of how unobserved heterogeneity at the brand and model levels affects the estimates of price and other coefficients. 
+
+```{r}
+
+logit_model_ols<- lm(log_share~price+engine_nbcylinder +
+                       wheelbase_ins+size_length_ins+
+                       size_width_ins+size_height_ins+
+                       curb_weight_lbs+mpg_combined+
+                       engine_hp+engine_hp_rpm+
+                       nb_doors+hp_to_weight+
+                       hp_to_cyl+car_size+car_volume+
+                       dpm_combined+engine_fuel_Diesel+
+                       engine_fuel_Elec+nationality_China+
+                       nationality_France+nationality_Germany+
+                       nationality_Indian+nationality_Japan+
+                       nationality_Korea+nationality_Netherlands+
+                       nationality_Sweden+nationality_UK+
+                       drivetype_AWD+drivetype_RWD+
+                       transmission_M+`class_Cargo Van` +
+                       class_Coupe+class_Hatchback+class_Minivan+
+                       class_Pickup+class_Suv+class_Wagon,data=df_struct)
+
+logit_model_ols_brand<- lm(log_share~price+brand+engine_nbcylinder +
+                       wheelbase_ins+size_length_ins+
+                       size_width_ins+size_height_ins+
+                       curb_weight_lbs+mpg_combined+
+                       engine_hp+engine_hp_rpm+
+                       nb_doors+hp_to_weight+
+                       hp_to_cyl+car_size+car_volume+
+                       dpm_combined+engine_fuel_Diesel+
+                       engine_fuel_Elec+nationality_China+
+                       nationality_France+nationality_Germany+
+                       nationality_Indian+nationality_Japan+
+                       nationality_Korea+nationality_Netherlands+
+                       nationality_Sweden+nationality_UK+
+                       drivetype_AWD+drivetype_RWD+
+                       transmission_M+`class_Cargo Van` +
+                       class_Coupe+class_Hatchback+class_Minivan+
+                       class_Pickup+class_Suv+class_Wagon,data=df_struct)
+
+logit_model_ols_product<- lm(log_share~price+model+engine_nbcylinder +
+                       wheelbase_ins+size_length_ins+
+                       size_width_ins+size_height_ins+
+                       curb_weight_lbs+mpg_combined+
+                       engine_hp+engine_hp_rpm+
+                       nb_doors+hp_to_weight+
+                       hp_to_cyl+car_size+car_volume+
+                       dpm_combined+engine_fuel_Diesel+
+                       engine_fuel_Elec+nationality_China+
+                       nationality_France+nationality_Germany+
+                       nationality_Indian+nationality_Japan+
+                       nationality_Korea+nationality_Netherlands+
+                       nationality_Sweden+nationality_UK+
+                       drivetype_AWD+drivetype_RWD+
+                       transmission_M+`class_Cargo Van` +
+                       class_Coupe+class_Hatchback+class_Minivan+
+                       class_Pickup+class_Suv+class_Wagon,data=df_struct)
+
+
+```
+
+```{r,echo=FALSE, results='asis'}
 
 blp_instruments <- 
   c("car_size", "mpg_combined", "dpm_combined", "engine_hp", "hp_to_weight")
+
+stargazer(logit_model_ols,logit_model_ols_brand,logit_model_ols_product,
+          omit=
+            union(setdiff(names(
+              logit_model_ols_product$coefficients),c(blp_instruments,"price")),
+              setdiff(names(logit_model_ols_brand$coefficients),
+                      c(blp_instruments,"price"))),
+          type="html",
+          title="Logit Model OLS Estimates",
+          column.labels=c("No Dummies","Brand Dummmies","Model Dummies"),
+          dep.var.labels="Market Share",
+          omit.stat="f")
+
+
 ```
 
-```{r create instruments}
+The results are provided in the table above, for a few select variables.
 
-#BLP2 corresponds to the sum of the same characteristic of the firm's other products in each year
-#BLP3 corresponds to the sum of the same characteristic of rival firms' products in each year
+Interestingly, the addition of the model and brand dummies actually decreases the price coefficient (in absolute value), though it remains negative. Generally, we would expect that once unobserved heterogeneity at the model or brand level is accounted for, consumers would become more sensitive to price; however, this appears to not be the case here.
 
-df_instrument <- df %>% 
-  group_by(Year,company) %>% 
-  mutate(across(blp_instruments, ~ sum(.x) - .x, .names = "BLP2_{.col}" )) %>% 
-  ungroup %>% group_by(Year) %>% 
+What are the resulting elasticities? We calculate and plot them below.
+
+```{r}
+
+# Elasticities, no dummies
+ols_elasticities<- data.frame(company=df_struct$company,brand=df_struct$brand,
+                              model=df_struct$model,Year=df_struct$Year,
+                              elasticity=(df_struct$price/(exp(predict.lm(logit_model_ols,df_struct)+
+                      log(df_struct$outside_share))))*
+                        (logit_model_ols$coefficients["price"]*
+                           (exp(predict.lm(logit_model_ols,df_struct)+
+                                                                      log(df_struct$outside_share)))*
+                           (1-(exp(predict.lm(logit_model_ols,df_struct)+
+                                                                                                               log(df_struct$outside_share)))))) %>% 
+  group_by(company, brand, model) %>% 
+  summarize(elasticity=median(elasticity)) %>% 
+  mutate(dummies="none")
+
+# Elasticities, brand dummies
+ols_elasticities_brand<- data.frame(company=df_struct$company,brand=df_struct$brand,
+                              model=df_struct$model,Year=df_struct$Year,
+                              elasticity=(df_struct$price/(exp(predict.lm(logit_model_ols_brand,df_struct)+
+                      log(df_struct$outside_share))))*
+                        (logit_model_ols_brand$coefficients["price"]*
+                           (exp(predict.lm(logit_model_ols_brand,df_struct)+
+                                                                      log(df_struct$outside_share)))*
+                           (1-(exp(predict.lm(logit_model_ols_brand,df_struct)+
+                                                                                                               log(df_struct$outside_share)))))) %>% 
+  group_by(company, brand, model) %>% 
+  summarize(elasticity=median(elasticity)) %>% 
+  mutate(dummies="brand")
+
+# Elasticities, model dummies
+ols_elasticities_model<- data.frame(company=df_struct$company,brand=df_struct$brand,
+                              model=df_struct$model,Year=df_struct$Year,
+                              elasticity=(df_struct$price/(exp(predict.lm(logit_model_ols_product,df_struct)+
+                      log(df_struct$outside_share))))*
+                        (logit_model_ols_product$coefficients["price"]*
+                           (exp(predict.lm(logit_model_ols_product,df_struct)+
+                                                                      log(df_struct$outside_share)))*
+                           (1-(exp(predict.lm(logit_model_ols_product,df_struct)+
+                                                                                                               log(df_struct$outside_share)))))) %>% 
+  group_by(company, brand, model) %>% 
+  summarize(elasticity=median(elasticity)) %>%
+  mutate(dummies="model")
+
+# Combining
+ols_elasticities_all<- rbind(ols_elasticities,
+                             ols_elasticities_brand,
+                             ols_elasticities_model)
+
+ols_elasticities_all$dummies<- factor(ols_elasticities_all$dummies, levels=c("none","brand","model"))
+
+# Plotting
+ols_elasticities_all %>% ggplot(aes(x=company,y=elasticity)) + 
+  geom_boxplot() + xlab("Company") + ylab("Median Elasticity") + 
+  ylim(-5,0)+ scale_color_viridis(discrete=T,guide=F) + 
+  coord_flip() + theme_minimal() + facet_wrap(~dummies)
+
+
+```
+
+As we might expect, the elasticities for the estimates with model dummies are smallest, and those without dummies are the largest (in absolute value). This is no coincidence, since the elasticities are determined by the $\alpha$ price coefficient. However, while they are negative by construction, many of them still fall between -1 and 0, implying that the firms are pricing on the inelastic portion of the demand curve. We see elasticities that are not all that different from those from the algorithmic models, with the notable exception of some of the smaller companies like Porsche and Daimler. These may be accounted for by the high prices of these vehicles in the sample, which feed into the elasticity formula. 
+
+# The IV Logit Model
+
+When estimating the logit model by OLS, we may be concerned with endogeneity of the price coefficient due to correlation between prices and unobserved model heterogeneity. In order to circumvent this, the linear regression formulation of the logit model allows for an intuitive use of instrumental variables estimation. For instruments, we use sums of product characteristics for products in the same company and products in the same market: the so-called "BLP instruments." In addition, we have one more instrument up our sleeve: the exchange rate of the country in which the car's manufacturer is located. This may be correlated with certain cost-side factors, but is unlikely to be correlated with the market share. 
+
+First, we calculate the BLP instruments:
+
+```{r instruments}
+
+blp_instruments <- 
+  c("mpg_combined","engine_hp","hp_to_weight","car_size","dpm_combined")
+
+df_struct<- df_struct %>% 
+  group_by(Year,company) %>%
+  mutate(across(all_of(blp_instruments), ~sum(.x)-.x,.names="BLP2_{.col}")) %>%
+  ungroup %>%
+  group_by(Year) %>%
   mutate(BLP3_car_size = sum(car_size) - car_size - BLP2_car_size,
          BLP3_mpg_combined = sum(mpg_combined) - mpg_combined - BLP2_mpg_combined,
          BLP3_dpm_combined = sum(dpm_combined) - dpm_combined - BLP2_dpm_combined,
@@ -115,18 +588,296 @@ df_instrument <- df %>%
          BLP3_hp_to_weight = sum(hp_to_weight) - hp_to_weight - BLP2_hp_to_weight
   ) %>% 
   ungroup
-         
+
 ```
 
-```{r basic_blp}
-#this section is used to get starting guesses for the unobserved heterogeneities and deltas in the model with observed heterogeneities
-#Not much problems with convergence in the algorithm over here
+Next, we estimate the models using the same dummies formulation as before. 
+
+```{r,echo=FALSE}
+
+logit_model_iv<- ivreg(log_share~price+engine_nbcylinder +
+                       wheelbase_ins+size_length_ins+
+                       size_width_ins+size_height_ins+
+                       curb_weight_lbs+mpg_combined+
+                       engine_hp+engine_hp_rpm+
+                       nb_doors+hp_to_weight+
+                       hp_to_cyl+car_size+car_volume+
+                       dpm_combined+engine_fuel_Diesel+
+                       engine_fuel_Elec+nationality_China+
+                       nationality_France+nationality_Germany+
+                       nationality_Indian+nationality_Japan+
+                       nationality_Korea+nationality_Netherlands+
+                       nationality_Sweden+nationality_UK+
+                       drivetype_AWD+drivetype_RWD+
+                       transmission_M+`class_Cargo Van` +
+                       class_Coupe+class_Hatchback+class_Minivan+
+                       class_Pickup+class_Suv+class_Wagon | 
+                       engine_nbcylinder +
+                       wheelbase_ins+size_length_ins+
+                       size_width_ins+size_height_ins+
+                       curb_weight_lbs+mpg_combined+
+                       engine_hp+engine_hp_rpm+
+                       nb_doors+hp_to_weight+
+                       hp_to_cyl+car_size+car_volume+
+                       dpm_combined+engine_fuel_Diesel+
+                       engine_fuel_Elec+nationality_China+
+                       nationality_France+nationality_Germany+
+                       nationality_Indian+nationality_Japan+
+                       nationality_Korea+nationality_Netherlands+
+                       nationality_Sweden+nationality_UK+
+                       drivetype_AWD+drivetype_RWD+
+                       transmission_M+`class_Cargo Van` +
+                       class_Coupe+class_Hatchback+class_Minivan+
+                       class_Pickup+class_Suv+class_Wagon+
+                       BLP2_mpg_combined+BLP2_engine_hp+
+                       BLP2_hp_to_weight+BLP2_car_size+
+                         BLP2_dpm_combined+BLP3_mpg_combined+BLP3_engine_hp+
+                       BLP3_hp_to_weight+BLP3_car_size+
+                         BLP3_dpm_combined+company_exchange_rate,data=df_struct)
+
+logit_model_iv_brand<- ivreg(log_share~price+brand+engine_nbcylinder +
+                       wheelbase_ins+size_length_ins+
+                       size_width_ins+size_height_ins+
+                       curb_weight_lbs+mpg_combined+
+                       engine_hp+engine_hp_rpm+
+                       nb_doors+hp_to_weight+
+                       hp_to_cyl+car_size+car_volume+
+                       dpm_combined+engine_fuel_Diesel+
+                       engine_fuel_Elec+nationality_China+
+                       nationality_France+nationality_Germany+
+                       nationality_Indian+nationality_Japan+
+                       nationality_Korea+nationality_Netherlands+
+                       nationality_Sweden+nationality_UK+
+                       drivetype_AWD+drivetype_RWD+
+                       transmission_M+`class_Cargo Van` +
+                       class_Coupe+class_Hatchback+class_Minivan+
+                       class_Pickup+class_Suv+class_Wagon | 
+                       brand+engine_nbcylinder +
+                       wheelbase_ins+size_length_ins+
+                       size_width_ins+size_height_ins+
+                       curb_weight_lbs+mpg_combined+
+                       engine_hp+engine_hp_rpm+
+                       nb_doors+hp_to_weight+
+                       hp_to_cyl+car_size+car_volume+
+                       dpm_combined+engine_fuel_Diesel+
+                       engine_fuel_Elec+nationality_China+
+                       nationality_France+nationality_Germany+
+                       nationality_Indian+nationality_Japan+
+                       nationality_Korea+nationality_Netherlands+
+                       nationality_Sweden+nationality_UK+
+                       drivetype_AWD+drivetype_RWD+
+                       transmission_M+`class_Cargo Van` +
+                       class_Coupe+class_Hatchback+class_Minivan+
+                       class_Pickup+class_Suv+class_Wagon+
+                       BLP2_mpg_combined+BLP2_engine_hp+
+                       BLP2_hp_to_weight+BLP2_car_size+
+                         BLP2_dpm_combined+BLP3_mpg_combined+BLP3_engine_hp+
+                       BLP3_hp_to_weight+BLP3_car_size+
+                         BLP3_dpm_combined+company_exchange_rate,data=df_struct)
+
+logit_model_iv_product<- ivreg(log_share~price+model+engine_nbcylinder +
+                       wheelbase_ins+size_length_ins+
+                       size_width_ins+size_height_ins+
+                       curb_weight_lbs+mpg_combined+
+                       engine_hp+engine_hp_rpm+
+                       nb_doors+hp_to_weight+
+                       hp_to_cyl+car_size+car_volume+
+                       dpm_combined+engine_fuel_Diesel+
+                       engine_fuel_Elec+nationality_China+
+                       nationality_France+nationality_Germany+
+                       nationality_Indian+nationality_Japan+
+                       nationality_Korea+nationality_Netherlands+
+                       nationality_Sweden+nationality_UK+
+                       drivetype_AWD+drivetype_RWD+
+                       transmission_M+`class_Cargo Van` +
+                       class_Coupe+class_Hatchback+class_Minivan+
+                       class_Pickup+class_Suv+class_Wagon | 
+                       model+engine_nbcylinder +
+                       wheelbase_ins+size_length_ins+
+                       size_width_ins+size_height_ins+
+                       curb_weight_lbs+mpg_combined+
+                       engine_hp+engine_hp_rpm+
+                       nb_doors+hp_to_weight+
+                       hp_to_cyl+car_size+car_volume+
+                       dpm_combined+engine_fuel_Diesel+
+                       engine_fuel_Elec+nationality_China+
+                       nationality_France+nationality_Germany+
+                       nationality_Indian+nationality_Japan+
+                       nationality_Korea+nationality_Netherlands+
+                       nationality_Sweden+nationality_UK+
+                       drivetype_AWD+drivetype_RWD+
+                       transmission_M+`class_Cargo Van` +
+                       class_Coupe+class_Hatchback+class_Minivan+
+                       class_Pickup+class_Suv+class_Wagon+
+                       BLP2_mpg_combined+BLP2_engine_hp+
+                       BLP2_hp_to_weight+BLP2_car_size+
+                         BLP2_dpm_combined+BLP3_mpg_combined+BLP3_engine_hp+
+                       BLP3_hp_to_weight+BLP3_car_size+
+                         BLP3_dpm_combined+company_exchange_rate,data=df_struct)
+
+```
+
+
+```{r,echo=FALSE, results='asis'}
+
+
+stargazer(logit_model_iv,logit_model_iv_brand,logit_model_iv_product,
+          omit=
+            union(setdiff(names(
+              logit_model_iv_product$coefficients),c(blp_instruments,"price")),
+              setdiff(names(logit_model_iv_brand$coefficients),
+                      c(blp_instruments,"price"))),
+          type="html",
+          title="Logit Model IV Estimates",
+          column.labels=c("No Dummies","Brand Dummmies","Model Dummies"),
+          dep.var.labels="Market Share",
+          omit.stat="f")
+
+
+```
+
+Results are tabulated above.
+
+
+The instruments don't actually do much for us in terms of altering the price coefficient, except in the model dummies formulation. Thus, we shouldn't expect the elasticities to be radically different:
+
+```{r,echo=FALSE}
+
+# Elasticities, no dummies
+iv_elasticities<- data.frame(company=df_struct$company,brand=df_struct$brand,
+                              model=df_struct$model,Year=df_struct$Year,
+                              elasticity=(df_struct$price/(exp(logit_model_iv$fitted.values+
+                      log(df_struct$outside_share))))*
+                        (logit_model_iv$coefficients["price"]*(exp(logit_model_iv$fitted.values+
+                                                                      log(df_struct$outside_share)))*(1-(exp(logit_model_iv$fitted.values+
+                                                                                                               log(df_struct$outside_share)))))) %>% 
+  group_by(company, brand, model) %>% 
+  summarize(elasticity=median(elasticity)) %>% 
+  mutate(dummies="none")
+
+# Elasticities, brand dummies
+iv_elasticities_brand<- data.frame(company=df_struct$company,brand=df_struct$brand,
+                              model=df_struct$model,Year=df_struct$Year,
+                              elasticity=(df_struct$price/(exp(logit_model_iv_brand$fitted.values+
+                      log(df_struct$outside_share))))*
+                        (logit_model_iv_brand$coefficients["price"]*(exp(logit_model_iv_brand$fitted.values+
+                                                                      log(df_struct$outside_share)))*(1-(exp(logit_model_iv_brand$fitted.values+
+                                                                                                               log(df_struct$outside_share)))))) %>% 
+  group_by(company, brand, model) %>% 
+  summarize(elasticity=median(elasticity)) %>% 
+  mutate(dummies="brand")
+
+# Elasticities, model dummies
+iv_elasticities_model<- data.frame(company=df_struct$company,brand=df_struct$brand,
+                              model=df_struct$model,Year=df_struct$Year,
+                              elasticity=(df_struct$price/(exp(logit_model_iv_product$fitted.values+
+                      log(df_struct$outside_share))))*
+                        (logit_model_iv_product$coefficients["price"]*(exp(logit_model_iv_product$fitted.values+
+                                                                      log(df_struct$outside_share)))*(1-(exp(logit_model_iv_product$fitted.values+
+                                                                                                               log(df_struct$outside_share)))))) %>% 
+  group_by(company, brand, model) %>% 
+  summarize(elasticity=median(elasticity)) %>%
+  mutate(dummies="model")
+
+# Combining
+iv_elasticities_all<- rbind(iv_elasticities,
+                             iv_elasticities_brand,
+                             iv_elasticities_model)
+
+iv_elasticities_all$dummies<- factor(iv_elasticities_all$dummies, levels=c("none","brand","model"))
+
+# Plotting
+iv_elasticities_all %>% ggplot(aes(x=company,y=elasticity)) + geom_boxplot() + xlab("Company") + ylab("Median Elasticity") + ylim(-5,0)+ scale_color_viridis(discrete=T,guide=F) + coord_flip() + theme_minimal() + facet_wrap(~dummies)
+
+
+```
+
+The instrumental variables regression doesn't greatly change the elasticities, and simply homogenizes them slightly across the different models. Another reason the IV logit model isn't sufficient to estimate demand is that it doesn't account for the varying substitution patterns between the products. We won't focus on that in this post, but this problem mainly has to do with the cross-price elasticities. 
+
+# The Random Coefficients Logit Model
+
+The random coefficients model builds on the Logit model by allowing some of the coefficients, including the price coefficient $\alpha$, to vary across individuals. However, since we don't observe data at the individual level, we assume a parametric distribution for the coefficients and estimate the parameters of this distribution. Estimation of this model is quite a bit more complicated. For simplicity, in this post, we will ignore the observed demographic distribution we have, and estimate with only unobserved heterogeneity at the individual level. We will allow four coefficients to vary among individuals: the intercept, the price coefficient, miles per gallon, and horsepower to weight ratio. We will use the same instruments as in the previous portion. 
+
+```{r,echo=FALSE}
+
+df_struct$brand<- as.character(df_struct$brand)
+df_struct$model<- as.character(df_struct$model)
+df_struct$model_2<- paste(df_struct$brand, df_struct$model, sep="_")
+df_struct$model_2<- factor(df_struct$model_2)
+df_struct$Model_id<- as.integer(df_struct$model_2)
+df_struct$brand<- factor(df_struct$brand)
+df_struct$model<- factor(df_struct$model)
+
+
+```
+
+
+In order to do the estimation, we use the BLPestimatoR package, which implements the calculation of the objective function in C++ for speed. Normally, calculating this function is very slow, as it requires repeated use of a contraction mapping that needs to converge to a very high degree of accuracy. Thus, implementing this portion of the estimation process in C++ allows estimation to take place in a reasonable amount of time. 
+
+First, we create the model:
+
+```{r blp model,echo=TRUE}
+# formula is as follows: linear | exogenous | random coefficients | IVs
+  
+blp_model <- as.formula("share ~ 
+                        price+engine_nbcylinder +
+                       wheelbase_ins+size_length_ins+
+                       size_width_ins+size_height_ins+
+                       curb_weight_lbs+mpg_combined+
+                       engine_hp+engine_hp_rpm+
+                       nb_doors+hp_to_weight+
+                       hp_to_cyl+car_size+car_volume+
+                       dpm_combined+engine_fuel_Diesel+
+                       engine_fuel_Elec+nationality_China+
+                       nationality_France+nationality_Germany+
+                       nationality_Indian+nationality_Japan+
+                       nationality_Korea+nationality_Netherlands+
+                       nationality_Sweden+nationality_UK+
+                       drivetype_AWD+drivetype_RWD+
+                       transmission_M+`class_Cargo Van` +
+                       class_Coupe+class_Hatchback+class_Minivan+
+                       class_Pickup+class_Suv+class_Wagon |
+                        engine_nbcylinder +
+                       wheelbase_ins+size_length_ins+
+                       size_width_ins+size_height_ins+
+                       curb_weight_lbs+mpg_combined+
+                       engine_hp+engine_hp_rpm+
+                       nb_doors+hp_to_weight+
+                       hp_to_cyl+car_size+car_volume+
+                       dpm_combined+engine_fuel_Diesel+
+                       engine_fuel_Elec+nationality_China+
+                       nationality_France+nationality_Germany+
+                       nationality_Indian+nationality_Japan+
+                       nationality_Korea+nationality_Netherlands+
+                       nationality_Sweden+nationality_UK+
+                       drivetype_AWD+drivetype_RWD+
+                       transmission_M+`class_Cargo Van` +
+                       class_Coupe+class_Hatchback+class_Minivan+
+                       class_Pickup+class_Suv+class_Wagon |
+                        price + mpg_combined + hp_to_weight |
+                        0 + car_size + mpg_combined + dpm_combined + 
+                        engine_hp + hp_to_weight +
+                        BLP2_car_size + BLP2_mpg_combined + BLP2_dpm_combined +
+                        BLP2_engine_hp + BLP2_hp_to_weight +
+                        BLP3_car_size + BLP3_mpg_combined + BLP3_engine_hp +
+                        BLP3_hp_to_weight+company_exchange_rate
+                        ") 
+
+rc <- c("(Intercept)","price","mpg_combined","hp_to_weight")
+
+blp_instruments <- 
+  c("car_size", "mpg_combined", "dpm_combined", "engine_hp", "hp_to_weight")
+```
+
+Then, we provide the necessary information to estimate, and run the estimation:
+
+```{r basic_blp,echo=TRUE}
 
 blp_basic_data <-  BLP_data(
   model = blp_model,
   market_identifier = "Year",
   product_identifier = "Model_id",
-  productData = df_instrument,
+  productData = df_struct,
   blp_inner_tol = 1e-9, blp_inner_maxit = 5000,
   integration_method = "MLHS",
   integration_accuracy = 40,
@@ -138,87 +889,135 @@ blp_basic_est <- estimateBLP(
   solver_method = "BFGS", solver_maxit = 1000, solver_reltol = 1e-9,
   standardError = "heteroskedastic",
   extremumCheck = FALSE,
-  printLevel = 1
+  printLevel = 0
 )
 
+```
+
+Results are tabulated below:
+
+<table style="text-align:center"><caption><strong>RC Logit Model Estimates</strong></caption>
+<tr><td colspan="3" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left"></td><td colspan="2"><em>Dependent variable:</em></td></tr>
+<tr><td></td><td colspan="2" style="border-bottom: 1px solid black"></td></tr>
+<tr><td style="text-align:left"></td><td colspan="2">Market Share</td></tr>
+<tr><td style="text-align:left"></td><td>Mean Effect</td><td>Std. Dev.</td><tr>
+<tr><td colspan="3" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left">price</td><td>-0.188<sup>***</sup></td><td>0.061<sup>**</sup></td></tr>
+<tr><td style="text-align:left"></td><td>(0.053)</td><td>(0.024)</td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td></tr>
+<tr><td style="text-align:left">mpg_combined</td><td>-0.085<sup>**</sup></td><td>0.05<sup>**</sup></td></tr>
+<tr><td style="text-align:left"></td><td>(0.039)</td><td>(0.02)</td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td></tr>
+<tr><td style="text-align:left">engine_hp</td><td>0.012<sup>***</sup></td><td></td></tr>
+<tr><td style="text-align:left"></td><td>(0.003)</td><td></td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td></tr>
+<tr><td style="text-align:left">hp_to_weight</td><td>-115.9<sup>***</sup></td><td>56.41<sup>***</sup></td></tr>
+<tr><td style="text-align:left"></td><td>(31.27)</td><td>(16.5)</td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td></tr>
+<tr><td style="text-align:left">car_size</td><td>-0.285<sup>***</sup></td><td></td></tr>
+<tr><td style="text-align:left"></td><td>(0.083)</td><td></td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td></tr>
+<tr><td style="text-align:left">dpm_combined</td><td>-33.26<sup>***</sup></td><td></td></tr>
+<tr><td style="text-align:left"></td><td>(5.717)</td><td></td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td></tr>
+<tr><td style="text-align:left">Constant</td><td>-14.85<sup>***</sup></td><td>0.324</td></tr>
+<tr><td style="text-align:left"></td><td>(3.303)</td><td>(0.44)</td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td></tr>
+<tr><td colspan="3" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left">Observations</td><td>6,875</td><td></td></tr>
+<tr><td colspan="4" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left"><em>Note:</em></td><td colspan="3" style="text-align:right"><sup>*</sup>p<0.1; <sup>**</sup>p<0.05; <sup>***</sup>p<0.01</td></tr>
+</table>
+
+Here we finally see a meaningful increase in the size of the price coefficient relative to the original OLS estimates, along with a statistically significant (though not very large) degree of individual heterogeneity in price sensitivity. Let's have a look at the resulting elasticities:
+
+```{r,include=FALSE}
+
+# extract parameters from output
+theta1_price <- blp_basic_est$theta_lin["price", ]
+theta2 <- matrix(NA, nrow = 4, ncol = 1)
+colnames(theta2) <- c("unobs_sd")
+rownames(theta2) <- c("(Intercept)", "price", "mpg_combined", "hp_to_weight")
+for (i in 1:4) {
+  theta2[blp_basic_est$indices[i, 1], blp_basic_est$indices[i, 2]] <-blp_basic_est$theta_rc[i]
+}
+
+delta_data <- data.frame(
+  "Model_id" = blp_basic_data$parameters$product_id,
+  "Year" = blp_basic_data$parameters$market_id_char_in,
+  "startingGuessesDelta" = blp_basic_est$delta
+)
+# always use update_BLP_data() to update data object to maintain consistent data
+blp_basic_data <- update_BLP_data(
+  data_update = delta_data,
+  blp_data = blp_basic_data
+)
+#> Mean utility variable startingGuessesDelta has been updated.
+
+shareObj <- getShareInfo(
+  blp_data = blp_basic_data,
+  par_theta2 = theta2,
+  printLevel = 1
+)
+#> Mean utility (delta) is used as provided in the BLP_data() function.
+
+# Calculate elasticities for all years; put in a list
+elasticity_data<- list()
+
+for (i in 1:31) {
+  elasticities_temp<- get_elasticities(
+  blp_data = blp_basic_data,
+  share_info = shareObj,
+  theta_lin = theta1_price,
+  variable = "price",
+  products = blp_basic_data$parameters$product_id,
+  market = as.character(i+1984)
+)
+  elasticity_data[[i]]<- data.frame(Model_id=names(diag(elasticities_temp)),
+                                    elasticity=diag(elasticities_temp),
+                                    Year=i+1984)
+  names(elasticity_data)[i]<- as.character(i+1984)
+}
+
+# Collapse the list down by medians
+elasticity_data<- reduce(elasticity_data,rbind)
+elasticity_data<- elasticity_data %>% group_by(Model_id) %>% summarize(elasticity=median(elasticity))
+
+# Merge by ids and then back out the model names, brands, companies
+elasticity_data$Model_id<- as.integer(elasticity_data$Model_id) 
+elasticity_data<- left_join(elasticity_data,df_struct %>% 
+                              select(company, brand, model, Model_id),
+                            by="Model_id") %>%
+  select(-Model_id) %>% 
+  group_by(company, brand, model) %>%
+  summarize(elasticity=median(elasticity))
+
+```
+
+```{r}
+
+# Plotting
+elasticity_data %>% ggplot(aes(x=company,y=elasticity)) + 
+  geom_boxplot() + xlab("Company") + ylab("Median Elasticity") + 
+  ylim(-5,0)+ scale_color_viridis(discrete=T,guide=F) +
+  coord_flip() + theme_minimal() 
+```
+
+Now we see more reasonable results: almost all elasticities greater than 1 in absolute value, and all are negative. This is the result of the desirable features of the random coefficients logit model: accounting for unobserved individual taste heterogeneity, and allowing for more sophisticated substitution patterns between products.
+
+What do we learn from this plot? Well, we notice that luxury brands like Jaguar Land Rover and Porsche seem to have higher elasticities, whereas mainstream brands like Ford and General Motors tend to have lower elasticities for their vehicles. Practically, this makes a fair bit of sense: companies like Porsche tend to have vehicles with very high prices and very low market shares, and thus slight changes in market share look comparatively large relative to slight changes in price. 
+
+## Conclusion
+
+While algorithmic models like Random Forest and XGBoost deliver fantastic results for prediction, they do still fall short when attempting to perform statistical inference with them. We see significant shrinkage of own-price elasticities of demand in our example from both Random Forest and XGBoost, with XGBoost suffering slighlty more from this problem. In addition, the elasticities have a significant spread, some spilling over onto the positive side of the axis. 
+
+On the other hand, the logit model of demand delivers elasticity estimates that are more reliably negative, but not significantly better than those from the Random Forest. Adding in instrumental variables to the estimation doesn't help much. To solve this problem, we use the random coefficients logit model of demand. It delivers very reasonable estimates for own-price elasticities that accord with economic theory. They are all negative, and generally are greater than 1 in absolute value. Vehicles with high prices and low market shares tend to have higher elasticities, while those in the opposite camp tend to have lower elasticities. 
+
+Our future posts will hopefully explore the reasons for these differences, and see if there are any ways to overcome the shrinkage problem that the algorithmic models seem to suffer from. We will also see if there is a way to estimate a matrix of cross-price elasticities using the algorithmic models, and how the substitution patterns compare to the benchmark random coefficients logit model. Finally, we will compare the predictive performance of the logit models to that of the algorithmic models.
+
+
+```{r,echo=FALSE}
 #Store the estimated unobserved heterogeneities' standard deviations and 
 #the deltas for subsequent use as starting guess
-unobs_sd <- blp_basic_est$theta_rc %>% matrix(ncol=1)
-df_instrument <- df_instrument %>% mutate(delta = blp_basic_est$delta)
+#unobs_sd <- blp_basic_est$theta_rc %>% matrix(ncol=1)
+#df_struct<- df_struct %>% mutate(delta = blp_basic_est$delta)
 ```
-
-```{r draws for observed and unobserved heterogeneities}
-df_income <- 
-  df %>% 
-  distinct(Year, .keep_all = TRUE) %>% 
-  select(Year,starts_with("real")) %>% 
-  arrange(Year)
-nYears <- nrow(df_income)
-
-#This part uses the real income percentiles to find the best fitting lognormal distribution for each year. (BLP used the mean and standard deviation to get the lognormal distributions. But i believe the resulting log normal distributions aren't very different at all)
-ofn <- function(x,q) {
-  sum(abs(q-qlnorm(c(0.2,0.4,0.6,0.8,0.95),x[1],x[2]))^2) 
-}
-para = matrix(0,nrow = nYears, ncol = 2)
-colnames(para) <- c("mu","sigma")
-for (i in 1:nYears) {
-  para[i,] <- optim(c(9,0.8),ofn, q = df_income[i,2:6],
-                    method = "L-BFGS-B",lower  = c(0,0))$par
-} 
-df_income <- bind_cols(df_income,as_tibble(para))
-
-
-#The rest of this code chunk gets the observed and unobserved heterogeneity draws into the format used by BLPestimatoR
-#Using the estimated lognormal distributions for each year, generate draws for income
-N_draws <- 100
-#Use log(income) as the income variable
-obs_draws_income = map2_dfr(pull(df_income,mu),pull(df_income,sigma), 
-                        ~ rlnorm(N_draws,meanlog = .x, sdlog = .y) %>% 
-                          log %>% matrix(nrow=1) %>% as_tibble) %>%
-  bind_cols(select(df_income,Year),.)
-
-obs_draws = list(income = obs_draws_income)
-
-
-#This part generates the unobserved heterogeneities from a SND 
-unobs_draws <- map(rc,
-                   ~ rnorm(N_draws*nYears) %>% 
-                     matrix(ncol=N_draws) %>% as_tibble %>% 
-                     bind_cols(select(df_income,Year),.)
-                   )
-names(unobs_draws) <- rc
-```
-
-```{r last step of data prep}
-blp_data <-  BLP_data(
-  model = blp_model,
-  market_identifier = "Year",
-  par_delta = "delta",
-  product_identifier = "Model_id",
-  productData = df_instrument,
-  blp_inner_tol = 1e-9, blp_inner_maxit = 5000,
-  demographic_draws = obs_draws,
-  integration_draws = unobs_draws,
-  integration_weights = rep(1 / N_draws, N_draws)
-)
-```
-
-```{r estimate blp}
-#Estimating the BLP model with observed heterogeneities results in a very unstable algorithm for most combinations of variables that i've tried.
-starting_guess <- cbind(unobs_sd,0.0)
-colnames(starting_guess) <- c("unobs_sd","income")
-rownames(starting_guess) <- rc
-
-
-blp_est <- estimateBLP(
-  blp_data = blp_data,
-  par_theta2 = starting_guess,
-  solver_method = "BFGS", solver_maxit = 1000, solver_reltol = 1e-6,
-  standardError = "heteroskedastic",
-  extremumCheck = FALSE,
-  printLevel = 1
-)
-```
-
 
 
