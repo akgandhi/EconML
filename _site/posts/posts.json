@@ -1,5 +1,28 @@
 [
   {
+    "path": "posts/zhongtian-yihao-midterm/",
+    "title": "Pricing Strategies of Retailers",
+    "description": "Random Forests and Next Steps",
+    "author": [
+      {
+        "name": "Zhongtian Chen",
+        "url": {}
+      },
+      {
+        "name": "Yihao Yuan",
+        "url": "https://github.com/yihao-yuan"
+      }
+    ],
+    "date": "2021-04-01",
+    "categories": [
+      "Zhongtian and Yihao's project"
+    ],
+    "contents": "\nPreliminary Results: Random Forest\nRandom Forest on Discount Rate\n\n\n\nWe run random forest on discount rate \\(\\frac{p_{regular} - p_{discount}}{p_{regular}}\\) on 1-30 day lagged stock quantities, sales quantities, and discount rates, as well as margins at regular prices \\(\\frac{p_{regular} - c}{p_{regular}}\\). The sample only includes products that are at discount.\nThe results show that margins at regular price is the most important factor to explain variations in discount rate. This is consistent with the descriptive analyses (heat map), where the stores tend to set their prices around wholesale prices when discounting the products. In addition, we find that discount rates in the previous seven days can explain a substantial part of the variations. This suggests that stores may make pricing decisions weekly.\nRandom Forest on Discount Decision\nTo be added. Sparklyr fails to estimate it locally.\nNext Steps\nDemand Estimation. We are interested in how demand factors affect the supply side. We may estimate simple linear regressions \\[log(Q_i) = -\\alpha \\log(p_i) + \\sum_{j\\neq i}\\beta_j \\log(p_j),\\] where \\(Q_i\\) and \\(p_i\\) are the sales quantity and price of product \\(i\\), and \\(p_j\\) is the price of other product \\(j\\). We hope this simple regression can capture the substitutions between products within categories, and potential cross-category complementarity. However, the right-hand side can be high-dimensional and cause estimation problems (e.g., overfitting). We may take BooST algorithm (credit to Catherine) or some Bayesian methods.\nUnsupervised Learning. We are interested in investigating whether there are any correlations between promotion decisions on different products, and what is its economic meaning if the correlation exists.\n\n\n\n",
+    "preview": {},
+    "last_modified": "2021-04-01T03:02:18-04:00",
+    "input_file": "midterm.utf8.md"
+  },
+  {
     "path": "posts/2021-03-24-k-means/",
     "title": "Clustering",
     "description": "Organizing the rows of your data",

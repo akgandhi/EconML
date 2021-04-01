@@ -1,0 +1,72 @@
+---
+title: "Pricing Strategies of Retailers"
+description: |
+  Random Forests and Next Steps
+author:
+  - name: Zhongtian Chen
+  - name: Yihao Yuan
+    url: https://github.com/yihao-yuan
+    affiliation: The University of Pennsylvania
+date: "`r Sys.Date()`"
+header-includes:
+  - \usepackage{dcolumn}  
+output: 
+  distill::distill_article
+toc: false
+categories: Zhongtian and Yihao's project
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(tidyverse)
+library(lubridate)
+library(janitor)
+library(dplyr)
+library(tidyr)
+library(jmuOutlier)
+library(Hmisc)
+library(car)
+library(TTR)
+
+library(knitr)
+knitr::opts_chunk$set(tidy=FALSE, 
+               fig.width=10,
+               fig.height=5,
+               fig.align='left',
+               warning=FALSE,
+               message=FALSE,
+               echo=TRUE)
+options(width = 120)
+library(ggplot2)
+library(colorspace)
+library(gridExtra)
+library(plm)
+library(lmtest)
+library(sandwich)
+library(lfe)
+library(DescTools)
+library(stargazer)
+```
+  
+## Preliminary Results: Random Forest
+
+### Random Forest on Discount Rate
+
+```{r, echo = FALSE, message = FALSE, warning=FALSE, preview=TRUE}
+# All defaults
+include_graphics("https://www.dropbox.com/s/oqc178q43bpsn5r/RF2.png?dl=1")
+```
+
+We run random forest on discount rate $\frac{p_{regular} - p_{discount}}{p_{regular}}$ on 1-30 day lagged stock quantities, sales quantities, and discount rates, as well as margins at regular prices $\frac{p_{regular} - c}{p_{regular}}$. The sample only includes products that are at discount. 
+
+The results show that margins at regular price is the most important factor to explain variations in discount rate. This is consistent with the descriptive analyses (heat map), where the stores tend to set their prices around wholesale prices when discounting the products. In addition, we find that discount rates in the previous seven days can explain a substantial part of the variations. This suggests that stores may make pricing decisions weekly.
+
+### Random Forest on Discount Decision
+
+To be added. **Sparklyr** fails to estimate it locally.
+
+## Next Steps
+
+* *Demand Estimation*. We are interested in how demand factors affect the supply side. We may estimate simple linear regressions $$log(Q_i) = -\alpha \log(p_i) + \sum_{j\neq i}\beta_j \log(p_j),$$ where $Q_i$ and $p_i$ are the sales quantity and price of product $i$, and $p_j$ is the price of other product $j$. We hope this simple regression can capture the substitutions between products within categories, and potential cross-category complementarity. However, the right-hand side can be high-dimensional and cause estimation problems (e.g., overfitting). We may take BooST algorithm (credit to Catherine) or some Bayesian methods.
+
+* *Unsupervised Learning*. We are interested in investigating whether there are any correlations between promotion decisions on different products, and what is its economic meaning if the correlation exists.
