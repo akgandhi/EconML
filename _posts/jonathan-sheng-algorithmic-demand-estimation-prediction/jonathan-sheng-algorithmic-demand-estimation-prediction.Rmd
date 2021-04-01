@@ -361,7 +361,7 @@ cart_vip
 
 We see some similarities with LASSO, like the presence of the F-series dummy again and the prominence of price, but some variables are reordered and others are new altogether. Note that variables related to car size and volume seem to take a more prominent role here. 
 
-Decision trees generally come with an added benefit of interpretability, so let's take a closer look at the model itself:
+Decision trees generally come with an added benefit of interpretability, so let's take a closer look at the model itself. Because the full tree is too large to be properly plotted, we snip it and display only the first few nodes of the tree:
 
 ```{r}
 final_cart <- 
@@ -375,11 +375,14 @@ final_cart <-
 ```
 
 ```{r, echo=TRUE}
-rpart.plot(final_cart$fit$fit$fit)
+
+final_cart$fit$fit$fit %>% 
+  snip.rpart(toss=c(3,16,17,18,19,20,21,22,23)) %>% 
+  rpart.plot
 
 ```
 
-This is quite a large tree, and a bit difficult to interpret. We may be able to faintly make out that the first split is along the F-series dummy, and further early splits pertain to price and price ratios, but much more than that becomes quite complex. Perhaps the interpretability advantage of a single tree is not so significant in our case.
+The splits are along the lines of the variable importance plot, with the F series, size of the company, and price variables being used at the first couple of splits. While not a new observation, the visualisation does emphasise the market dominance of the F-series models - their market shares are sufficiently of an outlier to warrant the first split into a pair of 100%/0% observations daughter nodes.   
 
 # Random Forest
 
@@ -413,8 +416,6 @@ rf_tune <- tune_grid(rf_workflow,
                      grid = 20)
 
 show_best(rf_tune, metric = "rmse")
-#Best model is mtry = 10, min_n = 4
-
 
 final_rf <- rf_workflow %>%
   finalize_workflow(select_best(rf_tune, metric = "rmse"))
@@ -425,12 +426,12 @@ rf_fit <- last_fit(final_rf, df_split)
 
 
 ```{r}
-rf_top<- data.frame(model=c(1,2,3,4,5),
-                    mtry=c(42,76,58,46,87),
-                    min_n=c(3,6,6,9,12),
-                    rmse=c(0.0002960400,0.0003004483,
-                           0.0003007966,0.0003074919,
-                           0.0003140362))
+rf_top <- data.frame(model=c(1,2,3,4,5),
+                     mtry=c(42,76,58,46,87),
+                     min_n=c(3,6,6,9,12),
+                     rmse=c(0.0002960400,0.0003004483,
+                            0.0003007966,0.0003074919,
+                            0.0003140362))
 ```
 
 
@@ -543,6 +544,25 @@ xgb_top<- data.frame(trees=c(1968,1888,1462,1913,1754),
                      rmse=c(0.0003977069,0.0004080520,
                             0.0004119114,0.0005697625,
                             0.0008602943))
+
+
+xgb_top_hypergrid = data.frame(trees=c(268,1145,1935,870,210),
+                               min_n=c(19,37,36,24,6),
+                               tree_depth=c(7,8,3,2,10),
+                               learn_rate=c(0.06375844,0.02088317,
+                                            0.02512130,0.04464686,
+                                            0.08128769),
+                               loss_reduction=c(1.583890e-08,2.532784e-09,
+                                                7.267478e-07,2.227183e-07,
+                                                4.653249e+00),
+                               sample_size=c(0.7728422,0.8932609,
+                                             0.8524559,0.7782517,
+                                             0.3219581),
+                               rmse=c(0.0003730483,0.0003875824,
+                                      0.0004186687,0.0004464930,
+                                      0.0008603319))
+
+
 ```
 
 ```{r}
@@ -598,9 +618,78 @@ xgb_vip
 
 Again we see somewhat similar results, with Ford, price, and car volume making their usual appearances. We do see the introduction of a couple of new variables, like the pickup truck class and the model age, but overall the results are not extremely different from the other models.
 
+To explore the performance differential between random forest and boosting a little further, we turn to the hyper-parameter tuning step. While random forest has only 2 tuning parameters, boosting has 6. This implies that the number of grid points in the tuning step for boosting must be exponentially higher to maintain the same density of the grid. For example, above we considered 20 grid points for random forest. This translates to $20^{1/2}\approx4$ values for each parameter. On the other hand, we used only 60 grid points for boosting, which is about  $60^{1/6}\approx2$  values for each parameter, a substantially sparser grid.
+
+To test whether the relatively denser random forest grid is the reason for its superior performance, we now use equally dense grids for both. Specifically, we use 600 grid points for boosting, and 10 grid points for random forest. Both translates to $\approx3$ values for each parameter. 
+
+```{r comparing densities of grids for RF and XGB}
+
+#outputs from tuning
+rf_top_10 <- data.frame(model=c(1,2,3,4,5),
+                     mtry=c(34,83,46,10,44),
+                     min_n=c(9,12,16,4,20),
+                     rmse=c(0.0003104008,0.0003146941,
+                            0.0003259640,0.0003326285,
+                            0.0003384036))
+xgb_top_600 = data.frame(model=c(1,2,3,4,5),
+                         trees=c(1613,244,1204,1900,756),
+                         min_n=c(9,3,8,14,28),
+                         tree_depth=c(15,12,9,8,15),
+                         learn_rate=c(0.027079512,0.064752604,
+                                      0.089592301,0.007993772,
+                                      0.036767989),
+                         loss_reduction=c(5.312934e-09,4.152213e-10,
+                                          1.214309e-10,8.830213e-08,
+                                          8.754294e-10),
+                         sample_size=c(0.8671689,0.6991916,
+                                       0.8324622,0.4738718,
+                                       0.9630240),
+                         rmse=c(0.0003438277,0.0003449897,
+                                0.0003517943,0.0003745011,
+                                0.0003758007))
+
+
+final_rf_10 <- 
+  workflow() %>% 
+  add_recipe(rf_recipe) %>% 
+  add_model(update(rf_spec,
+                   mtry = 34, min_n = 9, trees = 500)
+            )
+
+rf_fit_10 <- last_fit(final_rf_10, df_split)
+
+rf_metric_10 <-
+collect_metrics(rf_fit_10) %>% 
+  select(.metric,.estimate) %>% 
+  pivot_wider(names_from = .metric, values_from = .estimate) %>% 
+  mutate(Algo = "Random Forest", N_grids = 10)
+
+final_xgb_600 <- 
+  workflow() %>% 
+  add_recipe(xgb_recipe) %>% 
+  add_model(update(xgb_spec,
+                   trees = 1613, min_n = 9, tree_depth = 15, 
+                   learn_rate = 0.027079512, loss_reduction = 5.312934e-09,
+                   sample_size = 0.8671689)
+            )
+
+xgb_fit_600 <- last_fit(final_xgb_600, df_split)
+
+xgb_metric_600 <-
+collect_metrics(xgb_fit_600) %>% 
+  select(.metric,.estimate) %>% 
+  pivot_wider(names_from = .metric, values_from = .estimate) %>% 
+  mutate(Algo = "Boosting", N_grids = 600)
+
+bind_rows(rf_metric_10,xgb_metric_600) %>% relocate(Algo,N_grids)
+```
+
+The results indicate that random forest continues to perform better and therefore grid density is not the reason for the performance differential. However, we should note that boosting is a far more complex model, and there may be more efficient ways of tuning this model, such as random grid search, or simply fixing some parameters that are known to be less important, that will allow it to ultimately outperform random forest. Out of the box though, random forest seems to be the superior algorithm for this problem.   
+
+
 ## Summary and Conclusion
 
-We've now fit and tested four different algorithmic models to predict the market shares of automobiles in the United States. Let's review their overall performances and compare:
+We've now fitted and tested four different algorithmic models to predict the market shares of automobiles in the United States. Let's review their overall performances and compare:
 
 <!-- Collect and plot performance metrics of algorithms -->
 ```{r,echo=TRUE}

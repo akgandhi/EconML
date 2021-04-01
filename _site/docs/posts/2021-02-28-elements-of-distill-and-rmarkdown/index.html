@@ -2243,7 +2243,11 @@ h1, h2, h3, h4, h5, h6,
 
 d-article div.sourceCode code,
 d-article pre code {
+<<<<<<< HEAD
+	font-family: var(--mono-font), var(--mono-default);
+=======
   font-family: var(--mono-font), var(--mono-default);
+>>>>>>> 90861b92ad3cad3aafc2ce29a84ea7e697965064
 }
 
 
@@ -2268,36 +2272,67 @@ d-article h6 {
 }
 
 /*-- BODY --*/
+<<<<<<< HEAD
+/* only text inside of <p> tags */
+d-article > p {
+=======
 d-article > p,  /* only text inside of <p> tags */
 d-article > ul, /* lists */
 d-article > ol {
+>>>>>>> 90861b92ad3cad3aafc2ce29a84ea7e697965064
   color: var(--body-color, rgba(0, 0, 0, 0.8));
   font-size: var(--body-size, 1.06rem);
 }
 
+<<<<<<< HEAD
+/*-- CODE --*/
+d-article div.sourceCode code,
+d-article pre code {
+	font-size: var(--code-size, 14px);
+=======
 
 /*-- CODE --*/
 d-article div.sourceCode code,
 d-article pre code {
   font-size: var(--code-size, 14px);
+>>>>>>> 90861b92ad3cad3aafc2ce29a84ea7e697965064
 }
 
 /*-- ASIDE --*/
 d-article aside {
+<<<<<<< HEAD
+	font-size: var(--aside-size, 12px);
+	color: var(--aside-color, rgba(0, 0, 0, 0.6));
+=======
   font-size: var(--aside-size, 12px);
   color: var(--aside-color, rgba(0, 0, 0, 0.6));
+>>>>>>> 90861b92ad3cad3aafc2ce29a84ea7e697965064
 }
 
 /*-- FIGURE CAPTIONS --*/
 figure .caption,
 figure figcaption,
 .figure .caption {
+<<<<<<< HEAD
+	font-size: var(--fig-cap-size, 13px);
+	color: var(--fig-cap-color, rgba(0, 0, 0, 0.6));
+=======
   font-size: var(--fig-cap-size, 13px);
   color: var(--fig-cap-color, rgba(0, 0, 0, 0.6));
+>>>>>>> 90861b92ad3cad3aafc2ce29a84ea7e697965064
 }
 
 /*-- METADATA --*/
 d-byline h3 {
+<<<<<<< HEAD
+	font-size: var(--heading-size, 0.6rem);
+	color: var(--heading-color, rgba(0, 0, 0, 0.5));
+}
+
+d-byline {
+	font-size: var(--body-size, 0.8rem);
+	color: var(--body-color, rgba(0, 0, 0, 0.8));
+=======
   font-size: var(--heading-size, 0.6rem);
   color: var(--heading-color, rgba(0, 0, 0, 0.5));
 }
@@ -2305,41 +2340,71 @@ d-byline h3 {
 d-byline {
   font-size: var(--body-size, 0.8rem);
   color: var(--body-color, rgba(0, 0, 0, 0.8));
+>>>>>>> 90861b92ad3cad3aafc2ce29a84ea7e697965064
 }
 
 d-byline a,
 d-article d-byline a {
+<<<<<<< HEAD
+	color: var(--body-color, rgba(0, 0, 0, 0.8));
+=======
   color: var(--body-color, rgba(0, 0, 0, 0.8));
+>>>>>>> 90861b92ad3cad3aafc2ce29a84ea7e697965064
 }
 
 /*-- TABLE OF CONTENTS --*/
 .d-contents nav h3 {
+<<<<<<< HEAD
+	font-size: var(--heading-size, 18px);
+}
+
+.d-contents nav a {
+	font-size: var(--contents-size, 13px);
+=======
   font-size: var(--heading-size, 18px);
 }
 
 .d-contents nav a {
   font-size: var(--contents-size, 13px);
+>>>>>>> 90861b92ad3cad3aafc2ce29a84ea7e697965064
 }
 
 /*-- APPENDIX --*/
 d-appendix h3 {
   font-size: var(--heading-size, 15px);
+<<<<<<< HEAD
+	color: var(--heading-color, rgba(0, 0, 0, 0.65));
+=======
   color: var(--heading-color, rgba(0, 0, 0, 0.65));
+>>>>>>> 90861b92ad3cad3aafc2ce29a84ea7e697965064
 }
 
 d-appendix {
   font-size: var(--text-size, 0.8em);
+<<<<<<< HEAD
+	color: var(--text-color, rgba(0, 0, 0, 0.5));
+}
+
+d-appendix d-footnote-list a.footnote-backlink {
+	color: var(--text-color, rgba(0, 0, 0, 0.5));
+=======
   color: var(--text-color, rgba(0, 0, 0, 0.5));
 }
 
 d-appendix d-footnote-list a.footnote-backlink {
   color: var(--text-color, rgba(0, 0, 0, 0.5));
+>>>>>>> 90861b92ad3cad3aafc2ce29a84ea7e697965064
 }
 
 /*-- WEBSITE HEADER + FOOTER --*/
 .distill-site-header .title {
+<<<<<<< HEAD
+	font-size: var(--title-size, 18px);
+	font-family: var(--navbar-font), var(--heading-default);
+=======
   font-size: var(--title-size, 18px);
   font-family: var(--navbar-font), var(--heading-default);
+>>>>>>> 90861b92ad3cad3aafc2ce29a84ea7e697965064
 }
 
 .distill-site-header a,
@@ -2347,6 +2412,26 @@ d-appendix d-footnote-list a.footnote-backlink {
   font-family: var(--navbar-font), var(--heading-default);
 }
 
+<<<<<<< HEAD
+.distill-site-header a:hover {
+	color: var(--hover-color, white);
+}
+
+.distill-site-header {
+	font-size: var(--text-size, 15px);
+	color: var(--text-color, rgba(255, 255, 255, 0.8));
+	background-color: var(--bkgd-color, #0F2E3D);
+}
+
+.distill-site-footer {
+	font-size: var(--text-size, 15px);
+	color: var(--text-color, rgba(255, 255, 255, 0.8));
+	background-color: var(--bkgd-color, #0F2E3D);
+}
+
+.distill-site-footer a:hover {
+	color: var(--hover-color, white);
+=======
 .nav-dropdown .nav-dropbtn {
   color: var(--text-color, rgba(255, 255, 255, 0.8));
   font-size: var(--text-size, 15px);
@@ -2371,6 +2456,7 @@ d-appendix d-footnote-list a.footnote-backlink {
 
 .distill-site-footer a:hover {
   color: var(--hover-color, white);
+>>>>>>> 90861b92ad3cad3aafc2ce29a84ea7e697965064
 }</style>
 <!--/radix_placeholder_distill-->
   <script src="../../site_libs/header-attrs-2.7/header-attrs.js"></script>
