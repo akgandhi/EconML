@@ -1,0 +1,451 @@
+---
+title: "Eligible is not enough"
+description: |
+  A first attempt in predicting take-up of welfare programs.
+author:
+  - name: Ornella Darova
+  - name: Ozgur Seker
+date: 03-30-2021
+output:
+  distill::distill_article:
+    self_contained: false
+categories: Ornella and Ozgur's project
+---
+
+In this post, we are going to first subset our sample to those individuals that are actually eligible for welfare programs in the US, and then study the characteristics of those who actually participate in such programs, and those of who doesn't, through a prediction exercise of the take-up.
+
+First of all, typically there exist income thresholds below which it is possible to apply for social programs. The Department of Housing and Urban Development (HUD), for example, sets income limits that determine eligibility for assisted housing programs based on Median Family Income estimates and Fair Market Rent area definitions for each metropolitan area, parts of some metropolitan areas, and each non-metropolitan county. Therefore, there is variability at the county and at the year level. Income limits can be found at <a href="https://www.huduser.gov/portal/datasets/il.html">this link</a>.
+
+We carefully merge our dataset with this information in order to find the subset of US population that is eligible for social programs. Moreover, we add other characteristics determining eligibility for social programs such as older age (65+) or disability. 
+
+
+```{r, include=TRUE, warning=FALSE}
+library(tidyverse)
+library(haven)
+library(janitor)
+library(expss)
+library(readxl)
+
+root = "../../../Predicting Take-Up Rate/"
+  
+#### Preparing County Level Population, Income and Per Capita Income Data ####
+
+readCountyData <- function(){
+  countyData <- read_csv(paste0(root, "CountyLevelData/CAINC1/CAINC1__ALL_AREAS_1969_2019.csv"))
+  N <- length(countyData$GeoFIPS)
+  countyData = countyData[1:(N-4),]
+  return(countyData)
+}
+
+
+countyDat <- readCountyData()
+cols <- names(countyDat)[c(1,9:length(names(countyDat)))]
+countyDat <- countyDat %>% mutate_at(cols, as.numeric)
+rm(cols, readCountyData)
+
+prepCountyData <- function(data, year = 2019, newColNames = c("income_county", "pop_county", "percapincome_county"), colsNeeded = c("GeoFIPS", "GeoName", "Region") ){
+  
+  groups <- unique(data$LineCode)
+  dataNew <- data %>% filter(LineCode == groups[1])
+  dataNew[, paste0(newColNames[1])] <- dataNew[, paste(year)]
+  
+  yourCols <- c(colsNeeded, paste0(newColNames[1]))
+  
+  for (i in 2:length(groups)){
+    grp <- groups[i]
+    colnam <- newColNames[i]
+    dataTemp <- data %>% filter(LineCode == grp) 
+    newName <- paste0(newColNames[i]) 
+    yourCols <- c(yourCols, newName)
+    dataNew[,newName] <- dataTemp[,paste(year)]
+  }
+  
+  dataNew$year <- year 
+  
+  return(dataNew[,yourCols])
+  
+}
+
+
+#### Function to Prepare Critical Poverty Levels by county and family size ####
+
+prepPovertyLevels <- function(year = 2019){
+  
+  filepath = paste0(root, "incomeLevels/il", year, ".xls")
+  if (year > 2014){
+    filepath <- paste0(filepath, "x")
+  }
+  
+  povertyLevels <- read_excel(filepath)
+  
+  if (year < 2013) {
+    povertyLevels$fips <- as.numeric( povertyLevels$fips )
+    povertyLevels$countyfips <- povertyLevels$fips %/% 100000
+    povertyLevels$metfips <- povertyLevels$fips %% 100000
+  }
+  
+  if (year < 2016 & year > 2012){
+    povertyLevels$fips2000 <- as.numeric( povertyLevels$fips2000 )
+    povertyLevels$countyfips <- povertyLevels$fips2000 %/% 100000
+    povertyLevels$metfips <- povertyLevels$fips2000 %% 100000
+  }
+  
+  if (year > 2015){
+    povertyLevels$fips2010 <- as.numeric( povertyLevels$fips2010 )
+    povertyLevels$countyfips <- povertyLevels$fips2010 %/% 100000
+    povertyLevels$metfips <- povertyLevels$fips2010 %% 100000
+  }
+  
+  
+  plMatrx <- povertyLevels %>% select(contains("50") | contains("80"))
+  
+  plMatrx <- as.matrix(plMatrx)
+  
+  l50 <- c()
+  l80 <- c()
+  for (i in 1:length(povertyLevels$State)){
+    l50 <- c(l50, plMatrx[i,1:8])
+    l80 <- c(l80, plMatrx[i,9:16])
+  }
+  
+  povertyLevels <- povertyLevels %>% select(-contains("ELI")) %>% select(-contains("50")) %>% select(-contains("80"))
+  povertyLevels <- povertyLevels %>% select(-contains("name")) %>% select(-contains("Name")) %>% select(-contains("cbsasub")) %>% select(-starts_with("fips"))
+  
+  
+  N <- length(povertyLevels$metfips)
+  
+  povertyLevels <- povertyLevels[rep(seq_len(nrow(povertyLevels)), each = 8), ]
+  povertyLevels$famsize <- rep(1:8, N)
+  povertyLevels$l80 <- l80
+  povertyLevels$l50 <- l50
+  
+  rm(plMatrx, i, l50, l80, N)
+  
+  filepath <- paste0(root, "povertyLevels", year ,".csv")
+  
+  write_csv(povertyLevels, paste0(root,"povertyLevels2019.csv"))
+  
+  return(povertyLevels)
+  
+}
+
+#### Taking subset of data, only adults with complete county info ####
+
+cps <- read_dta(paste0(root,"cps_00005.dta"))
+cps <- cps %>% filter(county != 0, popstat != 3, year < 2020)
+
+allyears <- unique(cps$year)
+
+#### Function to Combine Datasets for given year ####
+
+combinedDataforYear <- function(data, yr){
+  
+  povertyLevels <- prepPovertyLevels(year = yr)
+  povertyLevels <- povertyLevels %>% select(-c(State_Alpha, metro, County))
+  povertyLevels <- povertyLevels %>% select(-contains("median"))
+  povertyLevels <- povertyLevels %>% select(-contains("30"))
+  
+  cd <- prepCountyData(countyDat, year = yr)
+  
+  ncps <- data %>% filter(year == yr)
+  
+  ncps$metarea[ncps$metarea == 9998] <- 9999
+  ncps$is_largefmly <- 0
+  ncps$is_largefmly[ncps$famsize > 8] <- 1
+  ncps$famsize[ncps$famsize > 8] <- 8
+  
+  ncps <- ncps %>% left_join(cd%>%select(GeoFIPS, "income_county", "pop_county", "percapincome_county"), by= c("county" = "GeoFIPS"))
+  ncps <- ncps %>% left_join(povertyLevels %>% select(-metfips) %>% distinct(), by = c("statefip" = "State", "county" = "countyfips", "famsize" = "famsize", "metarea" = "MSA"))
+  
+  ncps1 <- ncps %>% filter(is.na(l80) == FALSE)
+  ncps2 <- ncps %>% filter(is.na(l80))
+  
+  ncps2 <- ncps2 %>% select(-c(l80,l50)) %>% left_join(povertyLevels %>% filter(MSA == 9999) %>% select(-c(metfips, MSA)) %>% distinct(), by = c("statefip" = "State", "county" = "countyfips", "famsize" = "famsize"))
+  
+  ncps3 <- ncps2 %>% filter(is.na(l80))
+  ncps2 <- ncps2 %>% filter(is.na(l80) == FALSE)
+  
+  
+  ncps3 <- ncps3 %>% select(-c(l80,l50)) %>% mutate(metarea = metarea %/% 100) %>% left_join(povertyLevels %>% select(-metfips) %>% distinct() %>% mutate(MSA = MSA %/% 100), 
+                                                                                                 by = c("statefip" = "State", "county" = "countyfips", "famsize" = "famsize", "metarea" = "MSA"))
+  
+  ncps4 <- ncps3 %>% filter(is.na(l80))
+  ncps3 <- ncps3 %>% filter(is.na(l80) == FALSE)
+  
+  ncps4 <- ncps4 %>% select(-c(l80,l50)) %>% left_join(povertyLevels %>% select(-c(metfips, MSA)) %>% distinct(), 
+                                                           by = c("statefip" = "State", "county" = "countyfips", "famsize" = "famsize"))
+  
+  
+  ncps <- rbind(ncps1, ncps2, ncps3, ncps4)
+  rm(ncps1, ncps2, ncps3, ncps4)
+  
+  return(ncps)
+  
+}
+
+#### Combine all data ####
+
+df <- combinedDataforYear(cps, yr = allyears[1])
+
+for (i in 2:length(allyears)){
+  dftemp <- combinedDataforYear(cps, yr = allyears[i])
+  df <- rbind(df, dftemp)
+}
+
+#### Assign random hhinc depending on faminc info ####
+
+famincCats <- read.csv2(file = paste0(root,"famincdat.txt") ,sep = "")
+
+assignFamincValues <- function(dt, famincDat, seed = 100){
+  set.seed(seed)
+  N <- length( dt$faminc )
+  dt$randomTerm <- runif(N)
+  dt <- dt %>% left_join(famincDat)
+  dt$famincAssigned <- dt$hhincome
+  dt <- dt %>% mutate(famincAssigned = famincAssigned + (famincAssigned == 0) * (MinFaminc + randomTerm * (MaxFaminc - MinFaminc)))
+  dt$famincAssigned <- floor(dt$famincAssigned)
+  dt <- dt %>% select(-c("MinFaminc","MaxFaminc", "randomTerm"))
+  return(dt)
+}
+
+ncps <- assignFamincValues(df, famincCats, seed =100)
+write_dta(ncps, path = paste0(root,"sampleDataFull.dta"))
+
+```
+
+# Public Housing
+## Random Forest
+
+The first social program we are going to explore is public housing. 
+
+We begin by exploring the random forest technique. 
+
+```{r, include=TRUE, warning=FALSE}
+
+### Build eligibility variable for PUBLIC HOUSING
+ncps <- as.data.frame(ncps)
+ncps$hous_elig = ifelse(ncps$famincAssigned<ncps$l80|ncps$disabwrk==2|ncps$age>65,1,0) 
+ncps$hous_elig = ifelse(ncps$disabwrk==0,".",ncps$hous_elig)
+ncps$hous_elig = as.numeric(ncps$hous_elig)
+
+# Keep only eligible individuals
+hous_elig_ncps <- subset(ncps, hous_elig==1)
+
+# Modeling packages
+library(ranger)   
+library(h2o) 
+library(rsample)
+library(caret)
+library(randomForest)
+library(rpart)
+
+# Training sample
+set.seed(123)
+split  <- initial_split(hous_elig_ncps, prop = 0.7)
+ncps_train  <- training(split)
+
+# Prepare variables
+ncps_train$pub <- ifelse(ncps_train$pubhous==1,0,1)
+ncps_train$pub <- ifelse(ncps_train$pubhous==0,".",ncps_train$pub)
+ncps_train$pub <- as.numeric(ncps_train$pub)
+
+ncps_train$age <- as.numeric(ncps_train$age)
+ncps_train$male <- ifelse(ncps_train$sex==2,0,1)
+
+ncps_train$male <- ifelse(ncps_train$sex==9,".",ncps_train$male)
+ncps_train$male <- as.numeric(ncps_train$male)
+
+ncps_train$black <- ifelse(ncps_train$race==200,1,".")
+ncps_train$black <- ifelse(ncps_train$race==100,0,ncps_train$black)
+ncps_train$black <- as.numeric(ncps_train$black)
+ncps_train$asian <- ifelse(ncps_train$race==651,1,0)
+ncps_train$asian <- as.numeric(ncps_train$asian)
+
+ncps_train$married <- ifelse(ncps_train$marst==1|ncps_train$marst==2,1,0)
+ncps_train$married <- ifelse(ncps_train$marst==9,".",ncps_train$married)
+ncps_train$married <- as.numeric(ncps_train$married)
+
+ncps_train$foreign <- ifelse(ncps_train$nativity==4|ncps_train$nativity==5,1,".")
+ncps_train$foreign <- ifelse(ncps_train$nativity==1,0,ncps_train$foreign)
+ncps_train$foreign <- as.numeric(ncps_train$foreign)
+
+ncps_train$veteran <- ifelse(ncps_train$vetstat==1,0,".")
+ncps_train$veteran <- ifelse(ncps_train$vetstat==2,1,ncps_train$veteran)
+ncps_train$veteran <- as.numeric(ncps_train$veteran)
+
+ncps_train$nchildren <- as.numeric(ncps_train$nchild)
+
+ncps_train$unemployed <- ifelse(ncps_train$labforce==2,0,1)
+ncps_train$unemployed <- ifelse(ncps_train$labforce==0,".",ncps_train$unemployed)
+ncps_train$unemployed <- as.numeric(ncps_train$unemployed)
+
+
+# Tree
+
+d_tree <- rpart(pub ~ famincAssigned + male + age + black + asian + married
+                + foreign + veteran + nchildren + unemployed, 
+                data=ncps_train, control=rpart.control(minsplit=2, minbucket=1, cp=0.001),
+                na.action=na.omit)
+
+rpart.plot::rpart.plot(d_tree, main = "Decision Tree for Public Housing") 
+
+rf_impurity <- ranger(
+  formula = pub ~ famincAssigned + male + age + black + asian + married
+                 + nchildren + foreign, 
+  data = subset(ncps_train,!is.na(ncps_train$pub)&!is.na(ncps_train$black)&
+                  !is.na(ncps_train$foreign)), 
+  num.trees = 200,
+  mtry = 8,
+  min.node.size = 1,
+  sample.fraction = .80,
+  replace = FALSE,
+  importance = "impurity",
+  respect.unordered.factors = "order",
+  verbose = FALSE,
+  seed  = 123
+)
+
+# re-run model with permutation-based variable importance
+rf_permutation <- ranger(
+  formula = pub ~ famincAssigned + male + age + black + asian + married
+                 + nchildren + foreign, 
+  data = subset(ncps_train,!is.na(ncps_train$pub)&!is.na(ncps_train$black)&
+                  !is.na(ncps_train$foreign)), 
+  num.trees = 200,
+  mtry = 8,
+  min.node.size = 1,
+  sample.fraction = .80,
+  replace = FALSE,
+  importance = "permutation",
+  respect.unordered.factors = "order",
+  verbose = FALSE,
+  seed  = 123
+)
+
+
+library(vip)
+library(gridExtra)
+
+p1 <- vip::vip(rf_impurity, num_features = 25, bar = FALSE)
+p2 <- vip::vip(rf_permutation, num_features = 25, bar = FALSE)
+
+gridExtra::grid.arrange(p1, p2, nrow = 1)
+
+rm(rf_impurity)
+rm(rf_permutation)
+
+```
+
+# Medicare
+## Random Forest
+
+The second social program we are going to explore is public housing. 
+
+We begin by exploring the random forest technique. 
+
+```{r, include=TRUE,echo=FALSE, warning=FALSE}
+
+### Build eligibility variable for MEDICARE
+
+ncps$med_elig = ifelse(ncps$disabwrk==2|ncps$age>65,1,0)
+ncps$med_elig = ifelse(ncps$disabwrk==0,".",ncps$med_elig)
+ncps$med_elig = as.numeric(ncps$med_elig)
+
+# Keep only eligible individuals
+med_elig_ncps <- subset(ncps, med_elig==1)
+
+# Training sample
+set.seed(123)
+split  <- initial_split(med_elig_ncps, prop = 0.7)
+ncps_train  <- training(split)
+
+# Prepare variables
+ncps_train$medicare <- ifelse(ncps_train$carely==1,0,1)
+ncps_train$medicare <- ifelse(ncps_train$carely==0,".",ncps_train$medicare)
+ncps_train$medicare <- as.numeric(ncps_train$medicare)
+
+ncps_train$age <- as.numeric(ncps_train$age)
+ncps_train$male <- ifelse(ncps_train$sex==2,0,1)
+
+ncps_train$male <- ifelse(ncps_train$sex==9,".",ncps_train$male)
+ncps_train$male <- as.numeric(ncps_train$male)
+
+ncps_train$black <- ifelse(ncps_train$race==200,1,".")
+ncps_train$black <- ifelse(ncps_train$race==100,0,ncps_train$black)
+ncps_train$black <- as.numeric(ncps_train$black)
+ncps_train$asian <- ifelse(ncps_train$race==651,1,0)
+ncps_train$asian <- as.numeric(ncps_train$asian)
+
+ncps_train$married <- ifelse(ncps_train$marst==1|ncps_train$marst==2,1,0)
+ncps_train$married <- ifelse(ncps_train$marst==9,".",ncps_train$married)
+ncps_train$married <- as.numeric(ncps_train$married)
+
+ncps_train$foreign <- ifelse(ncps_train$nativity==4|ncps_train$nativity==5,1,".")
+ncps_train$foreign <- ifelse(ncps_train$nativity==1,0,ncps_train$foreign)
+ncps_train$foreign <- as.numeric(ncps_train$foreign)
+
+ncps_train$veteran <- ifelse(ncps_train$vetstat==1,0,".")
+ncps_train$veteran <- ifelse(ncps_train$vetstat==2,1,ncps_train$veteran)
+ncps_train$veteran <- as.numeric(ncps_train$veteran)
+
+ncps_train$nchildren <- as.numeric(ncps_train$nchild)
+
+ncps_train$unemployed <- ifelse(ncps_train$labforce==2,0,1)
+ncps_train$unemployed <- ifelse(ncps_train$labforce==0,".",ncps_train$unemployed)
+ncps_train$unemployed <- as.numeric(ncps_train$unemployed)
+
+
+# Tree
+
+d_tree <- rpart(medicare ~ famincAssigned + male + age + black + asian + married
+                + foreign + veteran + nchildren + unemployed, 
+                data=ncps_train, control=rpart.control(minsplit=2, minbucket=1, cp=0.001),
+                na.action=na.omit)
+
+rpart.plot::rpart.plot(d_tree, main = "Decision Tree for Medicare") 
+
+rf_impurity <- ranger(
+  formula = medicare ~ famincAssigned + male + age + black + asian + married
+                 + nchildren + foreign, 
+  data = subset(ncps_train,!is.na(ncps_train$medicare)&!is.na(ncps_train$black)&
+                  !is.na(ncps_train$foreign)),
+  num.trees = 200,
+  mtry = 8,
+  min.node.size = 1,
+  sample.fraction = .80,
+  replace = FALSE,
+  importance = "impurity",
+  respect.unordered.factors = "order",
+  verbose = FALSE,
+  seed  = 123
+)
+
+# re-run model with permutation-based variable importance
+rf_permutation <- ranger(
+  formula = medicare ~ famincAssigned + male + age + black + asian + married
+                 + nchildren + foreign, 
+  data = subset(ncps_train,!is.na(ncps_train$medicare)&!is.na(ncps_train$black)&
+                  !is.na(ncps_train$foreign)), 
+  num.trees = 200,
+  mtry = 8,
+  min.node.size = 1,
+  sample.fraction = .80,
+  replace = FALSE,
+  importance = "permutation",
+  respect.unordered.factors = "order",
+  verbose = FALSE,
+  seed  = 123
+)
+
+
+library(vip)
+library(gridExtra)
+
+p1 <- vip::vip(rf_impurity, num_features = 25, bar = FALSE)
+p2 <- vip::vip(rf_permutation, num_features = 25, bar = FALSE)
+
+gridExtra::grid.arrange(p1, p2, nrow = 1)
+
+```
+
+
