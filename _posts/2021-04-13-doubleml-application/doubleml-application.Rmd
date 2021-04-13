@@ -6,19 +6,16 @@ author:
   - name: Ornella Darova
   - name: Ozgur Seker
     url: {}
-date: 03-30-2021
-output:
-  distill::distill_article:
-    self_contained: false
+date: "`r Sys.Date()`"
+output: distill::distill_article
 categories: Ornella and Ozgur's project
-output: html_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-In previous posts, we have prepared our data and set the eligibility variable for different programs. In this post, we will create a setup for double ML package applications. 
+In previous posts, we have prepared our data and set eligibility variable. In this post, we will create a setup for double ML package applications. 
 
 ```{r prep, echo=FALSE}
 library(dplyr)
@@ -104,7 +101,7 @@ library(randomForest)
 
 The function below prepares data and apply doubleML with random forest. If argument subset is true, it uses the subset of data according to given arguments. 
 
-```{r packages2, echo=TRUE}
+```{r function, echo=TRUE}
 effectByDML <- function(data = ncps, yvar, dvar, xvars, subset=FALSE, subsetcols = NA, subsetvars = NA){
   df <- zap_labels( data )
   if(subset){
@@ -159,10 +156,10 @@ ncps <- ncps %>% mutate_at(orderedVars, as.numeric)
 We set our output interest as y, variables we want to estimate their effects as dlist, all covariates as xvars, and the variables that their effects should be normalized as dlistNormalize. 
 
 ```{r setting, echo=TRUE}
-y <- c("pub", "rentsub", "heatsub", "foodstmp", "lunchsub", "caidly", "carely")
-dlist <- c("famsize", "famincAssigned", "income_county", "nchild", "phone", "black", "vetstat", "citizen", "nativity", "empstat", "union")
+y <- "pub"
+dlist <- c("famsize", "famincAssigned", "income_county", "nchild")
 dlistNormalize <- c("famincAssigned", "income_county")
-xvars <- c("famsize","famincAssigned", "age", "empstat", "labforce", "famunit", "firmsize", "health", "income_county","phinsur", "nchild", "black", "disabwrk", "sex", "vetstat", "citizen", "nativity", "occupation", "empstat")
+xvars <- c("famsize","famincAssigned", "age", "empstat", "labforce", "famunit", "firmsize", "health", "income_county","phinsur", "nchild", "black", "disabwrk", "sex")
 ```
 
 We are interested in estimating effect on take-up rate for all and for only eligible people. Difference between these two might also give us some intuition. The code below prepares a table for results. 
