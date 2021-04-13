@@ -1,0 +1,208 @@
+---
+title: "DoubleML-application"
+description: |
+  A first attempt in predicting take-up of welfare programs.
+author:
+  - name: Ornella Darova
+  - name: Ozgur Seker
+    url: {}
+date: 03-30-2021
+output:
+  distill::distill_article:
+    self_contained: false
+categories: Ornella and Ozgur's project
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+In previous posts, we have prepared our data and set the eligibility variable for different programs. In this post, we will create a setup for double ML package applications. 
+
+```{r prep, echo=FALSE}
+library(dplyr)
+library(ranger)   
+library(rsample)
+library(caret)
+library(rpart)
+library(haven)
+library(rlang)
+
+ncps <- read_dta("sampleDataFull.dta")
+
+dataPrep <- function(ncps = ncps){
+
+  
+  ### Build eligibility variable for PUBLIC HOUSING
+  ncps <- as.data.frame(ncps)
+  ncps$hous_elig = ifelse(ncps$famincAssigned<ncps$l80|ncps$disabwrk==2|ncps$age>65,1,0) 
+  ncps$hous_elig = ifelse(ncps$disabwrk==0,".",ncps$hous_elig)
+  ncps$hous_elig = as.numeric(ncps$hous_elig)
+  
+  ### Build eligibility variable for MEDICARE
+  
+  ncps$med_elig = ifelse(ncps$disabwrk==2|ncps$age>65,1,0)
+  ncps$med_elig = ifelse(ncps$disabwrk==0,".",ncps$med_elig)
+  ncps$med_elig = as.numeric(ncps$med_elig)
+  
+  
+  # Prepare variables
+  ncps$pub <- ifelse(ncps$pubhous==1,0,1)
+  ncps$pub <- ifelse(ncps$pubhous==0,".",ncps$pub)
+  ncps$pub <- as.numeric(ncps$pub)
+  
+  ncps$medicare <- ifelse(ncps$carely==1,0,1)
+  ncps$medicare <- ifelse(ncps$carely==0,".",ncps$medicare)
+  ncps$medicare <- as.numeric(ncps$medicare)
+  
+  ncps$age <- as.numeric(ncps$age)
+  ncps$male <- ifelse(ncps$sex==2,0,1)
+  
+  ncps$male <- ifelse(ncps$sex==9,".",ncps$male)
+  ncps$male <- as.numeric(ncps$male)
+  
+  ncps$black <- ifelse(ncps$race==200,1,".")
+  ncps$black <- ifelse(ncps$race==100,0,ncps$black)
+  ncps$black <- as.numeric(ncps$black)
+  ncps$asian <- ifelse(ncps$race==651,1,0)
+  ncps$asian <- as.numeric(ncps$asian)
+  
+  ncps$married <- ifelse(ncps$marst==1|ncps$marst==2,1,0)
+  ncps$married <- ifelse(ncps$marst==9,".",ncps$married)
+  ncps$married <- as.numeric(ncps$married)
+  
+  ncps$foreign <- ifelse(ncps$nativity==4|ncps$nativity==5,1,".")
+  ncps$foreign <- ifelse(ncps$nativity==1,0,ncps$foreign)
+  ncps$foreign <- as.numeric(ncps$foreign)
+  
+  ncps$veteran <- ifelse(ncps$vetstat==1,0,".")
+  ncps$veteran <- ifelse(ncps$vetstat==2,1,ncps$veteran)
+  ncps$veteran <- as.numeric(ncps$veteran)
+  
+  ncps$nchildren <- as.numeric(ncps$nchild)
+  
+  ncps$unemployed <- ifelse(ncps$labforce==2,0,1)
+  ncps$unemployed <- ifelse(ncps$labforce==0,".",ncps$unemployed)
+  ncps$unemployed <- as.numeric(ncps$unemployed)
+  
+  return(ncps)
+}
+
+ncps <- dataPrep(ncps)
+
+
+```
+
+```{r packages, echo=TRUE}
+library(DoubleML)
+library(mlr3learners)
+library(mlr3)
+library(data.table)
+library(randomForest)
+```
+
+The function below prepares data and apply doubleML with random forest. If argument subset is true, it uses the subset of data according to given arguments. 
+
+```{r packages2, echo=TRUE}
+effectByDML <- function(data = ncps, yvar, dvar, xvars, subset=FALSE, subsetcols = NA, subsetvars = NA){
+  df <- zap_labels( data )
+  if(subset){
+    K <- length(subsetcols)
+    for (i in 1:K){
+      df <- df %>% filter(!!as.name(subsetcols[i]) == subsetvars[i])
+    }
+  }
+  
+  x_cols <- xvars[xvars != dvar]
+
+  
+  df <- subset(df, select = c(yvar, dvar, xvars))
+  df <- df[complete.cases(df),]
+  df <- df %>% mutate_at(yvar, as.numeric)
+  
+
+  # Estimating the PLR
+  lgr::get_logger("mlr3")$set_threshold("warn")
+  
+  learner = lrn("regr.ranger", num.trees = 100, mtry = 3, min.node.size = 2, max.depth = 5,
+                respect.unordered.factors = 'partition')
+  ml_g = learner$clone()
+  ml_m = learner$clone()
+  set.seed(1111)
+  obj_dml_data = double_ml_data_from_data_frame(df,
+                                                y_col = yvar,
+                                                d_cols = dvar,
+                                                x_cols = x_cols,
+                                                         use_other_treat_as_covariate=TRUE)
+  dml_plr_obj = DoubleMLPLR$new(obj_dml_data, ml_g, ml_m)
+  dml_plr_obj$fit()
+  return(dml_plr_obj)
+}
+
+
+```
+
+Before running the code, we detect ordered variables in our dataset and make all other variables categorical variable. 
+
+```{r prepare, echo=TRUE}
+orderedVars <- c("heatval", "stampmo", "atelunch", "frelunch", "faminc", "unitsstr", 
+                 "age", "famsize", "nchild", "nchlt5", "famunit", "eldch", "yngch", "durunem2",
+                 "uhrsworkt", "educ", "firmsize", "health", "famincAssigned", "hhincome", "income_county")
+
+ncps <- ncps %>% mutate_all( as.factor)
+ncps <- ncps %>% mutate_at(orderedVars, as.numeric)
+
+
+```
+
+We set our output interest as y, variables we want to estimate their effects as dlist, all covariates as xvars, and the variables that their effects should be normalized as dlistNormalize. 
+
+```{r setting, echo=TRUE}
+y <- c("pub", "rentsub", "heatsub", "foodstmp", "lunchsub", "caidly", "carely")
+dlist <- c("famsize", "famincAssigned", "income_county", "nchild", "phone", "black", "vetstat", "citizen", "nativity", "empstat", "union")
+dlistNormalize <- c("famincAssigned", "income_county")
+xvars <- c("famsize","famincAssigned", "age", "empstat", "labforce", "famunit", "firmsize", "health", "income_county","phinsur", "nchild", "black", "disabwrk", "sex", "vetstat", "citizen", "nativity", "occupation", "empstat")
+```
+
+We are interested in estimating effect on take-up rate for all and for only eligible people. Difference between these two might also give us some intuition. The code below prepares a table for results. 
+
+
+```{r running, echo=TRUE}
+
+resultsObjectsAll <- list()
+resultsObjectsElig <- list()
+resultsDF <- c()
+
+for (i in 1:length(dlist)) {
+  d <- dlist[i]
+  print(paste0("Calculating effect of ", d, " on take up rate for all"))
+  resAllObj  <- effectByDML(data = ncps, yvar = y, dvar = d, xvars = xvars, subset = FALSE, subsetcols = "hous_elig", subsetvars = 1)
+  if (d %in% dlistNormalize){
+    resAll  <- c(resAllObj$coef*sqrt(var(ncps[,d], na.rm = TRUE)), resAllObj$t_stat)
+    resAll  <- round(resAll, 6)
+  } else {
+    resAll  <- c(resAllObj$coef, resAllObj$t_stat)
+    resAll  <- round(resAll, 6)
+  }
+  resultsObjectsAll[[i]] <- resAllObj
+  
+  print(paste0("Calculating effect of ", d, " on take up rate for eligible only"))
+  resEligObj <- effectByDML(data = ncps, yvar = y, dvar = d, xvars = xvars, subset = TRUE, subsetcols = "hous_elig", subsetvars = 1)
+  
+  if (d %in% dlistNormalize){
+    resElig  <- c(resEligObj$coef*sqrt(var(ncps[,d], na.rm = TRUE)), resEligObj$t_stat)
+    resElig  <- round(resElig, 6)
+  } else {
+    resElig  <- c(resEligObj$coef, resEligObj$t_stat)
+    resElig  <- round(resElig, 6)
+  }
+  
+  resultsObjectsElig[[i]] <- resEligObj
+  
+  resultsDF <- rbind(resultsDF, c(d, resAll, resElig))
+}
+
+colnames(resultsDF) <- c("d_var", "coef_all", "t_stat_all", "coef_elig", "t_stat_elig")
+print(resultsDF)
+```
