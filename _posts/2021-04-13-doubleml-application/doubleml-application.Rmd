@@ -25,6 +25,7 @@ library(caret)
 library(rpart)
 library(haven)
 library(rlang)
+library(tibble)
 
 ncps <- read_dta("sampleDataFull.dta")
 
@@ -201,5 +202,106 @@ for (i in 1:length(dlist)) {
 }
 
 colnames(resultsDF) <- c("d_var", "coef_all", "t_stat_all", "coef_elig", "t_stat_elig")
-print(resultsDF)
+print.data.frame(as.data.frame( resultsDF) )
 ```
+
+We see that income per capita of the county has positive effect on take-up rates in full data but it is actually because of when per-capita income is high, it makes more people eligible due to increasing poverty levels. When we run it for only eligible people we see that this effect becomes insignificant.
+
+Family income is still important factor on take-up rate in eligible people. 
+
+One observation we have is that, when we remove number of childs from covariates, we suddenly start to see significant effect of family size on take-up rates. However it is not significant when the number of childrens is included. On the other hand, even though family size is included in covariates, effect of the nchild is significant. 
+
+```{r running2, echo=FALSE}
+y <- "pub"
+dlist <- c("famsize")
+dlistNormalize <- c("famincAssigned", "income_county")
+xvars <- c("famsize","famincAssigned", "age", "empstat", "labforce", "famunit", "firmsize", "health", "income_county","phinsur", "black", "disabwrk", "sex")
+
+resultsObjectsAlln <- list()
+resultsObjectsElign <- list()
+resultsDF <- c()
+
+for (i in 1:length(dlist)) {
+  d <- dlist[i]
+  # print(paste0("Calculating effect of ", d, " on take up rate for all"))
+  resAllObj  <- effectByDML(data = ncps, yvar = y, dvar = d, xvars = xvars, subset = FALSE, subsetcols = "hous_elig", subsetvars = 1)
+  if (d %in% dlistNormalize){
+    resAll  <- c(resAllObj$coef*sqrt(var(ncps[,d], na.rm = TRUE)), resAllObj$t_stat)
+    resAll  <- round(resAll, 6)
+  } else {
+    resAll  <- c(resAllObj$coef, resAllObj$t_stat)
+    resAll  <- round(resAll, 6)
+  }
+  resultsObjectsAlln[[i]] <- resAllObj
+  
+  # print(paste0("Calculating effect of ", d, " on take up rate for eligible only"))
+  resEligObj <- effectByDML(data = ncps, yvar = y, dvar = d, xvars = xvars, subset = TRUE, subsetcols = "hous_elig", subsetvars = 1)
+  
+  if (d %in% dlistNormalize){
+    resElig  <- c(resEligObj$coef*sqrt(var(ncps[,d], na.rm = TRUE)), resEligObj$t_stat)
+    resElig  <- round(resElig, 6)
+  } else {
+    resElig  <- c(resEligObj$coef, resEligObj$t_stat)
+    resElig  <- round(resElig, 6)
+  }
+  
+  resultsObjectsElign[[i]] <- resEligObj
+  
+  resultsDF <- rbind(resultsDF, c(d, resAll, resElig))
+}
+
+colnames(resultsDF) <- c("d_var", "coef_all", "t_stat_all", "coef_elig", "t_stat_elig")
+print.data.frame(as.data.frame( resultsDF) )
+```
+
+I also wanted to check effects of nchild, family size, and nchlt5 (number of childrent younger than 5) when nchlt is also included. 
+
+```{r running3, echo=FALSE}
+y <- "pub"
+dlist <- c("famsize","nchild", "nchlt5")
+dlistNormalize <- c("famincAssigned", "income_county")
+xvars <- c("famsize","famincAssigned", "age", "empstat", "labforce", "famunit", "firmsize", "health", "income_county","phinsur", "black", "disabwrk", "sex", "nchild", "nchlt5")
+
+resultsObjectsAlln <- list()
+resultsObjectsElign <- list()
+resultsDF <- c()
+
+for (i in 1:length(dlist)) {
+  d <- dlist[i]
+  # print(paste0("Calculating effect of ", d, " on take up rate for all"))
+  resAllObj  <- effectByDML(data = ncps, yvar = y, dvar = d, xvars = xvars, subset = FALSE, subsetcols = "hous_elig", subsetvars = 1)
+  if (d %in% dlistNormalize){
+    resAll  <- c(resAllObj$coef*sqrt(var(ncps[,d], na.rm = TRUE)), resAllObj$t_stat)
+    resAll  <- round(resAll, 6)
+  } else {
+    resAll  <- c(resAllObj$coef, resAllObj$t_stat)
+    resAll  <- round(resAll, 6)
+  }
+  resultsObjectsAlln[[i]] <- resAllObj
+  
+  # print(paste0("Calculating effect of ", d, " on take up rate for eligible only"))
+  resEligObj <- effectByDML(data = ncps, yvar = y, dvar = d, xvars = xvars, subset = TRUE, subsetcols = "hous_elig", subsetvars = 1)
+  
+  if (d %in% dlistNormalize){
+    resElig  <- c(resEligObj$coef*sqrt(var(ncps[,d], na.rm = TRUE)), resEligObj$t_stat)
+    resElig  <- round(resElig, 6)
+  } else {
+    resElig  <- c(resEligObj$coef, resEligObj$t_stat)
+    resElig  <- round(resElig, 6)
+  }
+  
+  resultsObjectsElign[[i]] <- resEligObj
+  
+  resultsDF <- rbind(resultsDF, c(d, resAll, resElig))
+}
+
+colnames(resultsDF) <- c("d_var", "coef_all", "t_stat_all", "coef_elig", "t_stat_elig")
+print.data.frame(as.data.frame( resultsDF) )
+```
+
+After including nchlt5, significance of family size has decreased more and we see that nchlt5 has significant effect on take-up rates but it is lower than number of all children. 
+
+
+
+
+

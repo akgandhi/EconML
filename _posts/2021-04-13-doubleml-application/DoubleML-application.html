@@ -1598,48 +1598,48 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 </code></pre>
 </div>
 <pre><code>[1] &quot;Calculating effect of famsize on take up rate for all&quot;
-Growing trees.. Progress: 99%. Estimated remaining time: 0 seconds.
-Growing trees.. Progress: 88%. Estimated remaining time: 4 seconds.
-Growing trees.. Progress: 84%. Estimated remaining time: 5 seconds.
-Growing trees.. Progress: 99%. Estimated remaining time: 0 seconds.
 [1] &quot;Calculating effect of famsize on take up rate for eligible only&quot;
+Growing trees.. Progress: 67%. Estimated remaining time: 1 minute, 48 seconds.
 [1] &quot;Calculating effect of famincAssigned on take up rate for all&quot;
 [1] &quot;Calculating effect of famincAssigned on take up rate for eligible only&quot;
 [1] &quot;Calculating effect of income_county on take up rate for all&quot;
-Growing trees.. Progress: 100%. Estimated remaining time: 0 seconds.
-Growing trees.. Progress: 100%. Estimated remaining time: 0 seconds.
-Growing trees.. Progress: 88%. Estimated remaining time: 4 seconds.
-Growing trees.. Progress: 93%. Estimated remaining time: 2 seconds.
-Growing trees.. Progress: 96%. Estimated remaining time: 1 seconds.
-Growing trees.. Progress: 93%. Estimated remaining time: 2 seconds.
-Growing trees.. Progress: 98%. Estimated remaining time: 0 seconds.
 [1] &quot;Calculating effect of income_county on take up rate for eligible only&quot;
+Growing trees.. Progress: 33%. Estimated remaining time: 32 minutes, 39 seconds.
 [1] &quot;Calculating effect of nchild on take up rate for all&quot;
-Growing trees.. Progress: 100%. Estimated remaining time: 0 seconds.
-Growing trees.. Progress: 99%. Estimated remaining time: 0 seconds.
-Growing trees.. Progress: 100%. Estimated remaining time: 0 seconds.
-Growing trees.. Progress: 99%. Estimated remaining time: 0 seconds.
-Growing trees.. Progress: 91%. Estimated remaining time: 3 seconds.
-Growing trees.. Progress: 98%. Estimated remaining time: 0 seconds.
-Growing trees.. Progress: 87%. Estimated remaining time: 4 seconds.
+Growing trees.. Progress: 48%. Estimated remaining time: 7 minutes, 38 seconds.
 [1] &quot;Calculating effect of nchild on take up rate for eligible only&quot;</code></pre>
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span><span class="op">(</span><span class="va">resultsDF</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">&quot;d_var&quot;</span>, <span class="st">&quot;coef_all&quot;</span>, <span class="st">&quot;t_stat_all&quot;</span>, <span class="st">&quot;coef_elig&quot;</span>, <span class="st">&quot;t_stat_elig&quot;</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">resultsDF</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/print.dataframe.html">print.data.frame</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html">as.data.frame</a></span><span class="op">(</span> <span class="va">resultsDF</span><span class="op">)</span> <span class="op">)</span>
 </code></pre>
 </div>
-<pre><code>     d_var            coef_all    t_stat_all   coef_elig  
-[1,] &quot;famsize&quot;        &quot;0.000442&quot;  &quot;1.022335&quot;   &quot;0.000709&quot; 
-[2,] &quot;famincAssigned&quot; &quot;-0.042727&quot; &quot;-75.337132&quot; &quot;-0.083409&quot;
-[3,] &quot;income_county&quot;  &quot;0.001601&quot;  &quot;2.873297&quot;   &quot;0.001224&quot; 
-[4,] &quot;nchild&quot;         &quot;0.011367&quot;  &quot;14.55351&quot;   &quot;0.013188&quot; 
-     t_stat_elig 
-[1,] &quot;1.09072&quot;   
-[2,] &quot;-53.882513&quot;
-[3,] &quot;1.435922&quot;  
-[4,] &quot;12.468708&quot; </code></pre>
+<pre><code>           d_var  coef_all t_stat_all coef_elig t_stat_elig
+1        famsize  0.000442   1.022335  0.000709     1.09072
+2 famincAssigned -0.042727 -75.337132 -0.083409  -53.882513
+3  income_county  0.001601   2.873297  0.001224    1.435922
+4         nchild  0.011367   14.55351  0.013188   12.468708</code></pre>
 </div>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<p>We see that income per capita of the county has positive effect on take-up rates in full data but it is actually because of when per-capita income is high, it makes more people eligible due to increasing poverty levels. When we run it for only eligible people we see that this effect becomes insignificant.</p>
+<p>Family income is still important factor on take-up rate in eligible people.</p>
+<p>One observation we have is that, when we remove number of childs from covariates, we suddenly start to see significant effect of family size on take-up rates. However it is not significant when the number of childrens is included. On the other hand, even though family size is included in covariates, effect of the nchild is significant.</p>
+<div class="layout-chunk" data-layout="l-body">
+<pre><code>Growing trees.. Progress: 71%. Estimated remaining time: 1 minute, 57 seconds.</code></pre>
+<pre><code>    d_var coef_all t_stat_all coef_elig t_stat_elig
+1 famsize 0.002471   7.260921  0.003043    5.863601</code></pre>
+</div>
+<p>I also wanted to check effects of nchild, family size, and nchlt5 (number of childrent younger than 5) when nchlt is also included.</p>
+<div class="layout-chunk" data-layout="l-body">
+<pre><code>Growing trees.. Progress: 23%. Estimated remaining time: 14 minutes, 40 seconds.
+Growing trees.. Progress: 39%. Estimated remaining time: 29 minutes, 19 seconds.
+Growing trees.. Progress: 9%. Estimated remaining time: 46 minutes, 50 seconds.
+Growing trees.. Progress: 17%. Estimated remaining time: 1 hour, 18 minutes, 46 seconds.</code></pre>
+<pre><code>    d_var  coef_all t_stat_all coef_elig t_stat_elig
+1 famsize -0.000128  -0.293397  -8.7e-05    -0.13432
+2  nchild  0.011889  14.015881  0.013895   12.000901
+3  nchlt5  0.004345   2.982506  0.004722    2.326201</code></pre>
+</div>
+<p>After including nchlt5, significance of family size has decreased more and we see that nchlt5 has significant effect on take-up rates but it is lower than number of all children.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>
