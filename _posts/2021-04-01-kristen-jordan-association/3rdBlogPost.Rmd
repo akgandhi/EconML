@@ -1,0 +1,280 @@
+---
+title: "Association and Classification Trees"
+description: |
+  Preliminary machine learning analysis.
+author:
+  - name: Kristen Beamer
+  - name: Jordan Peeples
+date: "4-1-2021"
+output: distill::distill_article
+#bibliography: 36423V1.ris
+categories: Jordan and Kristen's project
+---
+```{r setup, include=FALSE}
+#take these... you may need them
+library(jsonlite)
+library(tidyverse)
+library(tidyquant)
+library(lubridate)
+library(zoo)
+library(ggfortify)
+library(directlabels)
+library(gghighlight)
+library(plotly)
+library(stargazer)
+# a few more packages 
+library(rsample)
+library(rpart)
+library(rpart.plot)
+library(skimr)
+library(ranger)
+library(arules)
+library(randomForest)
+
+#import
+urlSchool <- url("https://www.dropbox.com/s/bzoyhrtj3gi4t1t/36423-0001-Data.rda?raw=1")
+urlStudent <- url("https://www.dropbox.com/s/x26tsp84rcn48gj/36423-0002-Data.rda?raw=1")
+load(urlSchool)
+load(urlStudent)
+# rename
+schoolData <- da36423.0001
+studentData1 <- da36423.0002
+
+#make variables NA's
+studentData <- studentData1 %>%
+  select(X3TCREDENG:S2PUBASSIST, P1RELSHP:P2QHELP4, M1SEX:N1TFAIL, 
+         A1GRADEPREK:A2TCHSUBJO, C1FTCNSL:C2FBGRAD, S3FOCUS) %>%
+  mutate_all(na_if, -5) %>%
+  mutate_all(na_if, -4) %>%
+  mutate_all(na_if, -6) %>%
+  mutate_all(na_if, -7) %>%
+  mutate_all(na_if, -8) %>%
+  mutate_all(na_if, -9) %>%
+  mutate(S3FOCUS = dplyr::recode(S3FOCUS, "(1) Taking classes from postsecondary institution" = "Postsecondary",
+                          "(2) Participating in an apprenticeship program" = "Apprenticeship",
+                          "(3) Working for pay" = "Work",
+                          "(4) Serving in the military" = "Military",
+                          "(5) Starting family or taking care of your/his/her children" = "Childcare",
+                          "(6) Attending high school or homeschool" = "Continued school",
+                          "(7) Taking course to prepare for the GED/other high school equivalency exam" = "GED Prep",
+                          "(8) Equally focused on more than one of these" = "Multiple"))
+
+
+#get rid of variables with majority NA's
+studentData <- studentData[ , colSums(is.na(studentData)) < 12000]
+
+#get rid of numeric variables for now
+studentDataChar <- studentData[, sapply(studentData, class) != "numeric"]
+studentDataChar <- studentDataChar[, sapply(studentDataChar, class) != "integer"]
+
+#separate surveys initially to combine variables that are very much alike... otherwise this
+#takes way too long
+studentDataStudents <- studentDataChar %>%
+  select(X3T1CREDALG1:S2HSJOBEVER, S3FOCUS)
+
+studentDataParents <- studentDataChar %>%
+  select(P1RELSHP:P1QHELP)
+
+studentDataTeacher <- studentDataChar %>% 
+  select(M1SEX:N1TFAIL)
+
+studentDataAdmin <- studentDataChar %>% 
+  select(A1SCHCONTROL:A2TCHSUBJ)
+
+studentDataCounsel <- studentDataChar %>% 
+  select(C1ASSIGNMENT:C2FBGRAD)
+
+#look at association rules
+#we first look at sets with confidence of 1 because we actually have a lot of them
+associationRulesStudents <- apriori(studentDataStudents, parameter = list(supp=0.8, conf=0.9, minlen = 5, maxlen = 7, maxtime = 0))
+
+associationRulesParents <- apriori(studentDataParents, parameter = list(supp=0.6, conf=0.8, minlen = 2, maxlen = 7, maxtime = 0))
+
+associationRulesTeacher <- apriori(studentDataTeacher, parameter = list(supp=0.6, conf=0.8, minlen = 2, maxlen = 7, maxtime = 0))
+
+associationRulesAdmin <- apriori(studentDataAdmin, parameter = list(supp=0.7, conf=0.8, minlen = 2, maxlen = 7, maxtime = 0))
+
+associationRulesCounsel <- apriori(studentDataCounsel, parameter = list(supp=0.8, conf=0.8, minlen = 2, maxlen = 7, maxtime = 0))
+
+```
+
+We run the Apriori algorithm to understand the relationships between variables for different surveys. Our end goal here is to be able to combine sets of variables that are very closely related to each other, so we can more effectively utilize classification trees and random forests. For example, we have a variable that a high school student participated in a math club and another variable for participating in a math competition. These are very closely related, so we would like to figure out a way to combine these without having to read through all the survey questions. Thus, we want to combine variables based on association rules. For now in this blog post, we look at rules with longer lengths to see if it is possible to group variables. We will first do this for separate surveys. Later, we will combine all surveys for further machine learning analysis once we have combined very similar variables. Below, we look at rules for different surveys. 
+
+```{r rules}
+summary(associationRulesStudents)
+
+```
+From the student survey above, we only look at variables with high support and confidence. There are actually many variables with a confidence of 1, which means conditional on other variables with high supports, they occur 100% of the time. These have a fairly high lift as well.
+
+```{r rules 2}
+
+#top 10 association rules
+inspect(associationRulesStudents[1:10])
+
+```
+Examples are provided above. For the first line, S1REVM09 = 9th grader taking remedial math in the fall, S1STATSM09 = 9th grader taking statistics in the fall, S1INTGM209 = 9th grader taking integrated math 2 in the fall, S1ANGEOM09 = 9th grader taking analytic geometry in the fall, and S1MFALL09 = 9th grader is taking a math course in the fall. So all students who aren't taking these particular math courses are still guaranteed to be taking math courses in the fall. This isn't particularly interesting because a vast majority of students said "no" in these antecedents. This is, however, useful to see that individually, these variables don't have much variance and aren't that important individually for analysis. It would be useful to combine them.
+
+Below is the parent survey:
+
+```{r parent}
+summary(associationRulesParents)
+
+```
+
+We had to set a lower minimum length for the rules, support, and confidence, as the parent survey doesn't have quite as strong associations as the student survey. 
+
+```{r parent 2}
+
+#top 10 association rules
+inspect(associationRulesParents[1:10])
+
+```
+
+From the first line, P1SLD = Doctor has told parent that 9th grader has learning disability, and P1INTELLECT = Doctor has told parent that 9th grade has intellectual disability.
+
+Below is the teacher survey: 
+
+```{r teacher}
+summary(associationRulesTeacher)
+
+```
+Once again, the associations here are not as strong as the student survey. 
+
+```{r teacher 2}
+
+#top 10 association rules
+inspect(associationRulesTeacher[1:10])
+
+```
+
+On the first line, M1CERTK5 = Math teacher certified to teach grades K-5, and M1CERT912 = Math teacher certified to teach grades 9-12.
+
+Below is the administrator survey:
+
+```{r admin}
+summary(associationRulesAdmin)
+
+```
+
+
+```{r admin 2}
+
+#top 10 association rules
+inspect(associationRulesAdmin[1:10])
+
+```
+
+On the first line, A1BAMAJ_STEM = Principal's major for Bachelor's degree was STEM, and A1HIMAJ_STEM = Principal's major for highest degree level was STEM.
+
+Below is the counselor survey:
+
+```{r counselor}
+summary(associationRulesCounsel)
+
+```
+These variables have higher supports and confidences than from the parent, teacher, and administrator data.
+
+```{r counselor 2}
+
+#top 10 association rules
+inspect(associationRulesCounsel[1:10])
+
+```
+
+From the first line, C1CLGFAIR = School holds or participates in college fair, and C1NOWAY = School doesn't have any options for taking courses not offered by school.
+
+We also do a preliminary classification tree and random forest analysis on the student survey for now.
+
+
+```{r tree, include = FALSE}
+#use student survey only
+studentDataStudents <- studentData %>%
+  select(X3TCREDENG:S1TALKFUTURE, S3FOCUS) %>%
+  mutate(S1EDUEXPECT = dplyr::recode(S1EDUEXPECT, "(01) Less than high school" = "Less than HS",
+                              "(02) High school diploma or GED" = "HS Diploma/GED",
+                              "(03) Start an Associate's degree" = "Start Assoc.",
+                              "(04) Complete an Associate's degree" = "Complete Assoc.",
+                              "(05) Start a Bachelor's degree" = "Start Bachelor's",
+                              "(06) Complete a Bachelor's degree" = "Complete Bachelor's",
+                              "(07) Start a Master's degree" = "Start Master's",
+                              "(08) Complete a Master's degree" = "Complete Master's",
+                              "(09) Start Ph.D/M.D/Law/other prof degree" = "Start PhD",
+                              "(10) Complete Ph.D/M.D/Law/other prof degree" = "Complete PhD",
+                              "(11) Don't know" = "Don't know"))
+
+#split data into testing/training
+set.seed(626)
+
+#student data
+student_split <-initial_split(data=studentDataStudents, prop=0.75)
+student_train <- training(student_split)
+student_test <- testing(student_split)
+
+# test tree on S3FOCUS (what student is doing on Nov. 1, 2013 )
+m.test <- rpart(S3FOCUS ~ .,
+                data=student_train, method="class") #let's mess with tuning parameters in later iteration
+
+```
+
+```{r tree 2, layout="l-body-outset", fig.width=10, fig.height=5}
+# plot 
+prp(m.test, type = 5, branch = 1, varlen = 0, box.palette="Blues") #plot of current tree
+
+
+```
+X3TGPAWGT is the overall GPA computed, honors weighted. X3TCREDLANG is the number of credits earned in foreign languages. X3TCRED12TH is number of credits earned in 12th grade. Lastly, S1EDUEXPECT is where 9th graders expected to be after graduation.
+
+
+
+```{r random forest, include=FALSE}
+
+
+#impute missing values
+#studentDataStudents <- studentDataStudents[!is.na(studentDataStudents$S3FOCUS),]
+#rfImpute(studentDataStudents, studentDataStudents$S3FOCUS, iter=5, ntree=300)
+
+#replace NA's with missing for now until we figure out how to handle NAs
+#studentDataStudents[is.na(studentDataStudents)] <- "Missing"
+#studentDataStudents <- studentDataStudents[!is.na(studentDataStudents$Factor)] <- "Missing"
+
+#having data issues on this... maybe you can figure it out?
+#studentDataStudents <- as.matrix(studentDataStudents)
+#studentDataStudents[is.na(studentDataStudents)] <- "(100) Missing"
+
+studentDataStudents <- na.omit(studentDataStudents)
+
+
+#studentDataStudents <- studentDataStudents[!is.na(studentDataStudents$Factor), ]
+
+#impurity based variable importance
+
+#need help here... produces too large of a vector
+rfImpurity <- ranger(
+  formula = S3FOCUS ~ ., 
+  data = studentDataStudents, 
+  num.trees = 100,
+  min.node.size = 1,
+  sample.fraction = .80,
+  replace = FALSE,
+  importance = "impurity",
+  verbose = FALSE,
+  seed  = 626
+)
+library(vip)
+```
+
+```{r random forest 2, layout="l-body-outset", fig.width=10, fig.height=5}
+vip::vip(rfImpurity, num_features = 15, bar = FALSE)
+
+
+```
+
+
+This is our initial random forest using the impurity-based variable performance. There is a big problem with this that we are working to fix. Our student survey dataframe has a lot of random NA's throughout all 23,500 observations. Our goal is to code these NA's as "Missing," but this is a little complicated with a mix of factor and numeric variables. For now, we just used na.omit to get rid of all of them. However, this leaves us with only 719 observations. Obviously, this random forest is wrong. We see here that the most important variable is X3TGPAHELPE, which is GPA in physical health and education courses. Intuitively, this doesn't seem right. 
+
+On the next blog post, we will expand upon combining associated variables and also work to expand the CART and random forest over all surveys, appropriately handling NA's.
+
+
+
+
+
