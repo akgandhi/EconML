@@ -1,0 +1,135 @@
+---
+title: "Class 05: Singular Value Decomposition"
+output: html_document
+---
+
+
+
+
+
+### The SVD in R
+
+Start by creating some simulated data similar to the ones that were given in
+the notes:
+
+```{r}
+set.seed(1)
+n <- 1e4; p <- 6
+X <- matrix(rnorm(n*p), ncol = p)
+X[,1] <- X[,1] * (0.01) + X[,2] * (0.99)
+b <- c(1,2,3,4,5,6)
+epsilon <- rnorm(n)
+y <- X %*% b + epsilon
+```
+
+And taking the SVD of the matrix `X`:
+
+```{r}
+svd_output <- svd(X)
+U <- svd_output[["u"]]
+V <- svd_output[["v"]]
+sigma <- svd_output[["d"]]
+```
+
+Verify that the matrix $V^t V$ is equal to the identity (note that it will only
+be close the identity because of numerical error):
+
+```{r}
+t(V) %*% V
+```
+
+Rounding to the 10th decimal place shows the result more clearly:
+
+```{r}
+round(t(V) %*% V, 10)
+```
+
+Then, run the following code to verify that all of the dimensions are exactly as we
+would expect:
+
+```{r}
+{
+  cat("Dimension of X: ")
+  cat(paste(dim(X), collapse = " by "))
+  
+  cat("\nDimension of U: ") 
+  cat(paste(dim(U), collapse = " by "))
+  
+  cat("\nDimension of V: ")
+  cat(paste(dim(V), collapse = " by "))
+  
+  cat("\nLength of singular values: ")
+  cat(length(sigma))
+}
+```
+
+### Least squares estimator
+
+The following code computes the least squares coefficents using the
+matrix $X$ and the response vector $y$:
+
+```{r}
+lm.fit(X, y)$coefficients
+```
+
+Compute the same equation using the SVD formula for $\beta$:
+
+```{r}
+V %*% diag(1 / sigma) %*% t(U) %*% y
+```
+
+
+### Maximum values
+
+I want to simulate the size of $|| X v ||_2^2$ where $v$ is in the unit
+ball of dimension 6. Here is the code to do this (just make sure that you
+understand what it is doing):
+
+```{r}
+N <- 100000                     # number of experiments to run
+norms <- rep(0, length=N)       # empty vector to store results in 
+for (i in seq_len(N))
+{
+  v <- runif(6)                 # take a random vector of size 6
+  v <- v / sqrt(sum(v^2))       # normalize its length so that it is in the l2 unit ball
+  norms[i] <- sum((X %*% v)^2)  # take norm of Xv and store in the object `norms`
+}
+```
+
+From the theoretical results we would expect the smallest value of norms to be:
+
+```{r}
+sigma[length(sigma)]^2
+```
+
+And the largest value to be:
+
+```{r}
+sigma[1]^2
+```
+
+How does this compare with the range of simulated values?
+
+```{r}
+range(norms)
+```
+
+You will probably find that the upper bound is close to the theoretical
+upper bound but the lower bound is a lot larger than the theoretical limit.
+Show here that it is in fact possible to achieve the lower bound with the
+vector $V[, 6]$:
+
+```{r}
+v <- V[, 6]
+cat("||v||_2^2  is equal to ", sum(v^2), "\n")
+cat("||Xv||_2^2 is equal to ", sum((X %*% v)^2), "\n")
+```
+
+
+
+
+
+
+
+
+
