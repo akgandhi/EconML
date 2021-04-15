@@ -1,5 +1,6 @@
 [
   {
+
     "path": "posts/2021-04-12-svd/",
     "title": "SVD",
     "description": "A Singularly Valuable Decomposition",
@@ -15,6 +16,7 @@
     "preview": "https://miro.medium.com/max/894/1*XNWUlrQJXGeoCDqUMd0iUA.png",
     "last_modified": "2021-04-14T18:05:29+00:00",
     "input_file": {}
+
   },
   {
     "path": "posts/2021-03-24-k-means/",
