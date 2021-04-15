@@ -1,0 +1,465 @@
+---
+title: "Predicting Hospital Exit"
+description: |
+  Preliminary predictions 
+author:
+  - name: Catherine Ishitani
+  - name: Gi Kim
+    affiliation: Wharton
+date: "March 31, 2021"
+output:
+  distill::distill_article:
+    self_contained: true
+toc: false 
+categories: Catherine and Gi's project
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+
+#our temporary post graphic
+knitr::include_graphics("varimptc.png")
+```
+
+We run [4] algorithms in this post, each aimed at predicting hospital exit. Our explanatory variables include hospital, market, ownership, and financial characteristics. We are testing some standard algorithmic models-- Lasso, CART, random forest-- as well as ones tailored to panel data-- REEMtree, REEMforest.
+
+```{r load_packages, include=FALSE}
+library(tidyverse)
+library(ggplot2)
+library(ggrepel)
+library(skimr)
+library(ranger)
+library(vip)
+library(tidymodels)
+library(usemodels)
+library(rmarkdown)
+library(rpart.plot)
+library(rsample)     
+library(haven)
+library(janitor)
+library(dplyr)
+library(smotefamily)
+library(doParallel)
+library(REEMtree)
+library(ipred)
+library(glmnet)
+library(caret)
+library(BBmisc)
+#library(LongituRF) #Note that this masks REEMtree functions 
+
+#our hospital data
+#setwd('C:/Users/cathe/Downloads/R_stuff/workingfolder/Gandhi_class')
+hcris <- read_dta("gandhi_hcris_3.dta") %>%  clean_names() 
+hcris[hcris == ""] <- NA
+hcris$outcome_new = as.factor(hcris$outcome_new)
+```
+
+
+## Lasso 
+
+Lasso model performs poorly, as there is no distinction of the spread in predicted probability between exited and non-exited outcome.
+
+```{r, cache = TRUE}
+#demean (to deal with panel structure) and normalize the data (to set a consistent scale)
+cleaned <- select(hcris, -c(outcome_new,num_prvdr_num,cont,sysid)) %>%
+  group_by(year) %>% mutate(across(everything(), ~ .x - mean(.x), .names = "tdm_{col}")) %>%
+  mutate(across(starts_with("tdm"), ~ normalize(.x, method="standardize"), .names="stand_{col}")) %>%
+  select(c(exit_outcome,starts_with("stand_tdm"),-stand_tdm_exit_outcome))
+
+# Create reproducible training (70%) and test (30%) sets, by hospital.
+set.seed(123)
+hosp_train<- createDataPartition(hcris$num_prvdr_num,p=.7,list=FALSE)
+
+#run a Lasso model
+x_vars <- model.matrix(exit_outcome~. , cleaned)[,-1]
+y_var <- cleaned$exit_outcome
+lambda_seq <- 10^seq(0, -4, by = -.1)
+
+cv_output <- cv.glmnet(x_vars[hosp_train,], y_var[hosp_train],
+                       alpha = 1, lambda = lambda_seq, 
+                       nfolds = 5)
+cv_result <- tidy(cv_output)
+#identify the best lambda
+best_lam_threshold <- cv_result[cv_result$lambda==min(cv_result$lambda),'estimate'] + sd(cv_result$estimate)
+best_lam <- min(cv_result[cv_result$estimate > best_lam_threshold[1,1],'lambda'])
+best_lam
+
+lasso_best <- glmnet(x_vars[hosp_train,], y_var[hosp_train], alpha = 1, lambda = best_lam)
+pred <- predict(lasso_best, s = best_lam, newx = x_vars[-hosp_train,])
+
+#prediction error
+compare_lasso <- data.frame(exit=y_var[-hosp_train], predicted=pred)
+p_error <- Metrics::rmse(actual = y_var[-hosp_train], predicted = pred)
+p_error
+
+ggplot(compare_lasso, aes(x=X1, color=as.factor(exit))) +
+  geom_histogram(fill="white",  alpha=0.5, position="identity")+
+  theme(legend.position="top")
+
+#best predictor vars
+lasso_coeff_table <- tidy(coef(lasso_best))
+```
+
+
+## Decision tree
+
+Classification trees generally perform poorly on rare event (e.g., hospital exit) data. We tried oversampling our minority events using SMOTE techniques, but found that performance was still better using a regression tree. SMOTE did not enhance our regression tree performance, so we ran the remaining models using our original dataset.
+
+```{r, cache = TRUE}
+#main outcome: outcome_new 
+#simpler outcome: exit_outcome. drop if using main outcome and v-v.
+
+#remove some id vars & unused vars
+cleaned <- select(hcris, -c(outcome_new,num_prvdr_num,cont,sysid))
+
+#use SMOTE to create a more "balanced problem"
+#newdata <- SMOTE(X=cleaned, target=cleaned$exit_outcome, K=4, dup_size= 25)
+#syndata = newdata$data
+#prop.table(table(syndata$exit_outcome))
+#syndata <- select(syndata, -c(class))
+
+#SMOTE does not enhance our regression tree performance, so we'll use the original data
+syndata <- cleaned
+```
+
+We created training and test samples.
+
+```{r, echo = TRUE}
+# Create reproducible training (70%) and test (30%) sets.
+set.seed(123)
+hosp_split <- initial_split(syndata, prop = .7)
+hosp_train <- training(hosp_split)
+hosp_test  <- testing(hosp_split)
+```
+
+Then, we ran a tree using the CART algorithm on the training sample. 
+
+```{r, echo = TRUE, cache = TRUE}
+#Our CART code is based on Professor Gandhi's from lecture.
+m1 <- rpart(
+  formula = exit_outcome ~ .,
+  data    = hosp_train,
+  method  = "anova"
+  )
+
+m1
+rpart.plot(m1)
+#rpart.plot(m1,box.palette = "blue")
+```
+
+Our cross validation plot indicates that the optimal tree only has 2 splits. A lagged measure of total assets is split first (a proxy for size), followed by net income margin.  
+
+```{r, echo = TRUE}
+plotcp(m1)
+```
+
+Our predicted test error is ~12.1%. (As an aside, visualizing prediction performance for binary variables is awkward. Our plot indicates that our model predicts at most a 56% probability of exit for any observation and is much more successful at predicting non-exit.)
+
+```{r, echo = TRUE, cache = TRUE}
+pred <- predict(m1, newdata = hosp_test)
+p_error <- Metrics::rmse(actual = hosp_test$exit_outcome, predicted = pred)
+p_error
+
+#Plot predictions vs obs (v awkward to do since the outcome is binary)
+obs <- hosp_test$exit_outcome
+df  <- data.frame(pred, obs)
+
+pred_plot <- ggplot(data = df) + 
+  geom_point(mapping = aes(x = obs, y = pred),position = "jitter") +
+  geom_abline(lty = 2, color = "gray50") +
+  #geom_hline(yintercept = 0, color = "gray50") +
+  xlim(0,1) +
+  ylim(0,1) 
+pred_plot
+  
+```
+
+There wasn't much space to tune this tree, since it's so small. However, we still tried to search over a grid of hyperparameters to find the optimal tree.
+
+```{r, cache = TRUE}
+#Set up parallel computing using doParallel. 
+getDoParWorkers()
+registerDoParallel(cores=2)
+getDoParWorkers()
+```
+
+
+```{r, cache = TRUE}
+#Set up a grid for the tuning parameters, and use CART for each tuning parameter value in the grid. 
+hyper_grid <- expand.grid(
+  minsplit = seq(5,10,1),
+  maxdepth = seq(1,2,1)
+)
+
+head(hyper_grid)
+
+#train a model and store in the list (run in parallel)
+models <- foreach(i=1:nrow(hyper_grid), .packages='rpart', .combine='c')  %dopar% {
+  minsplit <- hyper_grid$minsplit[i]
+  maxdepth <- hyper_grid$maxdepth[i]
+
+  rpart(
+    formula = exit_outcome ~ .,
+    data    = hosp_train,
+    method  = "anova",
+    control = list(minsplit = minsplit, maxdepth = maxdepth)
+    )
+}
+
+models2 <- list()
+for (i in 1:nrow(hyper_grid)) {
+  j = 5+(i-1)*14
+  models2[[i]] <-as.list(models[j])
+}
+
+
+#fxn: get optimal cp
+get_cp <- function(x) {
+  min    <- which.min(x$cptable[, "xerror"])
+  cp <- x$cptable[min, "CP"] 
+}
+
+#fxn: get min error
+get_min_error <- function(x) {
+  min    <- which.min(x$cptable[, "xerror"])
+  xerror <- x$cptable[min, "xerror"] 
+}
+
+hyper_grid %>%
+  mutate(
+    cp    = purrr::map_dbl(models2, get_cp),
+    error = purrr::map_dbl(models2, get_min_error)
+    ) %>%
+  arrange(error) %>%
+  top_n(-5, wt = error)
+
+#extract the optimal tree
+optimal_tree <- rpart(
+    formula = exit_outcome ~ .,
+    data    = hosp_train,
+    method  = "anova",
+    control = list(minsplit = 10, maxdepth = 2, cp = 0.01)
+    )
+pred <- predict(optimal_tree, newdata = hosp_test)
+p_error <- Metrics::rmse(actual = hosp_test$exit_outcome, predicted = pred)
+p_error
+```
+
+## REEM tree
+
+We next tried a REEMtree model to see if it improved performance on panel data. This algorithm is designed to deal with longitudinal and clustered data, using a combination of mixed effects and tree-based models.
+
+```{r, echo = FALSE, cache = TRUE}
+# Create reproducible training (70%) and test (30%) sets.
+cleaned <- select(hcris, -c(outcome_new,cont,sysid))
+
+set.seed(123)
+hosp_split <- initial_split(cleaned, prop = .7)
+hosp_train <- training(hosp_split)
+hosp_test  <- testing(hosp_split)
+hosp_train =  as.data.frame(hosp_train)
+hosp_test  =  as.data.frame(hosp_test)
+
+#run a REEMtree
+#REEMresult<-REEMtree(Y~D+t+X, data=simpleREEMdata, random=~1|ID)
+REEMresult <- REEMtree(exit_outcome ~ year+tot_pop+white+highschool+college+unempl+med_inc+uninsur+public_insur+private_insur+elderly+poverty+male+mcaid_exp+wage_index+tacmi+age_hosp+age_sys+bdtot+admtot+ipdtot+paytot+exptot+fte+teach+catholic+cah+minorteach+rural+mcare+mcaid+vi+tot_services+tech_services+mh_services+bought_ss+hsa_sh+hosp_hsa+hrr_sh+hosp_hrr+dist2hosp+occ+netdebt+uncomp+dsh+ptnt_opex+tot_costs+rev_tot+rev_netptnt+net_income+ptnt_income+cash+debt+tot_assets+fa_tot+capex+liquid+rev_adm+levg+ptnt_mgn+ni_mgn+uncomp_mgn+capex_mgn+bought+sysowned+bought_is+absorbing+enter+switch+switch2np+invest+n_boughts+age_enter+p_hist_invest+p_hist_downsize+fp+np+pub+hosp_type_child+hosp_type_gac+hosp_type_ltc+hosp_type_other+hosp_type_pysch+hosp_type_rehab+hosp_type_spec+l1_admtot+l1_netdebt+l1_ptnt_opex+l1_tot_costs+l1_rev_tot+l1_rev_netptnt+l1_net_income+l1_ptnt_income+l1_cash+l1_debt+l1_tot_assets+l1_capex+l1_rev_adm+l1_liquid+l1_levg+l1_ptnt_mgn+l1_ni_mgn+l1_uncomp_mgn+l1_capex_mgn+l1_invest+l1_bought+l1_sysowned+l1_bought_is+l1_absorbing+l1_enter+l1_switch+l1_cont+ch_fte+ch_tot_services+ch_hosp_hsa+ch_hosp_hrr+ch_dist2hosp+ch_tot_pop+ch_admtot+ch_netdebt+ch_ptnt_opex+ch_tot_costs+ch_rev_tot+ch_rev_netptnt+ch_net_income+ch_ptnt_income+ch_cash+ch_debt+ch_tot_assets+ch_capex+ch_rev_adm+ch_liquid+ch_levg+ch_mcaid+ch_mcare+ch_tech_services+ch_mh_services+ch_occ+ch_ptnt_mgn+ch_ni_mgn+ch_uncomp_mgn+ch_capex_mgn+st_1+st_2+st_3+st_4+st_5+st_6+st_7+st_8+st_9+st_10+st_11+st_12+st_13+st_14+st_15+st_16+st_17+st_18+st_19+st_20+st_21+st_22+st_23+st_24+st_25+st_26+st_27+st_28+st_29+st_30+st_31+st_32+st_33+st_34+st_35+st_36+st_37+st_38+st_39+st_40+st_41+st_42+st_43+st_44+st_45+st_46+st_47+st_48+st_49+st_50+st_51+st_52+st_53+st_54+st_55, data=hosp_train, random=~1|num_prvdr_num)
+plot(REEMresult)
+#tree.REEMtree(REEMresult)
+```
+
+Our predicted test error from the REEMtree was slightly lower, at 11.7%. 
+
+```{r, echo = TRUE, cache = TRUE}
+pred <- predict(REEMresult, hosp_test, EstimateRandomEffects=FALSE)
+p_error <- Metrics::rmse(actual = hosp_test$exit_outcome, predicted = pred)
+p_error
+```
+
+However, the tree has many more splits and is therefore more interpretable. Net income margin is the first split (again), followed by leverage (a measure of debt to earnings), the net income level, and whether the year is prior to 2014. Critical access hospitals are less likely to close, while Disproportionate Share (which serve more low-income patients) are more likely to exit. The hospital's number of admissions, age, and history of downsizing all affect the probability of exit in expected ways. 
+
+It was not obvious how to tune this model from the documentation, but we incorporated different types of autocorrelation. For example, with AR1 correlation, our test error is slightly higher at 11.9%.
+
+```{r, cache = TRUE}
+#run another REEMtree
+REEMresult2 <- REEMtree(exit_outcome ~ year+tot_pop+white+highschool+college+unempl+med_inc+uninsur+public_insur+private_insur+elderly+poverty+male+mcaid_exp+wage_index+tacmi+age_hosp+age_sys+bdtot+admtot+ipdtot+paytot+exptot+fte+teach+catholic+cah+minorteach+rural+mcare+mcaid+vi+tot_services+tech_services+mh_services+bought_ss+hsa_sh+hosp_hsa+hrr_sh+hosp_hrr+dist2hosp+occ+netdebt+uncomp+dsh+ptnt_opex+tot_costs+rev_tot+rev_netptnt+net_income+ptnt_income+cash+debt+tot_assets+fa_tot+capex+liquid+rev_adm+levg+ptnt_mgn+ni_mgn+uncomp_mgn+capex_mgn+bought+sysowned+bought_is+absorbing+enter+switch+switch2np+invest+n_boughts+age_enter+p_hist_invest+p_hist_downsize+fp+np+pub+hosp_type_child+hosp_type_gac+hosp_type_ltc+hosp_type_other+hosp_type_pysch+hosp_type_rehab+hosp_type_spec+l1_admtot+l1_netdebt+l1_ptnt_opex+l1_tot_costs+l1_rev_tot+l1_rev_netptnt+l1_net_income+l1_ptnt_income+l1_cash+l1_debt+l1_tot_assets+l1_capex+l1_rev_adm+l1_liquid+l1_levg+l1_ptnt_mgn+l1_ni_mgn+l1_uncomp_mgn+l1_capex_mgn+l1_invest+l1_bought+l1_sysowned+l1_bought_is+l1_absorbing+l1_enter+l1_switch+l1_cont+ch_fte+ch_tot_services+ch_hosp_hsa+ch_hosp_hrr+ch_dist2hosp+ch_tot_pop+ch_admtot+ch_netdebt+ch_ptnt_opex+ch_tot_costs+ch_rev_tot+ch_rev_netptnt+ch_net_income+ch_ptnt_income+ch_cash+ch_debt+ch_tot_assets+ch_capex+ch_rev_adm+ch_liquid+ch_levg+ch_mcaid+ch_mcare+ch_tech_services+ch_mh_services+ch_occ+ch_ptnt_mgn+ch_ni_mgn+ch_uncomp_mgn+ch_capex_mgn+st_1, data=hosp_train, random=~1|num_prvdr_num,correlation=corAR1())
+#plot(REEMresult2)
+
+pred2 <- predict(REEMresult2, hosp_test, id=hosp_test$num_prvdr_num, EstimateRandomEffects=TRUE) 
+#ID variable needs to be explicitly stated when autocorrelation is estimated
+p_error <- Metrics::rmse(actual = hosp_test$exit_outcome, predicted = pred2)
+p_error
+
+```
+
+## Random forest
+
+The next step was to bag (and perturb) trees for a random forest. The out of the box RF gave us an 11.9% RMSE. 
+
+```{r, echo=T, cache = TRUE}
+#Create reproducible training (70%) and test (30%) sets.
+cleaned <- select(hcris, -c(outcome_new,num_prvdr_num,cont,sysid))
+cleaned <- select(cleaned, -c(162:216))
+
+set.seed(123)
+hosp_split <- initial_split(cleaned, prop = .7)
+hosp_train <- training(hosp_split)
+hosp_test  <- testing(hosp_split)
+
+#number of features
+n_features <- length(setdiff(names(hosp_train), "exit_outcome"))
+
+#train a default random forest model
+rf1 <- ranger(
+  exit_outcome ~ ., 
+  data = hosp_train,
+  mtry = floor(n_features / 3),
+  respect.unordered.factors = "order",
+  seed = 123,
+)
+rf1
+
+#RMSE
+(default_rmse <- sqrt(rf1$prediction.error))
+```
+
+We tried tuning hyperparameters next, focusing on the number of trees, number of features considered, and tree complexity. A grid search suggested that a model with 1000 trees, 53 considered features, and a minimum node size of 20 performed best among the tested models. 
+
+```{r, eval=T, echo=T, cache = TRUE}
+# create hyperparameter grid
+hyper_grid.df <- expand.grid(
+  num.trees = c(500, 1000),
+  mtry = floor(n_features * c(.01, .05, .3333)),
+  min.node.size = c(1, 10, 20), 
+  rmse = NA                                               
+)
+```
+
+```{r, eval=F, echo=T}
+#create and register cluster
+n.cores <- parallel::detectCores() - 1
+my.cluster <- parallel::makeCluster(n.cores)
+doParallel::registerDoParallel(cl = my.cluster)
+
+#execute grid search in parallel
+prediction.error <- foreach(
+  num.trees     = hyper_grid.df$num.trees,
+  mtry          = hyper_grid.df$mtry,
+  min.node.size = hyper_grid.df$min.node.size,
+  .combine = 'c', 
+  .packages = "ranger") %dopar% {
+  
+  #fit model
+  m.i <- ranger::ranger(
+    formula         = exit_outcome ~ ., 
+    data            = hosp_train, 
+    num.trees       = num.trees,
+    mtry            = mtry,
+    min.node.size   = min.node.size,
+    verbose         = FALSE,
+    seed            = 123,
+    respect.unordered.factors = 'order'
+  )
+  
+  #returning OOB error 
+  return(sqrt(m.i$prediction.error))
+}
+
+hyper_grid.df$prediction.error <- prediction.error
+
+parallel::stopCluster(cl = my.cluster)
+```
+
+```{r, eval=T, echo=F,cache = TRUE}
+hyper_grid.df$prediction.error <- c(0.1227798,0.1227288,0.1207477,0.1205374,0.1195574,0.1194408,0.1227396,0.1226545,0.1202625,0.1200935,0.1193701,0.119195,0.1226195,0.1226158,0.1199485,0.1198683,0.1190613,0.1189746)
+```
+
+```{r, eval=T, echo=T,cache = TRUE}
+#plot the errors
+ggplot2::ggplot(data = hyper_grid.df) + 
+  ggplot2::aes(
+    x = as.factor(mtry),
+    y = as.factor(min.node.size),
+    fill = prediction.error
+  ) + 
+  ggplot2::facet_wrap(as.factor(hyper_grid.df$num.trees)) +
+  ggplot2::geom_tile() + 
+  ggplot2::scale_y_discrete(breaks = c(1, 10, 20)) +
+  ggplot2::scale_fill_viridis_c() + 
+  ggplot2::xlab("mtry") +
+  ggplot2::ylab("min.node.size")
+
+#list top 10 models
+hyper_grid.df %>%
+  arrange(prediction.error) %>%
+  head(10)
+```
+
+Our tuned tree:
+
+```{r, echo=T, cache = TRUE}
+#train a random forest model
+rf1 <- ranger(
+  exit_outcome ~ ., 
+  data = hosp_train,
+  num.trees = 1000,
+  mtry = floor(n_features / 3),
+  respect.unordered.factors = "order",
+  min.node.size = 20, 
+  seed = 123,
+  importance = "permutation"
+)
+rf1
+rf1$variable.importance
+
+p1 <- vip::vip(rf1, num_features = 25, bar = FALSE)
+gridExtra::grid.arrange(p1, nrow = 1)
+#saved as varimptc.png
+
+#RMSE
+(default_rmse <- sqrt(rf1$prediction.error))
+```
+
+Our variable importance plot suggests that functions of net income are again the most important factor predicting hospital exit, followed by Disproportionate Share status, leverage, and critical access status. The majority of "important" variables are financial metrics, rather than hospital or market characteristics. So far, the only hint we have that "capital constraints" might be important is from leverage, while the remaining variables suggest that profits and size are important. Categorically, these important variables are very similar to those found in the CART-based tree. 
+
+```{r, eval=T}
+#our variable importance plot
+knitr::include_graphics("varimptc.png")
+```
+
+## REEM forest
+
+We're currently attempting a REEMforest, which is a similar mixed-effects model extension of random forest for longitudinal data. 
+
+```{r, eval = FALSE, echo = FALSE}
+detach("package:REEMtree", unload=TRUE)
+library(LongituRF)
+
+#set.seed(123)
+#data <- DataLongGenerator(n=20)
+syndata <- select(hcris, -c(outcome_new,cont,sysid))
+syndata$exit_outcome = as.factor(syndata$exit_outcome)   ##needs to be classification for model to run
+
+# Create reproducible training (70%) and test (30%) sets.
+set.seed(123)
+hosp_split <- initial_split(syndata, prop = .7)
+hosp_train <- training(hosp_split)
+hosp_test  <- testing(hosp_split)
+
+
+x <- select(hosp_train, -c(num_prvdr_num,year,exit_outcome))
+z <- matrix(1, nrow = nrow(x), ncol = 2)
+y <- as.factor(hosp_train$exit_outcome)
+
+
+browser()
+SREEMF <- REEMforest(X=x,Y=y,Z=z,id=hosp_train$num_prvdr_num,time=hosp_train$year,mtry=2,ntree=2,sto="none")    ##update to 500 ntree
+
+#SREEMF <- REEMforest(X=data$X,Y=data$Y,Z=data$Z,id=data$id,time=data$time,mtry=2,ntree=500,sto="none")
+SREEMF$forest # is the fitted random forest (obtained at the last iteration).
+plot(SREEMF$Vraisemblance) #evolution of the log-likelihood.
+SREEMF$OOB 
+```
+
+For our next post, we plan to show results from our REEMforest and boosted trees. 
