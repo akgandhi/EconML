@@ -1,0 +1,196 @@
+---
+title: "Automobile Data: An Unsupervised Approach"
+description: |
+  Applications of Unsupervised Learning
+author:
+  - Jonathan Arnold 
+  - Sheng Chao Ho
+date: 03-31-2021
+output:
+  distill::distill_article:
+    self_contained: false
+categories: "Jonathan and Sheng"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Introduction
+
+In this post, we'll take a slight detour from prediction and inference in order to examine the structure of our data using unsupervised learning algorithms. Our data isn't particularly suited to using association rules, because we don't have very many binary or categorical variables which are conducive to the market basket analysis approach. However, there is a natural sense in which cluster analysis applies to our data. Since we are looking at a market with differentiated products that fall into several fairly distinct classes (SUV, sedan, minivan, etc.) it makes sense to cluster our data in a way that might be reflective of these classes. We will use K-means to examine the structure of our data and see how well the clusters produced match the natural categories we might put automobiles into a priori.
+
+## K-means
+
+```{r load_packages, include=FALSE}
+library(tidyverse)
+library(ggplot2)
+library(ggrepel)
+library(skimr)
+library(ranger)
+library(vip)
+library(DescTools)
+library(gt)
+library(gtsummary)
+library(viridis)
+library(treemapify)
+library(plotly)
+library(fastDummies)
+```
+
+First, we will use the K-means algorithm. We will first load the data:
+
+```{r,echo=TRUE} 
+df_raw<- haven::read_dta("Model_panel_cleaned.dta")
+```
+
+And then clean and process it in much the same way as before:
+
+```{r process data, echo=TRUE}
+df<- df_raw %>% 
+  select(-trim_name,-starts_with("log_"),
+         -model_age,-body_original,-transmission_id,-drivetype_id,
+         -starts_with("income_"), -cpi,-gas_nominal,-gas_real,
+         -korea,-mexico,-netherlands,-spain,-italy,-germany,
+         -france,-uk,-sweden,-japan,-indian,-china,-canada,
+         -nationality1,-nationality2,-MY_id,-Model_id,-count_trim,
+         -starts_with("I_"),-suv_class,-nb_bodystyle,-mpg_city,-mpg_hwy,
+         -dpm_city,-dpm_hwy
+         ) %>%
+  mutate(nationality=case_when(nationality%in%
+                                 c("Italy/US","Germany/US") ~ "US",
+                                  nationality == "" ~ "US",
+                                  TRUE ~ nationality)) %>%
+  mutate_if(is.character,as.factor) %>%
+  mutate(share=sales/(nb_hh*1000)) %>%
+  select(-sales,-nb_hh) %>%
+  #get price into scale consistent with BLP
+  mutate(price = price/1000) %>% 
+  drop_na() %>%
+  dummy_cols(select_columns=c("engine_fuel","nationality","drivetype","transmission","class")) %>%
+  select(-c(engine_fuel,engine_fuel_Gas,nationality,nationality_US,drivetype,drivetype_FWD,transmission,transmission_A, class_Sedan))
+
+for (i in 1:ncol(df)) {
+  attr(df[[i]],"label")<- NULL
+  attr(df[[i]],"format.stata")<- NULL
+}
+
+
+```
+
+Now, let's visually examine the way in which the classes differ by dimensions. The following plot shows the distribution of lengths, widths, and heights, sorted by class of vehicle:
+
+```{r}
+
+fig_1<- plot_ly(df,x=~size_length_ins,y=~size_width_ins,z=~size_height_ins,color=~class,marker = list(symbol = 'circle'),
+             text = ~paste('Model:', model, '<br>Brand:', brand, '<br>Company:', company,'<br>Share:', round(share*100,4)),type='scatter3d',mode='markers') %>% layout(scene = list(xaxis = list(title = 'Length (ins.)'),
+                     yaxis = list(title = 'Width (ins.)'),
+                     zaxis = list(title = 'Height (ins.)')))
+
+fig_1
+```
+
+The plot is interactive, so you can zoom in and change the orientation. If we look closely, we can see that cargo vans tend to be the tallest cars, followed by SUVs, minivans, and pickups, then sedans and hatchbacks, and coupes appear to be the shortest. However, some categories, like minivans and SUVs, are fairly well mixed together in this plot. One reason for this is that one of the dimensions isn't really being used: most of the cars have roughly the same width. Therefore, in the next plot, we remove width and instead replace it with price:
+
+```{r}
+
+fig_2<- plot_ly(df,x=~size_length_ins,y=~price,z=~size_height_ins,color=~class,marker = list(symbol = 'circle'),
+             text = ~paste('Model:', model, '<br>Brand:', brand, '<br>Company:', company,'<br>Share:', round(share*100,4)),type='scatter3d',mode='markers') %>% layout(scene = list(xaxis = list(title = 'Length (ins.)'),
+                     yaxis = list(title = 'Price (1000s of Dollars)'),
+                     zaxis = list(title = 'Height (ins.)')))
+
+fig_2
+```
+
+Now we see a bit more differentiation. Note how most of the minivans fall into the lower price category, while SUVs have a wider spread. 
+
+Let's begin applying the K-means algorithm naively, searching for 8 clusters since this is how many classes of vehicles there are in the data. To do this, we'll first select the columns of our data we wish to cluster on:
+
+```{r,echo=TRUE}
+df_cluster<- df %>% select(size_length_ins,price,size_height_ins)
+```
+
+Then we will run the algorithm:
+
+```{r,echo=TRUE}
+
+set.seed(123)
+kmean8<- kmeans(df_cluster,centers=8,nstart=20)
+
+```
+
+Let's see what this algorithm has produced:
+
+```{r, echo=TRUE}
+
+df <- df %>% mutate(kmean8clust=kmean8$cluster)
+df$kmean8clust<- factor(df$kmean8clust)
+
+fig_3<- plot_ly(df,x=~size_length_ins,y=~price,z=~size_height_ins,color=~kmean8clust,marker = list(symbol = 'circle'),
+             text = ~paste('Model:', model, '<br>Brand:', brand, '<br>Company:', company,'<br>Share:', round(share*100,4)),type='scatter3d',mode='markers') %>% layout(scene = list(xaxis = list(title = 'Length (ins.)'),
+                     yaxis = list(title = 'Price (1000s of Dollars)'),
+                     zaxis = list(title = 'Height (ins.)')))
+
+fig_3
+
+```
+
+This result looks reasonable in terms of clustering, but seems to bear fairly little resemblance to the classes we saw earlier. Let's check whether our visual intuition is correct:
+
+```{r}
+
+df_comparison<- data.frame(table(df$class,df$kmean8clust))
+names(df_comparison)<- c("class","cluster","Count")
+df_comparison %>% ggplot(aes(x=cluster,y=Count,fill=class)) + geom_bar(stat="identity") + scale_fill_viridis(alpha=0.9,discrete=T)+theme_minimal()
+
+```
+
+Clearly, some of the K-means clusters match fairly well with certain classes, but overall they are very different. The algorithm tends to group SUVs and minivans together, and it also mixes up sedans and coupes.
+
+What if we include more variables? Below, we run the algorithm using many more characteristics, but excluding price.
+
+```{r,echo=TRUE}
+
+df_cluster2<- df %>% select(engine_nbcylinder,wheelbase_ins,size_length_ins,size_width_ins,size_height_ins,curb_weight_lbs,mpg_combined,engine_hp,engine_size_cc,nb_doors,hp_to_weight,car_size,car_volume)
+set.seed(123)
+kmean8_2<- kmeans(df_cluster2,centers=8,nstart=20)
+
+```
+
+This will be impossible to plot since there are too many dimensions, but we can at least compare the results to those of the classes. 
+
+```{r}
+
+df <- df %>% mutate(kmean8clust2=kmean8_2$cluster)
+df$kmean8clust2<- factor(df$kmean8clust2)
+df_comparison3<- data.frame(table(df$class,df$kmean8clust2))
+names(df_comparison3)<- c("class","cluster","Count")
+df_comparison3 %>% ggplot(aes(x=cluster,y=Count,fill=class)) + geom_bar(stat="identity")+scale_fill_viridis(alpha=0.9,discrete=T)
+
+```
+
+Again, the results are quite different. 
+
+How do the classes of cars versus the K-means clusters do in predicting market shares? Let's examine visually which one produces greater distinctions in market share:
+
+```{r}
+
+df_clustvis<- df %>% select(price,share,class,kmean8clust2) %>% pivot_longer(names_to="Cluster",values_to="cluster_id",cols=c(class,kmean8clust2)) 
+
+df_clustvis %>% ggplot(aes(x=cluster_id,y=share)) + geom_boxplot() + theme_minimal() + coord_flip() + facet_wrap(~Cluster,scales="free",nrow=2)
+
+```
+
+It looks like the class of the car contains more information relevant to market share, relative to the clusters produced by K-means. Why might this be? Well, when customers shop for cars, they typically are looking for a car within one of the specified classes. As we've seen in the plots above, this class distinction isn't fully accounted for by the various characteristics of the car (size, volume, etc.). So when we sort cars in categories relative to their characteristics but ignore class, we miss valuable information pertinent to consumer decisions and market shares.
+
+What if we look at which clustering produces more information for prices? See the below plot:
+
+
+```{r}
+
+df_clustvis %>% ggplot(aes(x=cluster_id,y=price)) + geom_boxplot() + theme_minimal() + coord_flip() + facet_wrap(~Cluster,scales="free",nrow=2)
+
+```
+
+Recall that the clustering algorithm here was not fed information on prices. Clearly, in spite of that, the clustering algorithm has picked out quite a bit of price-relevant information, especially compared to the classes in the data. There may be a couple of reasons for this. One, information on number of cylinders, engine size, car volume, and other factors may be proxies for manufacturing and material costs for the producers, thus influencing the pricing of the vehicles. Two, manufacturers seem to produce a broad range of vehicles within classes to appeal to different sectors of consumers, while our clusters do not internalize this market structure. 
+
