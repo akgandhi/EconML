@@ -117,7 +117,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <!--/radix_placeholder_rmarkdown_metadata-->
   
   <script type="text/json" id="radix-resource-manifest">
-  {"type":"character","attributes":{},"value":["gs.log","gs.pdf","gs.synctex.gz","gs.tex","netflix1.png","netflix2.png","netflix3.png","svd_2d.png","svd_files/anchor-4.2.2/anchor.min.js","svd_files/bowser-1.9.3/bowser.min.js","svd_files/distill-2.2.21/template.v2.js","svd_files/figure-html5/unnamed-chunk-3-1.png","svd_files/figure-html5/unnamed-chunk-4-1.png","svd_files/header-attrs-2.7/header-attrs.js","svd_files/jquery-1.11.3/jquery.min.js","svd_files/popper-2.6.0/popper.min.js","svd_files/tippy-6.2.7/tippy-bundle.umd.min.js","svd_files/tippy-6.2.7/tippy-light-border.css","svd_files/tippy-6.2.7/tippy.css","svd_files/tippy-6.2.7/tippy.umd.min.js","svd_files/webcomponents-2.0.0/webcomponents.js","svdpic.png","testlecture.html","timeseriespca.png"]}
+  {"type":"character","attributes":{},"value":["gs.log","gs.pdf","gs.synctex.gz","gs.tex","netflix1.png","netflix2.png","netflix3.png","NMF1.png","NMF2.png","svd_2d.png","svd_files/anchor-4.2.2/anchor.min.js","svd_files/bowser-1.9.3/bowser.min.js","svd_files/distill-2.2.21/template.v2.js","svd_files/figure-html5/unnamed-chunk-3-1.png","svd_files/figure-html5/unnamed-chunk-4-1.png","svd_files/header-attrs-2.7/header-attrs.js","svd_files/jquery-1.11.3/jquery.min.js","svd_files/popper-2.6.0/popper.min.js","svd_files/tippy-6.2.7/tippy-bundle.umd.min.js","svd_files/tippy-6.2.7/tippy-light-border.css","svd_files/tippy-6.2.7/tippy.css","svd_files/tippy-6.2.7/tippy.umd.min.js","svd_files/webcomponents-2.0.0/webcomponents.js","svdpic.png","testlecture.html","timeseriespca.png"]}
   </script>
   <!--radix_placeholder_navigation_in_header-->
 <meta name="distill:offset" content="../.."/>
@@ -2533,10 +2533,10 @@ Az &amp;= \sum_i \alpha_i \sigma_i u_i
 <span class='va'>unitBall</span><span class='op'>[</span>,<span class='fl'>1</span><span class='op'>:</span><span class='fl'>4</span><span class='op'>]</span>
 </code></pre>
 </div>
-<pre><code>            [,1]       [,2]       [,3]        [,4]
-[1,]  0.01092632 -0.5466198  0.3034195  0.05765038
-[2,] -0.31310741  0.2495561 -0.7050712 -0.09640481
-[3,] -0.17904672 -0.4968334  0.3904865  0.18179566</code></pre>
+<pre><code>           [,1]       [,2]       [,3]      [,4]
+[1,] -0.5110679 -0.2903995  0.3395521 0.5568557
+[2,] -0.0183568  0.7258543 -0.5344193 0.3464603
+[3,] -0.7374395 -0.2720976 -0.2026884 0.1022587</code></pre>
 </div>
 <h2 id="picture">Picture</h2>
 <div class="layout-chunk" data-layout="l-body">
@@ -2616,15 +2616,6 @@ y &amp;= \left( \begin{array}{cc} 10^9 &amp; -1 \\ -1 &amp; 10^{-5} \end{array}\
 <h2 id="what-is-happening">What is happening</h2>
 <p>In a linear model, we only observe <span class="math inline">\(X \beta\)</span>, rather than <span class="math inline">\(\beta\)</span> itself. There can be difficult numerical problems that arise when <span class="math inline">\(X\beta\)</span>’s are very similar for regression vectors <span class="math inline">\(\beta\)</span> that are quite different.</p>
 <h2 id="what-is-happening-1">What is happening</h2>
-<p>Say that we have an error (or noise) <span class="math inline">\(\Delta\)</span> in the term <span class="math inline">\(\beta\)</span>. Consider the following quantity for a full rank matrix <span class="math inline">\(A\)</span>:</p>
-<p><span class="math display">\[\begin{align*}
-\frac{|| A\delta ||_2}{||\delta||_2}
-\end{align*}\]</span> Let <span class="math inline">\(\delta = \sum_i \alpha_i v_i\)</span>. Then: <span class="math display">\[\begin{align*}
-\frac{|| A\delta ||_2}{||\delta||_2}
-  &amp;= \sqrt{\frac{\sum_i \sigma_i^2 \alpha_i^2 v_i^2}{\sum_i \alpha_i^2 v_i^2}}
-\end{align*}\]</span> We can see that the minimum occurs when <span class="math inline">\(\delta\)</span> is equal to <span class="math inline">\(v_{\text{min}(n,m)}\)</span>.</p>
-<p>Likewise, the maximum occurs when <span class="math inline">\(\delta\)</span> is equal to <span class="math inline">\(v_1\)</span>.</p>
-<h2 id="what-is-happening-2">What is happening</h2>
 <p>We wish to control the ratio of the relative error in estimation to that of projection: </p>
 <p><span class="math display">\[\begin{align*}
 \frac{\text{rel. error estimation}}{\text{rel. error projection}}
@@ -2632,16 +2623,28 @@ y &amp;= \left( \begin{array}{cc} 10^9 &amp; -1 \\ -1 &amp; 10^{-5} \end{array}\
  &lt; \epsilon
 \end{align*}\]</span></p>
 <p>So we do not want large changes in <span class="math inline">\(\Delta\)</span> to yield relatively small changes in the prediction space <span class="math inline">\(X\beta\)</span>.</p>
-<h2 id="condition-number">Condition Number</h2>
 <p>Notice that we can re-arrange the equation as:</p>
 <p><span class="math display">\[\begin{align*}
 \frac{|| \beta + \Delta ||_2 / || X(\beta + \Delta) ||_2}{|| \beta ||_2 / || X\beta ||_2}
 \end{align*}\]</span></p>
-<p>And now we have an upper bound on the numerator and an lower bound on the denominator via the singular values:</p>
+<p>A bound is found by taking the upper bound on the numerator and an lower bound on the denominator.</p>
+<h2 id="recovering-bounds">Recovering Bounds</h2>
+<p>Suppos we map <span class="math inline">\(x\)</span> to <span class="math inline">\(Ax\)</span>. How *different" is the size of <span class="math inline">\(Ax\)</span> in comparison to <span class="math inline">\(x\)</span>.</p>
+<p><span class="math display">\[\begin{align*}
+\frac{|| Ax ||_2}{||x||_2}
+\end{align*}\]</span></p>
+<p>Let <span class="math inline">\(x = \sum_i \alpha_i v_i\)</span>. Then:</p>
+<p><span class="math display">\[\begin{align*}
+\frac{|| Ax ||_2}{||x||_2}
+  &amp;= \sqrt{\frac{\sum_i \sigma_i^2 \alpha_i^2 ||u_i||^2}{\sum_i \alpha_i^2 ||v_i||^2}}
+\end{align*}\]</span></p>
+<p>The change of basis to <span class="math inline">\(\{v_{i}\}\)</span> is norm preserving. We can see that the minimum occurs when <span class="math inline">\(x\)</span> is equal to <span class="math inline">\(v_{\text{min}(n,m)}\)</span>.</p>
+<p>Likewise, the maximum occurs when <span class="math inline">\(x\)</span> is equal to <span class="math inline">\(v_1\)</span>.</p>
+<h2 id="condition-number">Condition Number</h2>
 <p><span class="math display">\[\begin{align*}
 \frac{\text{rel. error estimation}}{\text{rel. error projection}} \leq \frac{\sigma_{max}}{\sigma_{min}}
 \end{align*}\]</span></p>
-<p>This is called the <em>condition number</em> of the matrix <span class="math inline">\(A\)</span>, and was the quantity R complained about when I tried to invert an ill-conditioned matrix.</p>
+<p>This is called the <em>condition number</em> of the matrix <span class="math inline">\(A\)</span>, and was the quantity R complained about when we tried to invert an ill-conditioned matrix.</p>
 <h2 id="svd-and-the-normal-equations">SVD and the Normal Equations</h2>
 <p>If we take the SVD of the data matrix <span class="math inline">\(X\)</span>, we have</p>
 <p><span class="math display">\[\begin{align}
@@ -2858,7 +2861,12 @@ X^{\prime} &amp;= V\Sigma^{\prime}U^{\prime} \\
 \end{align*}\]</span></p>
 <p>Each column of <span class="math inline">\(X^\prime\)</span> is a linear combination of the loadings <span class="math inline">\(V\)</span> where the weights of the <span class="math inline">\(i^{th}\)</span> columns (the <span class="math inline">\(i^{th}\)</span> case in the population) are the vector of principal components of the <span class="math inline">\(i^{th}\)</span> case in <span class="math inline">\(T\)</span>.</p>
 <h2 id="applications">Applications</h2>
+<p>We can build a <em>sparse PCA</em></p>
 <p><img src="timeseriespca.png" /></p>
+<p>Often our data is positive valued (think about an image or a time series of demand). In this case we would want the equivalent of loadings and components/weights that are all positive valued as well. In this case the loadings/factors become interpretable as elements from the population. This gives rise to the idea of non-negative matrix factorization (NMF).</p>
+<p>Note the SVD is not guaranteed to give loadings that are positive valued.</p>
+<p><img src="NMF1.png" /></p>
+<p><img src="NMF2.png" /></p>
 <h2 id="r-examples">R Examples</h2>
 <p><a href="https://allisonhorst.github.io/palmerpenguins/articles/articles/pca.html">Palmer Penguins</a></p>
 <p><a href="https://quanteda.io/articles/pkgdown/examples/lsa.html">Latent Semantic Analysis</a></p>

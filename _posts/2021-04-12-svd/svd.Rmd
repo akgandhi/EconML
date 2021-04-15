@@ -246,21 +246,7 @@ In a linear model, we only observe $X \beta$, rather than $\beta$ itself.
 There can be difficult numerical problems that arise when $X\beta$'s are very similar for regression vectors $\beta$
 that are quite different.
 
-## What is happening
 
-Say that we have an error (or noise) $\Delta$ in the term $\beta$. Consider the following quantity for a full rank matrix $A$:
-
-\begin{align*}
-\frac{|| A\delta ||_2}{||\delta||_2}
-\end{align*}
-\pause Let $\delta = \sum_i \alpha_i v_i$. Then:
-\begin{align*}
-\frac{|| A\delta ||_2}{||\delta||_2}
-  &= \sqrt{\frac{\sum_i \sigma_i^2 \alpha_i^2 v_i^2}{\sum_i \alpha_i^2 v_i^2}}
-\end{align*}
-\pause We can see that the minimum occurs when $\delta$ is equal to $v_{\text{min}(n,m)}$.
-
-Likewise, the maximum occurs when $\delta$ is equal to $v_1$.
 
 ## What is happening
 
@@ -275,7 +261,6 @@ estimation to that of projection: \pause
 
 So we do not want large changes in $\Delta$ to yield relatively small changes in the prediction space $X\beta$.
 
-## Condition Number
 
 Notice that we can re-arrange the equation as:
 
@@ -283,15 +268,36 @@ Notice that we can re-arrange the equation as:
 \frac{|| \beta + \Delta ||_2 / || X(\beta + \Delta) ||_2}{|| \beta ||_2 / || X\beta ||_2}
 \end{align*}
 
-And now we have an upper bound on the numerator and an lower bound on the
-denominator via the singular values:
+A bound is found by taking the upper bound on the numerator and an lower bound on the
+denominator.
+
+## Recovering Bounds
+
+Suppos we map $x$ to $Ax$. How *different" is the size of $Ax$ in comparison to $x$. 
+
+\begin{align*}
+\frac{|| Ax ||_2}{||x||_2}
+\end{align*}
+
+Let $x = \sum_i \alpha_i v_i$. Then:
+
+\begin{align*}
+\frac{|| Ax ||_2}{||x||_2}
+  &= \sqrt{\frac{\sum_i \sigma_i^2 \alpha_i^2 ||u_i||^2}{\sum_i \alpha_i^2 ||v_i||^2}}
+\end{align*}
+
+\pause The change of basis to $\{v_{i}\}$ is norm preserving. We can see that the minimum occurs when $x$ is equal to $v_{\text{min}(n,m)}$.
+
+Likewise, the maximum occurs when $x$ is equal to $v_1$.
+
+## Condition Number
 
 \begin{align*}
 \frac{\text{rel. error estimation}}{\text{rel. error projection}} \leq \frac{\sigma_{max}}{\sigma_{min}}
 \end{align*}
 
 This is called the *condition number* of the matrix $A$, and was the
-quantity R complained about when I tried to invert an ill-conditioned
+quantity R complained about when we tried to invert an ill-conditioned
 matrix.
 
 ## SVD and the Normal Equations
@@ -519,8 +525,17 @@ Each column of $X^\prime$ is a linear combination of the loadings $V$ where the 
 
 ## Applications
 
+We can build a *sparse PCA*
+
 ![](timeseriespca.png)
 
+Often our data is positive valued (think about an image or a time series of demand). In this case we would want the equivalent of loadings and components/weights that are all positive valued as well. In this case the loadings/factors become interpretable as elements from the population. This gives rise to the idea of non-negative matrix factorization (NMF).
+
+Note the SVD is not guaranteed to give loadings that are positive valued. 
+
+![](NMF1.png)
+
+![](NMF2.png)
 
 ## R Examples
 
