@@ -13,9 +13,15 @@ categories: Ornella and Ozgur's project
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
+root = "../../../Predicting Take-Up Rate/"
 ```
 
-In previous posts, we have prepared our data and set eligibility variable. In this post, we will create a setup for double ML package applications. 
+# Introduction
+
+In previous posts, we prepared our data and set the eligibility variables for different programs. We also started inspecting possible predictors of the take-up of welfare programs through random forests. 
+
+In this post, we will create a setup for double ML package applications. 
 
 ```{r prep, echo=FALSE}
 library(dplyr)
@@ -27,7 +33,7 @@ library(haven)
 library(rlang)
 library(tibble)
 
-ncps <- read_dta("sampleDataFull.dta")
+ncps <- read_dta(paste0(root,"sampleDataFull.dta"))
 
 dataPrep <- function(ncps = ncps){
 
@@ -100,7 +106,9 @@ library(data.table)
 library(randomForest)
 ```
 
-The function below prepares data and apply doubleML with random forest. If argument subset is true, it uses the subset of data according to given arguments. 
+# DoubleML
+
+The function below prepares data and applies doubleML with random forest. If the argument subset is true, it uses the subset of data according to given arguments. 
 
 ```{r function, echo=TRUE}
 effectByDML <- function(data = ncps, yvar, dvar, xvars, subset=FALSE, subsetcols = NA, subsetvars = NA){
@@ -141,14 +149,15 @@ effectByDML <- function(data = ncps, yvar, dvar, xvars, subset=FALSE, subsetcols
 
 ```
 
-Before running the code, we detect ordered variables in our dataset and make all other variables categorical variable. 
+Before running the code, we detect ordered variables in our dataset and convert all categorical variables to factor variables. 
 
 ```{r prepare, echo=TRUE}
 orderedVars <- c("heatval", "stampmo", "atelunch", "frelunch", "faminc", "unitsstr", 
                  "age", "famsize", "nchild", "nchlt5", "famunit", "eldch", "yngch", "durunem2",
-                 "uhrsworkt", "educ", "firmsize", "health", "famincAssigned", "hhincome", "income_county")
+                 "uhrsworkt", "educ", "firmsize", "health", "famincAssigned", "hhincome", 
+                 "income_county", "phone", "black", "vetstat", "citizen", "nativity", "empstat", "union")
 
-ncps <- ncps %>% mutate_all( as.factor)
+ncps <- ncps %>% mutate_all(as.factor)
 ncps <- ncps %>% mutate_at(orderedVars, as.numeric)
 
 
@@ -156,14 +165,16 @@ ncps <- ncps %>% mutate_at(orderedVars, as.numeric)
 
 We set our output interest as y, variables we want to estimate their effects as dlist, all covariates as xvars, and the variables that their effects should be normalized as dlistNormalize. 
 
+## Public housing
+
 ```{r setting, echo=TRUE}
 y <- "pub"
-dlist <- c("famsize", "famincAssigned", "income_county", "nchild")
+dlist <- c("famsize", "famincAssigned", "income_county", "nchild", "phone", "black", "vetstat", "citizen", "nativity", "empstat", "union")
 dlistNormalize <- c("famincAssigned", "income_county")
-xvars <- c("famsize","famincAssigned", "age", "empstat", "labforce", "famunit", "firmsize", "health", "income_county","phinsur", "nchild", "black", "disabwrk", "sex")
+xvars <- c("famsize","famincAssigned", "age", "empstat", "labforce", "famunit", "firmsize", "health", "income_county", "phinsur", "nchild", "black", "disabwrk", "sex")
 ```
 
-We are interested in estimating effect on take-up rate for all and for only eligible people. Difference between these two might also give us some intuition. The code below prepares a table for results. 
+We are interested in estimating effect on take-up rate of public housing for all, and subsequently exclusively for eligible people. The code below prepares a table for results. 
 
 
 ```{r running, echo=TRUE}
@@ -205,17 +216,22 @@ colnames(resultsDF) <- c("d_var", "coef_all", "t_stat_all", "coef_elig", "t_stat
 print.data.frame(as.data.frame( resultsDF) )
 ```
 
-We see that income per capita of the county has positive effect on take-up rates in full data but it is actually because of when per-capita income is high, it makes more people eligible due to increasing poverty levels. When we run it for only eligible people we see that this effect becomes insignificant.
+We see that income per capita of the county has a positive effect on the take-up rates in full data: this is due to the fact that when per-capita income is high, more people are eligible due to increasing poverty levels, as eligibility is set in terms of a percentage of the median income in the corresponding county. When we run the same empirical strategy exclusively for the pool of eligible individuals, we observe that this effect, indeed, becomes  not significant.
 
-Family income is still important factor on take-up rate in eligible people. 
+The family income still represents an important factor for the take-up rate for the pool of eligible individuals. 
 
-One observation we have is that, when we remove number of childs from covariates, we suddenly start to see significant effect of family size on take-up rates. However it is not significant when the number of childrens is included. On the other hand, even though family size is included in covariates, effect of the nchild is significant. 
+We can observe that, when we remove the number of children from the covariates, we suddenly start to see a significant effect of family size on take-up rates. However, it is not significant when the number of children is included. On the other hand, even though family size is included in covariates, effect of the number of children is significant. 
 
 ```{r running2, echo=FALSE}
+# y <- "pub"
+# dlist <- c("famsize")
+# dlistNormalize <- c("famincAssigned", "income_county")
+# xvars <- c("famsize","famincAssigned", "age", "empstat", "labforce", "famunit", "firmsize", "health", "income_county","phinsur", "black", "disabwrk", "sex")
+
 y <- "pub"
-dlist <- c("famsize")
+dlist <- c("famsize", "famincAssigned", "income_county", "nchild", "phone", "black", "vetstat", "citizen", "nativity", "empstat", "union")
 dlistNormalize <- c("famincAssigned", "income_county")
-xvars <- c("famsize","famincAssigned", "age", "empstat", "labforce", "famunit", "firmsize", "health", "income_county","phinsur", "black", "disabwrk", "sex")
+xvars <- c("famsize","famincAssigned", "age", "empstat", "labforce", "famunit", "firmsize", "health", "income_county", "phinsur", "nchild", "black", "disabwrk", "sex")
 
 resultsObjectsAlln <- list()
 resultsObjectsElign <- list()
@@ -254,7 +270,7 @@ colnames(resultsDF) <- c("d_var", "coef_all", "t_stat_all", "coef_elig", "t_stat
 print.data.frame(as.data.frame( resultsDF) )
 ```
 
-I also wanted to check effects of nchild, family size, and nchlt5 (number of childrent younger than 5) when nchlt is also included. 
+We also wanted to check effects of the number of children, family size, and the variable nchlt5 (number of children that are younger than 5) when nchlt is also included. 
 
 ```{r running3, echo=FALSE}
 y <- "pub"
@@ -299,7 +315,12 @@ colnames(resultsDF) <- c("d_var", "coef_all", "t_stat_all", "coef_elig", "t_stat
 print.data.frame(as.data.frame( resultsDF) )
 ```
 
-After including nchlt5, significance of family size has decreased more and we see that nchlt5 has significant effect on take-up rates but it is lower than number of all children. 
+After including nchlt5, the significance of the family size decreases more, while we can observe that the variable nchlt5 has a significant effect on take-up rates, but it is lower than the number of all children. In other words: the number of children seems to have a strong effect, and the younger children drive a large part of this impact, while once taken into consideration the number of children, the effect of family size per se is not that relevant. This impaact could come from several factors: first of all, it could be the case that households with a higher number of very young children are given priority in these programs; moreover, it could be the case that households with very young children are more easily approached by several institutions that might inform them: hospitals, kindergartens and so on. 
+
+
+
+
+
 
 
 
