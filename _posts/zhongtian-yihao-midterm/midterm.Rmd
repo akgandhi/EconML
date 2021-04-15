@@ -48,25 +48,56 @@ library(DescTools)
 library(stargazer)
 ```
   
-## Preliminary Results: Random Forest
+## Analyses on Discount Decisions
+
+We used *sparklyr* package on local PC to manage the data and conduct the analyses below. Because it fails to perform analyses even on the previous subsample that includes six categories of goods (~19 million observations), we used a small sample with only soda drinks that only has 774,475 observations. 
+
+The dependent variable is a binary indicator of discount, which equals to one when the price of a product is below its regular price. The independent variable includes product margin at regular price, stock quantity, and the lags of sales quantities and discount rates in the past four weeks. The regular margin is added to detect whether the profitability of a product can explain variations in discount decisions. Stock quantity is used to verify whether inventory management is a valid explanatory variable, though its effect may be spurious if there is a scheduled promotion and the stores increase their inventories as a preparation. The lagged sales quantities can help examine whether the popularity of products are considered by store managers when making promotion decisions. The lagged discount rates can help capture whether there are cyclical patterns in discount decisions.
+
+Validation method is used to decide the depth of the trees. Ideally, 10-fold cross-validation should be used for a more robust tuning result, but it turns to be too time consuming. Instead, we split 80% of the data as the training data, and 20% as the test data, and choose the hyperparameters that generate the smallest RMSE. Finally, we set the maximum depth to 10 for gradient boosted tree, and 5 for random forest.
+
+### Gradient Boosted Tree on Discount Decision
+
+```{r, echo = FALSE, message = FALSE, warning=FALSE, preview=TRUE}
+# All defaults
+include_graphics("https://www.dropbox.com/s/9un6jb1arxvcwc6/gbt1.png?dl=1")
+```
+
+The gradient boosted tree result above shows that the lag one discount rate is the most important factor with an importance factor of 0.7. This indicates that stores may not change product prices at daily level, but there is no strong evidence that the stores adjust prices weekly. The only other variable has a meaningfully large importance level is the regular margin, but we do not know if the products with higher regular margins are more or less likely to have discounts. 
+
+### Random Forest on Discount Decision
+
+```{r, echo = FALSE, message = FALSE, warning=FALSE, preview=TRUE}
+# All defaults
+include_graphics("https://www.dropbox.com/s/dpjqccacm7717ya/rf1.png?dl=1")
+```
+
+The graph above shows that discount rates in the past 7 days are the most important features, especially that in the past four days, which all has importance level close to 0.1 or above. Overall, it shows the stores may make weekly pricing decisions.
+
+## Analyses on Discount Rate
+
+We run random forest on discount rate $\frac{p_{regular} - p_{discount}}{p_{regular}}$ on 1-30 day lagged stock quantities, sales quantities, and discount rates, as well as margins at regular prices $\frac{p_{regular} - c}{p_{regular}}$. The sample only includes products that are at discount. Therefore, the sample size is small, with only 5,612 observations. The control variables and validation method are the same as used in the analyses on discount decisions. Finally, we set max depth to 5 for gradient boosted trees, and 20 for random forest.
+
+### Gradient Boosted Tree on Discount Rate
+
+```{r, echo = FALSE, message = FALSE, warning=FALSE, preview=TRUE}
+# All defaults
+include_graphics("https://www.dropbox.com/s/oglxp61j3c8rybx/gbt2.png?dl=1")
+```
+
+Regular margin turns to be the most important feature. It is consistent with the heat map in our last presentation, where we found that the stores tend to discount their products towards the cost level. In addition, lagged variables and stock quantity have their importance level larger than 0.03 as well.
 
 ### Random Forest on Discount Rate
 
 ```{r, echo = FALSE, message = FALSE, warning=FALSE, preview=TRUE}
 # All defaults
-include_graphics("https://www.dropbox.com/s/oqc178q43bpsn5r/RF2.png?dl=1")
+include_graphics("https://www.dropbox.com/s/prc3dtqtq8whg5x/rf2.png?dl=1")
 ```
 
-We run random forest on discount rate $\frac{p_{regular} - p_{discount}}{p_{regular}}$ on 1-30 day lagged stock quantities, sales quantities, and discount rates, as well as margins at regular prices $\frac{p_{regular} - c}{p_{regular}}$. The sample only includes products that are at discount. 
-
-The results show that margins at regular price is the most important factor to explain variations in discount rate. This is consistent with the descriptive analyses (heat map), where the stores tend to set their prices around wholesale prices when discounting the products. In addition, we find that discount rates in the previous seven days can explain a substantial part of the variations. This suggests that stores may make pricing decisions weekly.
-
-### Random Forest on Discount Decision
-
-To be added. **Sparklyr** fails to estimate it locally.
+Similar to the analyses on discount decisions, we found patterns of weekly pricing decisions using random forest on discount rate, as the lagged discount rates in the past week are very important features, but lag 7 discount rate is not. Regular margin is still a very important feature, but the importance of stock quantity shrinks to around 0.02.
 
 ## Next Steps
 
-* *Demand Estimation*. We are interested in how demand factors affect the supply side. We may estimate simple linear regressions $$log(Q_i) = -\alpha \log(p_i) + \sum_{j\neq i}\beta_j \log(p_j),$$ where $Q_i$ and $p_i$ are the sales quantity and price of product $i$, and $p_j$ is the price of other product $j$. We hope this simple regression can capture the substitutions between products within categories, and potential cross-category complementarity. However, the right-hand side can be high-dimensional and cause estimation problems (e.g., overfitting). We may take BooST algorithm (credit to Catherine) or some Bayesian methods.
+* *RE-EM Trees*. RE-EM trees allow item fixed effects in the model, while the current gradient boosted tree and random forest models cannot handle a large amount of item dummies. Using item fixed effects can help control the effects of heterogeneity across products, and use only within-product and cross-time variations to identify the importance of the features. However, we had difficulty applying R command in the spark environment.
 
-* *Unsupervised Learning*. We are interested in investigating whether there are any correlations between promotion decisions on different products, and what is its economic meaning if the correlation exists.
+* *Demand Estimations*. Regular margin is not a very ideal control variable. It is correlated with a lot of factors, like demand elasticity and retailers' market power. We want to further separate these two different mechanisms of effects. A possible solution is to include elasticities of demand.
