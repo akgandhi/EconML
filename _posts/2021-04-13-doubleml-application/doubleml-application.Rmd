@@ -14,7 +14,7 @@ categories: Ornella and Ozgur's project
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 
-root = "../../../Predicting Take-Up Rate/"
+# root = "../../../Predicting Take-Up Rate/"
 ```
 
 # Introduction
@@ -33,7 +33,7 @@ library(haven)
 library(rlang)
 library(tibble)
 
-ncps <- read_dta(paste0(root,"sampleDataFull.dta"))
+ncps <- read_dta("sampleDataFull.dta")
 
 dataPrep <- function(ncps = ncps){
 
@@ -222,6 +222,8 @@ The family income still represents an important factor for the take-up rate for 
 
 We can observe that, when we remove the number of children from the covariates, we suddenly start to see a significant effect of family size on take-up rates. However, it is not significant when the number of children is included. On the other hand, even though family size is included in covariates, effect of the number of children is significant. 
 
+Correlation between family size and number of children is about 0.6, so we could expect the 60% of the effect of nchild as family size effect when we remove nchild. However the effect estimated with doubleML is much lower than that. 
+
 ```{r running2, echo=FALSE}
 # y <- "pub"
 # dlist <- c("famsize")
@@ -229,9 +231,9 @@ We can observe that, when we remove the number of children from the covariates, 
 # xvars <- c("famsize","famincAssigned", "age", "empstat", "labforce", "famunit", "firmsize", "health", "income_county","phinsur", "black", "disabwrk", "sex")
 
 y <- "pub"
-dlist <- c("famsize", "famincAssigned", "income_county", "nchild", "phone", "black", "vetstat", "citizen", "nativity", "empstat", "union")
+dlist <- c("famsize")
 dlistNormalize <- c("famincAssigned", "income_county")
-xvars <- c("famsize","famincAssigned", "age", "empstat", "labforce", "famunit", "firmsize", "health", "income_county", "phinsur", "nchild", "black", "disabwrk", "sex")
+xvars <- c("famsize","famincAssigned", "age", "empstat", "labforce", "famunit", "firmsize", "health", "income_county", "phinsur", "black", "disabwrk", "sex")
 
 resultsObjectsAlln <- list()
 resultsObjectsElign <- list()
