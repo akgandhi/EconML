@@ -1,0 +1,648 @@
+\documentclass[handout]{dmu}
+\usepackage{pgfpages}
+\pgfpagesuselayout{2 on 1}[letterpaper,border shrink=5mm]
+
+\subtitle{Markov Decision Processes and Bellman's Equation}
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+
+\foot{DMU 4.1.1}
+\begin{frame}{Stochastic problems}
+\centering
+\begin{tikzpicture}
+\matrix [ampersand replacement=\&,row sep=0.6cm,column sep=0.8cm] {
+\node[decision node](a0){$A_0$}; \& \node[decision node](a1){$A_1$}; \&\node[decision node](a2){$A_2$};  \\
+\node[utility node](r0){$R_0$}; \& \node[utility node](r1){$R_1$}; \& \node[utility node](r2){$R_2$}; \\
+\node[node](x0){$S_0$}; \& \node[node](x1){$S_1$}; \& \node[node](x2){$S_2$}; \\
+};
+\path[->] (a0) edge (r0) edge (x1) (x0) edge (x1) edge (r0) (x1) edge (x2) edge (r1) (a1) edge (r1) edge (x2) (x2) edge (r2);
+\end{tikzpicture}
+\vfill
+\begin{itemize}
+\item<1-> Agent chooses action $A_t$ at time $t$ based on observing state $S_t$
+\item<2-> State evolves probabilistically based on current state and action taken by agent (\alert<2>{Markov assumption})
+\item<3-> Objective is to maximize sum of rewards $R_1, \ldots$
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Markov decision process}
+\centering
+\begin{tikzpicture}
+\matrix [ampersand replacement=\&,row sep=0.6cm,column sep=0.8cm] {
+\node[decision node](a0){$A$};\\
+\node[utility node](r0){$R$}; \\
+\node[node](x0){$S$}; \& \node[node](x1){$S'$}; \\
+};
+\path[->] (a0) edge (r0) edge (x1) (x0) edge (x1) (x0) edge (r0);
+\end{tikzpicture}
+\vfill
+\begin{itemize}
+\item<1-> If transition and utility models are stationary (does not vary with time), then a \alert<1>{dynamic Bayesian network} can be used
+\item<2-> Problem is known as a \alert<2>{Markov decision process} (MDPs)
+\item<3-> Defined by \alert<3>{transition model} $T(s' \mid s, a)$ \\ and \alert<3>{reward model} $R(s, a)$ (often assumed deterministic)
+\end{itemize}
+\end{frame}
+\clearfoot
+
+\begin{frame}{Example Markov decision process}{Aircraft collision avoidance}
+\centering
+\begin{tikzpicture}
+\usetikzlibrary{shapes.aircraft}
+\node [fill=blue!80!black,aircraft side,minimum width=40pt] (own) {}; \node[below] at (0,-0.2) {own aircraft};
+\node [fill=red!80!black,aircraft side,minimum width=40pt,xscale=-1] (intruder) at (5,1) {}; \node [below]  at (5,0.8) {intruder aircraft};
+\end{tikzpicture}
+\vfill
+\begin{itemize}
+\item<1-> Own aircraft must choose to stay level, climb, or descend
+\item<2-> At each step, $-1$ for collision, $-0.01$ for climb or descend
+\item<3-> State determined by altitude, closure rate, and vertical rates
+\item<4-> Intruder aircraft flies around randomly
+\end{itemize}
+\vfill
+\uncover<4->{\bumper{Optimal behavior determined by reward and transition model}}
+\end{frame}
+
+\foot{DMU 4.1.2}
+\begin{frame}{Models of optimal behavior}
+\begin{itemize}
+\item<1-> In the \alert<1>{finite-horizon model} agent should optimize \\ expected reward for the next $H$ steps: $E(\sum_{t = 0}^H r_t)$
+\item<2-> Continuously executing $H$-step optimal actions is known as \alert<1>{receding horizon control}
+\item<3-> In the \alert<3>{infinite-horizon discounted model} agent should optimize \\ $E(\sum_{t = 0}^\infty \gamma^t r_t)$ 
+\item<4-> \alert<4>{Discount factor} $0 \leq \gamma < 1$ can be thought of as an interest rate (reward now is worth more than reward in the future)
+\item<5-> Discounting keeps utility of an infinite sequence finite
+\end{itemize}
+\end{frame}
+\clearfoot
+
+\begin{frame}{Outline}
+\begin{enumerate}
+\item Formulation
+\item \alert{Dynamic programming}
+\item Structured dynamic programming
+\item Approximate dynamic programming
+\item Online methods
+\end{enumerate}
+\end{frame}
+
+\foot{DMU 4.2.1}
+\begin{frame}{Policies and utilities of states}
+\begin{itemize}
+\item<1-> A \alert<1>{policy} $\pi$ specifies what action to execute from every possible state
+\item<2-> Action to execute from state $s$ according to $\pi$ is denoted $\pi(s)$
+\item<3-> Expected utility of executing $\pi$ when starting from $s$ is denoted $U^\pi(s)$
+\item<4-> Optimal policy $\pi^*$ is one that maximizes expected utility: $\pi^*(s) = \argmax_\pi U^\pi(s)$
+\end{itemize}
+\end{frame}
+\clearfoot
+
+\foot{DMU 4.2.2}
+\begin{frame}{Iterative policy evaluation}
+\begin{itemize}
+\item<1-> Incrementally compute expected utility after $k$ steps of executing $\pi$
+\item<2-> $U_0^\pi(s) = 0$
+\item<3-> $U_1^\pi(s) = R(s, \pi(s))$
+\item<4-> ...
+\item<5-> $U_k^\pi(s) = R(s, \pi(s)) + \gamma \sum_{s'} T(s' \mid s, \pi(s)) U_{k-1}^\pi(s')$
+\end{itemize}
+\vfill
+\uncover<6>{\bumper{This kind of iterative calculation is called \alert{dynamic programming}}}
+\end{frame}
+
+\begin{frame}{Policy evaluation}
+\begin{itemize}
+\item<1-> For an infinite horizon,\\$U^\pi(s) = R(s, \pi(s)) + \gamma \sum_{s'} T(s' \mid s, \pi(s)) U^\pi(s')$
+\item<2-> Can compute this arbitrarily well with enough iterations of iterative policy evaluation
+\item<3-> Alternative is to just solve system of $N$ linear equations, where $N$ is the number of states, requiring $O(n^3)$ time
+\item<4-> $U^\pi = R^\pi + \gamma T^\pi U^\pi$ (in matrix form)
+\item<5-> $U^\pi - \gamma T^\pi U^\pi = R^\pi$
+\item<6-> $(I - \gamma T^\pi) U^\pi = R^\pi$
+\item<7-> $U^\pi = (I - \gamma T^\pi)^{-1}R^\pi$ \\ (in Matlab, best to use matrix left division)
+\end{itemize}
+\end{frame}
+
+\foot{DMU 4.2.3}
+\begin{frame}{Policy iteration}
+\begin{itemize}
+\item<1-> Policy iteration is one way to compute an optimal policy $\pi^*$
+\item<2-> The algorithm starts with any policy $\pi_0$ and iterates the following steps
+\begin{enumerate}
+\item \structure{Policy evaluation}: given $\pi_i$ compute $U^{\pi_i}$
+\item \structure{Policy improvement}: compute new policy from $U^{\pi_i}$\\$\pi_{i+1}(s) = \argmax_a [ R(s, a) + \gamma \sum_{s'} T(s' \mid s, a) U^{\pi_i}(s')]$
+\end{enumerate}
+\item<3-> Algorithm terminates when there is no more improvement
+\item<4-> Since every step leads to improvement and there are finitely many policies, algorithm terminates at optimal solution
+\end{itemize}
+\end{frame}
+
+\foot{DMU 4.2.4}
+\begin{frame}{Value iteration}
+\begin{itemize}
+\item<1-> An alternative algorithm is \alert<1>{value iteration}
+\item<2-> \alert<2>{Bellman equation} says value of optimal policy is given by\\$U^*(s) = \max_a [R(s, a) + \gamma \sum_{s'} T(s' \mid s, a) U^*(s')]$
+\item<3-> $U^*_0(s) = 0$ (initialization)
+\item<4-> $U^*_1(s) = \max_a [R(s, a) + \gamma \sum_{s'} T(s' \mid s, a) U_0^*(s')]$
+\item<5-> ...
+\item<5-> $U^*_k(s) = \max_a [R(s, a) + \gamma \sum_{s'} T(s' \mid s, a) U_{k-1}^*(s')]$
+\item<6-> $U^*_k \rightarrow U^*$ as $k \rightarrow \infty$
+\item<7-> $\pi(s) = \argmax_a [R(s, a) + \gamma \sum_{s'} T(s' \mid s, a) U(s')]$
+\end{itemize}
+\end{frame}
+
+\foot{DMU 4.2.4}
+\begin{frame}{Convergence of value iteration}
+\begin{itemize}
+\item<1-> Let $||U||$ denote the \alert<1>{max norm}, i.e. $||U|| = \max_s |U(s)|$
+\item <2-> $||U^*_k - U^*_{k-1}||$ is known as the \alert<2>{Bellman residual}
+\item <3-> Can be proven that \\if $||U^*_k - U^*_{k-1}|| < \epsilon(1-\gamma)/\gamma$ then $||U^*_k - U^*|| < \epsilon$ \sitem{Hence, slower convergence for $\gamma$ closer to 1}
+\item <4-> Can also bound \alert<4>{policy loss}:\\if $||U^*_k - U^*|| < \epsilon$ then $||U^{\pi_k} - U^*|| < 2\epsilon\gamma/(1-\gamma)$ 
+\end{itemize}
+\end{frame}
+\clearfoot
+
+\foot{DMU 4.25, \url{http://www.cs.ubc.ca/~poole/demos/mdp/vi.html}}
+\begin{frame}{Example grid world}
+\begin{itemize}
+\item<1-> \structure{States}: cells in $10\times10$ grid
+\item <2-> \structure{Actions}: up, down, left, and right
+\item <3-> \structure{Transition model}: 0.7 chance of moving in intended direction, uniform in other directions
+\item <4-> \structure{Reward}: two states have cost (and are not terminal),\\ two have reward (and are terminal), $-1$ for wall crash
+\end{itemize}
+\end{frame}
+\clearfoot
+
+\foreach \x in {1,...,9} {
+\begin{frame}{Grid world: Iteration {\x} $(\gamma = 0.9)$}
+\begin{center}
+\input{figures/mdpstep\x-0.9.tex}
+\end{center}
+\end{frame}
+
+}
+
+\begin{frame}{Grid world: Converged $(\gamma = 0.9)$}
+\begin{center}
+\input{figures/mdpstep-0.9.tex}
+\end{center}
+\end{frame}
+
+\begin{frame}{Grid world: Converged $(\gamma = 0.5)$}
+\begin{center}
+\input{figures/mdpstep-0.5.tex}
+\end{center}
+\end{frame}
+
+\foot{DMU 4.2.6}
+\begin{frame}{Gauss-Siedel value iteration}
+\begin{itemize}
+\item<1-> Regular value iteration must maintain two arrays \\(the old $U$ and the new $U$)
+\item <2-> \alert<2>{Gauss-Siedel value iteration} only uses one array and can lead to faster convergence
+\item <3-> Iterate through the state space and apply the Bellman update: $U(s) \leftarrow \max_a [R(s, a) + \gamma \sum_{s'} T(s' \mid s, a) U(s')]$
+\item <4-> Choice of ordering of updates can affect convergence rate
+\end{itemize}
+\end{frame}
+
+\foot{\url{http://www.mathworks.com/matlabcentral/fileexchange/25786-markov-decision-processes-mdp-toolbox}}
+\begin{frame}{Markov Decision Process (MDP) Toolbox for Matlab}
+\includegraphics[width=10cm]{figures/matlabmdpgs}
+\end{frame}
+
+\clearfoot
+\newcommand\utilr{\text{\textcolor{red}{r}}}
+\newcommand\utilb{\text{\textcolor{blue}{b}}}
+
+\foot{DMU 4.2.7}
+\begin{frame}{Closed loop and open loop planning}
+\begin{itemize}
+\item<1-> \structure{Closed loop}: accounts for future state information (MDP)
+\item <1-> \structure{Open loop}: does not account for future state information (path planning)
+\end{itemize}
+\vfill
+\begin{columns}
+\begin{column}{5cm}
+\begin{uncoverenv}<2->
+\begin{tikzpicture}[xscale=2,yscale=0.7,font=\footnotesize,>=stealth']
+\tikzstyle{node}=[circle,fill=blue!20,draw=blue!80!black]
+\node[node] (s0) at (0,0) {$s_0$};
+\node[node] (s1) at (1,3) {$s_1$};
+\node[node] (s2) at (1,1) {$s_2$};
+\node[node] (s3) at (1,-2) {$s_3$};
+\node[node] (s4) at (2,4) {$s_4$};
+\node[node] (s5) at (2,2) {$s_5$};
+\node[node] (s6) at (2,0) {$s_6$};
+\node[node] (s7) at (2,-1) {$s_7$};
+\node[node] (s8) at (2,-3) {$s_8$};
+\path[->,dashed,red] (s0) edge node[left]{(0.5)} (s1);
+\path[->,dashed,red] (s0) edge node[below right]{(0.5)} (s2);
+\path[->,blue] (s0) edge  (s3);
+\path[->,red] (s1) edge  (s4);
+\path[->,blue] (s1) edge (s5);
+\path[->,red] (s2) edge (s5);
+\path[->,blue] (s2) edge (s6);
+\path[->,red] (s3) edge (s7);
+\path[->,blue] (s3) edge (s8);
+\node [right] at (s4.east) {$30$};
+\node [right] at (s5.east) {$0$};
+\node [right] at (s6.east) {$30$};
+\node [right] at (s7.east) {$20$};
+\node [right] at (s8.east) {$20$};
+\end{tikzpicture}
+\end{uncoverenv}
+\end{column}
+\begin{column}{5cm}
+\begin{itemize}
+\item<2-> Open loop plans do not always result in optimal behavior
+\item <3-> $U(\utilr , \utilr) = 15$
+\item <3-> $U(\utilr , \utilb) = 15$
+\item <3-> $U(\utilb , \utilr) = 20$
+\item <3-> $U(\utilb , \utilb) = 20$
+\item <4-> MDP solution can increase utility to 30
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+\clearfoot
+\begin{frame}{Outline}
+\begin{enumerate}
+\item Formulation
+\item Dynamic programming
+\item \alert{Structured dynamic programming}
+\item Approximate dynamic programming
+\item Online methods
+\end{enumerate}
+\end{frame}
+
+\foot{DMU 4.3.1}
+\begin{frame}{Factored Markov decision processes}
+\begin{itemize}
+\item<1-> Number of discrete states grows exponentially with the number of state variables
+\item <2-> \alert<2>{Factored Markov decision processes} (FMDPs) compactly represent transition and reward functions using dynamic decision networks
+\item <3-> Conditional probability distributions and utility functions can be represented as decision trees
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Coffee robot problem}
+\begin{itemize}
+\item<1-> Robot must go buy a cup of coffee for its owner located at the office
+\item <2-> When it's raining, robot must get an umbrella to stay dry
+\item <3-> Actions: go to other location, buy coffee, deliver coffee, and get umbrella
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Transition model for deliver coffee action}
+\begin{tikzpicture}
+\matrix [ampersand replacement=\&,row sep=0.4cm,column sep=0.8cm] {
+\node [node] (w) {$W$}; \& \node [node] (wp) {$W$}; \& \node[anchor=west] {wet?};\\
+\node [node] (u) {$U$}; \& \node [node] (up) {$U$}; \& \node[anchor=west] {umbrella?};\\
+\node [node] (r) {$R$}; \& \node [node] (rp) {$R$}; \& \node[anchor=west] {raining?};\\
+\node [node] (o) {$O$}; \& \node [node] (op) {$O$}; \& \node[anchor=west] {office?};\\
+\node [node] (c) {$H$}; \& \node [node] (cp) {$H$}; \& \node[anchor=west] {owner have coffee?};\\
+\node [node] (h) {$C$}; \& \node [node] (hp) {$C$}; \& \node[anchor=west] {robot have coffee?};\\
+};
+\path [->] (w) edge (wp) (u) edge (up) (r) edge (rp) (o) edge (op) edge (cp) edge (hp) (c) edge (cp) (h) edge (cp) edge (hp);
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}{Conditional distribution as decision tree}{Representation of $P(H' = 1 \mid H, C, O, \text{deliver coffee})$}
+\begin{columns}
+\begin{column}{4cm}
+\begin{tabular}{ccc|l}
+$H$ & $C$ & $O$ & $P(H')$ \\ \midrule
+1&1&1&1.0\\
+1&1&0&1.0\\
+1&0&1&1.0\\
+1&0&0&1.0\\
+0&1&1&0.8\\
+0&1&0&0.0\\
+0&0&1&0.0\\
+0&0&0&0.0
+\end{tabular}
+\end{column}
+\begin{column}{4cm}
+\begin{tikzpicture}
+\matrix [ampersand replacement=\&,row sep=0.5cm,column sep=0.3cm] {
+\& \node [node] (c) {$H$};\\
+\node (n1) {$1.0$}; \& \& \node[node] (h) {$C$};\\
+\& \node [node] (o) {$O$}; \& \& \node (n0) {$0.0$}; \\
+\node (n8) {$0.8$}; \& \& \node (n02) {$0.0$};\\
+};
+\path [->] (c) edge node[above] {1} (n1) edge node [above] {0} (h) (h) edge node [above] {1} (o) edge node [above] {0} (n0) (o) edge node [above] {1} (n8) edge node [above] {0} (n02);
+\end{tikzpicture}
+\end{column}
+\end{columns}
+\vfill
+Both the table and decision tree represent the same distribution, but the decision tree is more compact
+\end{frame}
+
+\foot{DMU 4.3.2, \fullcite{Boutilier-Dearden-Goldszmidt-2000}}
+\begin{frame}{Structured dynamic programming}
+\begin{itemize}
+\item<1-> $R(s, a)$ and $U(s)$ can also be represented using a decision tree
+\item <2-> \alert<2>{Structured value iteration} and \alert<2>{structured policy iteration} performs updates on leaves of the decision trees instead of all the states
+\item <3-> Structured dynamic programming algorithms improve efficiency by \alert<3>{aggregating} states
+\item <4-> Algorithms can also leverage additive decomposition of reward and value function
+\end{itemize}
+\end{frame}
+
+\foot{DMU 4.3.2, \fullcite{Hoey-StAubin-etal-1999}}
+\begin{frame}{Stochastic Planning Using Decision Diagrams (SPUDD)}
+Additional efficiency can be gained using \alert{decision diagrams}
+\vfill
+\begin{columns}
+\begin{column}{5cm}
+\centering
+\structure{Decision tree}
+\begin{tikzpicture}
+\matrix [ampersand replacement=\&,row sep=0.7cm,column sep=0.3cm] {
+\& \& \node [node] (a) {$A$};\\
+\& \node [node] (b) {$B$}; \& \& \node [node] (c) {$C$}; \\
+\node (n1) {$0.0$}; \& \node [node] (c2) {$C$}; \& \node (n4) {$0.0$}; \& \node (n5) {$1.0$}; \\
+\node (n2) {$0.0$}; \& \& \node (n3) {$1.0$};\\
+};
+\path [->] (a) edge [red] (b) edge [black] (c) (b) edge [red] (n1) edge [black] (c2) (c) edge [red] (n4) edge [black] (n5) (c2) edge [red] (n2) edge [black] (n3);
+\end{tikzpicture}
+\end{column}
+\begin{column}{5cm}
+\centering
+\structure{Decision diagram}
+\begin{tikzpicture}
+\matrix [ampersand replacement=\&,row sep=0.7cm,column sep=0.3cm] {
+\& \node [node] (a) {$A$};\\
+\node [node] (b) {$B$};  \\
+ \& \node [node] (c) {$C$}; \\
+\node (n1) {$0.0$}; \& \node (n2) {$1.0$};\\
+};
+\path [->] (a) edge [red] (b) (a) edge [black] (c) (b) edge [black] (c) (b) edge [red] (n1) edge [black] (c) (c) edge [red] (n1) edge [black] (n2);
+\end{tikzpicture}
+\end{column}
+\end{columns}
+Software: \url{http://www.computing.dundee.ac.uk/staff/jessehoey/spudd/index.html}
+\end{frame}
+\clearfoot
+
+\begin{frame}{Outline}
+\begin{enumerate}
+\item Formulation
+\item Dynamic programming
+\item Structured dynamic programming
+\item \alert{Approximate dynamic programming}
+\item Online methods
+\end{enumerate}
+\end{frame}
+
+
+\foot{DMU 4.5, \fullcite{Powell2007}}
+\begin{frame}{Approximate dynamic programming}
+\begin{itemize}
+\item<1-> Discussion up to this point assumed (small) discrete state and action spaces
+\item <2-> \alert<2>{Approximate dynamic programming} is concerned with finding approximately optimal policies for problems with large or continuous spaces
+\item <3-> ADP is an \alert<3>{active} area of research and shares ideas with \alert<3>{reinforcement learning} (discussed in the next session)
+\item <4-> Methods include parametric approximation, local approximation, and state aggregation (abstraction) methods
+\end{itemize}
+\end{frame}
+
+\foot{DMU 4.5.1, \fullcite{Gordon-1999}}
+\begin{frame}{Grid-based parametric approximation}
+\begin{itemize}
+\item<1-> If state space $X$ is continuous, how to represent utility $U$?
+\item <2-> One way is to use a grid to get a discrete set of points $S \subset X$
+\item <3-> Let $V$ be a utility function over $S$
+\item <4-> Determine $U(x)$ by \alert<4>{interpolating} $V$
+\item <5-> Bellman update: $V_k(s) \leftarrow \max_a [R(s, a) + \gamma \sum_{x'} P(x' \mid s, a) U_{k-1}(x')]$
+\end{itemize}
+\begin{center}
+\begin{uncoverenv}<2->
+\begin{tikzpicture}[font=\tiny]
+\draw (0,0) grid (4, 4);
+\foreach \x in {0,...,4} {
+\foreach \y in {0,...,4} {
+\draw[fill=gray] (\x,\y) circle (2pt);
+}
+}
+\begin{uncoverenv}<4->
+\begin{scope}[fill=yellow]
+\draw [fill=yellow] (1,1) circle (2pt) node [below left] {1.8};
+\draw [fill=yellow] (2,1) circle (2pt) node [below right] {2.2};
+\draw [fill=yellow] (2,2) circle (2pt) node [above right] {0.5};
+\draw [fill=yellow] (1,2) circle (2pt) node [above left] {3.9};
+\end{scope}
+\draw [fill=red] (1.25,1.75) circle (2pt) node [below right] {$x$};
+\end{uncoverenv}
+\end{tikzpicture}
+\end{uncoverenv}
+\end{center}
+\end{frame}
+
+\foot{DMU 4.5.2}
+\begin{frame}{Linear regression parametric approximation}
+\begin{itemize}
+\item<1-> Instead of discretizing the state space (exponential in state variables) define a set of \alert<1>{basis functions} $\phi_1, \ldots, \phi_n$ over $X$
+\item <2-> Each basis function maps states in $X$ to real numbers
+\item <3-> Think of basis functions as a state-dependent features
+\item <4-> Represent $U$ as a \alert<4>{linear combination} of basis functions: $U(x) = \theta_1 \phi_1(x) + \ldots + \theta_n \phi_n(x)$
+\item <5-> Given fixed basis functions, determine $\theta_1, \ldots, \theta_n$ that best represents the optimal value function
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Linear regression parametric approximation}
+\begin{itemize}
+\item<1-> Let $S$ be a finite set of samples from $X$ (doesn't have to be from a grid)
+\item <2-> Initialize $\theta_1, \ldots, \theta_n$ to 0, making $U_0(x) = 0$
+\item <3-> Bellman update: $V_k(s) \leftarrow \max_a [R(s, a) + \gamma \sum_{x'} P(x' \mid s, a) U_{k-1}(x')]$
+\item <4-> Use regression (e.g., least squares) to find $U_k$ that approximates $V_k$ at sample points in $S$
+\item <5-> Approach can be generalized to other parametric approximation methods (e.g., neural networks)
+\end{itemize}
+\end{frame}
+
+\foot{\fullcite{Munos-Moore-2002}}
+\begin{frame}{Variable resolution dynamic programming}
+\begin{itemize}
+\item<1-> Carve up $X$ into a discrete state space $S$
+\item <2-> Instead of solving for the optimal policy over $X$, solve for policy over $S$
+\item <3-> Some parts of the state space require \alert<3>{finer resolution} than other parts when finding a good policy
+\item <4-> One approach is to \alert<4>{adaptively partition} the state space according to heuristics
+\end{itemize}
+\vfill
+\begin{center}
+\includegraphics[width=3cm]{figures/vrdp}
+\end{center}
+\end{frame}
+
+\foot{DMU 4.4}
+\begin{frame}{Linear representations}
+Exact solutions for continuous state and action spaces are available under certain assumptions:
+\begin{itemize}
+\item<1-> Dynamics are \alert{linear Gaussian}: \\ $T(\vect z \mid \vect s, \vect a) = \Normal(\vect z \mid \mat T_s \vect s + \mat T_a \vect a, \Sigma)$
+\item<2-> Rewards are \alert{quadratic}: \\ $R(\vect s, \vect a) = \vect s^\transpose \mat R_s \vect s + \vect a^\transpose \mat R_a \vect a$\\
+assuming $\mat R_s = \mat R_s^\transpose \leq 0$ and $\mat R_a = \mat R_a^\transpose < 0$
+\end{itemize}
+Bellman equation (undiscounted) is:
+$U_n(\vect s) = \max_{\vect a} \left(R(\vect s, \vect a) + \int T(\vect z \mid \vect s, \vect a) U_{n-1}(\vect z) d\vect z\right)$
+\end{frame}
+
+\begin{frame}{Linear representations}
+\begin{itemize}
+\item<1-> It is possible to show that\\ $U_n(\vect s) = \vect s^\transpose \mat V_n \vect s +  q_n$ \\
+$\mat V_n = \mat T_s^\transpose \mat V_{n-1} \mat T_s - \mat T_s^\transpose \mat V_{n-1} \mat T_a(\mat T_a^\transpose \mat T_a + \mat R_a)^{-1}\mat T_s^\transpose \mat V_{n-1} \mat T_s + \mat R_s$
+$q_n = q_{n-1} + \mathrm{Tr}(\Sigma \mat V_{n-1})$
+assuming $\mat R_s = \mat R_s^\transpose \leq 0$ and $\mat R_a = \mat R_a^\transpose < 0$
+\item<2-> Optimal policy: \\ $\pi_n(\vect s) = -(\mat T_a^\transpose \mat  V_{n-1} \mat T_a + \mat R_a)^{-1}\mat T_a \mat V_{n-1} \mat T_s \vect s$
+\item<3-> Note that optimal policy does not depend upon noise!
+\item<4-> For some problems, the dynamics are approximated with a linear Gaussian system and then solved exactly
+\end{itemize}
+\end{frame}
+
+\foot{DMU 4.7}
+\begin{frame}{Direct policy search}
+\begin{itemize}
+\item<1-> Alternative to planning over entire state space is to search the space of \alert<1>{policies} directly
+\item<2-> Consider stochastic policy parameterized by $\vect \lambda$
+\item<3-> Probability policy selects $a$ in state $s$ is given by $\pi_{\vect \lambda}(a \mid s)$
+\item<4-> Use Monte Carlo simulations to estimate expected discounted return from a distribution of initial states
+\item<5-> Find best $\vect\lambda$ using local search, cross entropy method, or evolutionary algorithms
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Outline}
+\begin{enumerate}
+\item Formulation
+\item Dynamic programming
+\item Structured dynamic programming
+\item Approximate dynamic programming
+\item \alert{Online methods}
+\end{enumerate}
+\end{frame}
+
+\foot{DMU 4.6}
+\begin{frame}{Online methods}
+\begin{itemize}
+\item<1-> Online methods compute optimal action from current state
+\item<2-> Expand tree up to some horizon
+\item<3-> States reachable from the current state is typically small compared to full state space
+\item<4-> Heuristics and branch-and-bound techniques allow search space to be pruned
+\item<5-> Monte Carlo methods provide approximate solutions
+\end{itemize}
+\end{frame}
+
+\foot{DMU 4.6.1}
+\begin{frame}{Forward search}
+Provides optimal action from current state $s$ up to depth $d$\\
+Recall $U(s) = \max_{a \in A(s)} [R(s,a) + \gamma \sum_{s' \in S(s, a)} T(s' \mid s, a) U(s')]$
+\vfill
+\begin{algorithmic}[1]
+\Function{SelectAction}{$s, d$}
+\If{$d = 0$}
+	\State \Return $(\nil, 0)$
+\EndIf
+\State $(a^*, v^*) \gets (\nil, -\infty)$
+\ForAll{$a$}{$A(s)$}
+	\State $q \gets R(s, a)$
+	\ForAll{$s'$}{$S(s, a)$}
+		\State $(a', v') \gets \Call{SelectAction}{s', d - 1}$
+		\State $q \gets q + \gamma T(s' \mid s, a) v'$
+	\EndFor
+	\If{$q > v^*$}
+		\State $(a^*, v^*) \gets (a, q)$
+	\EndIf
+\EndFor
+\State \Return $(a^*, v^*)$
+\EndFunction
+\end{algorithmic}
+\vfill
+\uncover<2->{Time complexity is $O((|S|\times|A|)^d)$}
+\end{frame}
+
+\foot{DMU 4.6.2}
+\begin{frame}{Branch and bound search}
+Requires a lower bound $\underline U(s)$ and upper bound $\overline U(s)$
+\vfill
+\begin{algorithmic}[1]
+\Function{SelectAction}{$s, d$}
+\If{$d = 0$}
+	\State \Return $(\nil, \underline U(s))$ \label{line:lowerbound}
+\EndIf
+\State $(a^*, v^*) \gets (\nil, -\infty)$
+\ForAll{$a$}{$A(s)$} \label{line:action ordering}
+	\If{$\overline U(s, a) < v^*$} \label{line:prune}
+		\State \Return $(a^*, v^*)$
+	\EndIf
+	\State $q \gets R(s, a)$
+	\ForAll{$s'$}{$S(s, a)$}
+		\State $(a', v') \gets \Call{SelectAction}{s', d - 1}$
+		\State $q \gets q + \gamma T(s' \mid s, a) v'$
+	\EndFor
+	\If{$q > v^*$}
+		\State $(a^*, v^*) \gets (a, q)$
+	\EndIf
+\EndFor
+\State \Return $(a^*, v^*)$
+\EndFunction
+\end{algorithmic}
+\end{frame}
+
+\foot{DMU 4.6.3}
+\begin{frame}{Sparse sampling}
+Requires a generative model $(s', r) \sim G(s, a)$
+\vfill
+\begin{algorithmic}[1]
+\Function{SelectAction}{$s, d$}
+\If{$d = 0$}
+	\State \Return $(\nil, 0)$
+\EndIf
+\State $(a^*, v^*) \gets (\nil, -\infty)$
+\ForAll{$a$}{$A(s)$}
+	\State $q \gets 0$
+	\For{$i$}{$1$}{$n$}
+		\State $(s', r) \sim G(s, a)$ \label{line:sparse sample draw}
+		\State $(a', v') \gets \Call{SelectAction}{s', d - 1}$
+		\State $q \gets q + (r + \gamma v')/n$
+	\EndFor
+	\If{$q > v^*$}
+		\State $(a^*, v^*) \gets (a, q)$
+	\EndIf
+\EndFor
+\State \Return $(a^*, v^*)$
+\EndFunction
+\end{algorithmic}
+\end{frame}
+
+\begin{frame}{Summary}
+\begin{itemize}
+\item<1-> MDPs represent sequential decision making problems using a transition and reward function
+\item<2-> Optimal policies can be found using dynamic programming algorithms
+\item<3-> Structured dynamic programming can efficiently solve factored Markov decision processes
+\item<4-> Problems with large or continuous state spaces can be solved approximately using function approximation or aggregation
+\item<5-> This session assumed the transition and reward function are known exactly; the next section will relax this assumption
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Questions}
+\begin{enumerate}
+\item Assume that the rewards are finite in an infinite horizon discounted reward problem. Prove that with a discount factor $0 \leq \gamma < 1$, the expected utility is bounded.
+\item Suppose the $n \times n$ state transition matrix $\mat T^\pi$ contains only non-zero elements. Show how to compute the distribution over the state in $t$ time steps given the current state.
+\item Suppose the $n \times n$ state transition matrix $\mat T^\pi$ contains only non-zero elements. Show how to compute the state distribution after $t$ time steps as $t \rightarrow \infty$.
+\item Provide an upper bound on the number of iterations in policy iteration.
+\item How would the Bellman equation change if the time spent within states follow an exponential distribution?
+\seti
+\end{enumerate}
+\end{frame}
+
+
+\begin{frame}{Questions}
+\begin{enumerate}
+\conti
+\item Provide an example of a type of problem where Gauss-Seidel value iteration gives an exact solution with a single sweep through the state space.
+\item Under what condition is closed-loop planning equivalent to open-loop planning?
+\item Draw a decision tree representing $(A \vee B) \wedge \neg C$. Note that $\vee =$ ``or'', $\wedge =$ ``and'', and $\neg = $ ``not''.
+\item Given the current state $s$ and action $a$, the distribution over the next state is $\Normal(2s + 3a, 1^2)$. The immediate reward is $-(s^2 + a^2)$. What is the optimal 2-step policy?
+\item Describe an example of an MDP whose optimal value function may be challenging to compute but permits a easily-computable lower bound that is useful in branch-and-bound search.
+\end{enumerate}
+\end{frame}
+
+
+\end{document}

@@ -86,639 +86,39 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 </style>
 
   <!--radix_placeholder_meta_tags-->
-  <title>Econ 712: Pricing Strategies of Retailers</title>
+  <title>Bandit Problems</title>
 
-  <meta property="description" itemprop="description" content="Final Project Proposal for ECON-712-008"/>
+  <meta property="description" itemprop="description" content="From Bellman Equations to Reinforcement Learning"/>
 
 
-  <meta name="article:author" content="Zhongtian Chen &amp; Yihao Yuan"/>
+  <!--  https://schema.org/Article -->
+  <meta property="article:published" itemprop="datePublished" content="2021-04-17"/>
+  <meta property="article:created" itemprop="dateCreated" content="2021-04-17"/>
+  <meta name="article:author" content="Amit Gandhi"/>
 
   <!--  https://developers.facebook.com/docs/sharing/webmasters#markup -->
-  <meta property="og:title" content="Econ 712: Pricing Strategies of Retailers"/>
+  <meta property="og:title" content="Bandit Problems"/>
   <meta property="og:type" content="article"/>
-  <meta property="og:description" content="Final Project Proposal for ECON-712-008"/>
+  <meta property="og:description" content="From Bellman Equations to Reinforcement Learning"/>
   <meta property="og:locale" content="en_US"/>
-  <meta property="og:site_name" content="Econ 712"/>
 
   <!--  https://dev.twitter.com/cards/types/summary -->
   <meta property="twitter:card" content="summary"/>
-  <meta property="twitter:title" content="Econ 712: Pricing Strategies of Retailers"/>
-  <meta property="twitter:description" content="Final Project Proposal for ECON-712-008"/>
+  <meta property="twitter:title" content="Bandit Problems"/>
+  <meta property="twitter:description" content="From Bellman Equations to Reinforcement Learning"/>
 
   <!--/radix_placeholder_meta_tags-->
   <!--radix_placeholder_rmarkdown_metadata-->
 
   <script type="text/json" id="radix-rmarkdown-metadata">
-  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","author","\\date","output"]}},"value":[{"type":"character","attributes":{},"value":["Pricing Strategies of Retailers"]},{"type":"character","attributes":{},"value":["Final Project Proposal for ECON-712-008\n"]},{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","url","affiliation"]}},"value":[{"type":"character","attributes":{},"value":["Zhongtian Chen & Yihao Yuan"]},{"type":"character","attributes":{},"value":["https://github.com/yihao-yuan"]},{"type":"character","attributes":{},"value":["The University of Pennsylvania"]}]}]},{"type":"character","attributes":{},"value":["2021-04-20"]},{"type":"character","attributes":{},"value":["distill::distill_article"]}]}
+  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","author","date","output","preview"]}},"value":[{"type":"character","attributes":{},"value":["Bandit Problems"]},{"type":"character","attributes":{},"value":["From Bellman Equations to Reinforcement Learning\n"]},{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","url"]}},"value":[{"type":"character","attributes":{},"value":["Amit Gandhi"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":[]}},"value":[]}]}]},{"type":"character","attributes":{},"value":["04-17-2021"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["self_contained"]}},"value":[{"type":"logical","attributes":{},"value":[false]}]}]},{"type":"character","attributes":{},"value":["https://www.kdnuggets.com/images/reinforcement-learning-fig1-700.jpg"]}]}
   </script>
   <!--/radix_placeholder_rmarkdown_metadata-->
+  
+  <script type="text/json" id="radix-resource-manifest">
+  {"type":"character","attributes":{},"value":["3.dmu.log","3.dmu.tex","bandit-problems_files/anchor-4.2.2/anchor.min.js","bandit-problems_files/bowser-1.9.3/bowser.min.js","bandit-problems_files/distill-2.2.21/template.v2.js","bandit-problems_files/header-attrs-2.7/header-attrs.js","bandit-problems_files/jquery-1.11.3/jquery.min.js","bandit-problems_files/popper-2.6.0/popper.min.js","bandit-problems_files/tippy-6.2.7/tippy-bundle.umd.min.js","bandit-problems_files/tippy-6.2.7/tippy-light-border.css","bandit-problems_files/tippy-6.2.7/tippy.css","bandit-problems_files/tippy-6.2.7/tippy.umd.min.js","bandit-problems_files/webcomponents-2.0.0/webcomponents.js","BanditProblems-Slides.aux","BanditProblems-Slides.bbl","BanditProblems-Slides.blg","BanditProblems-Slides.log","BanditProblems-Slides.nav","BanditProblems-Slides.pdf","BanditProblems-Slides.snm","BanditProblems-Slides.synctex.gz","BanditProblems-Slides.tex","BanditProblems-Slides.toc","betadist.png","eligibilitytrace.png","gw1.png","gw10.png","gw11.png","gw2.png","gw3.png","gw4.png","gw5.png","gw6.png","gw7.png","gw8.png","gw9.png","neuralnetwork.png","perceptron.png"]}
+  </script>
   <!--radix_placeholder_navigation_in_header-->
-  <meta name="distill:offset" content=""/>
-
-  <script type="application/javascript">
-
-    window.headroom_prevent_pin = false;
-
-    window.document.addEventListener("DOMContentLoaded", function (event) {
-
-      // initialize headroom for banner
-      var header = $('header').get(0);
-      var headerHeight = header.offsetHeight;
-      var headroom = new Headroom(header, {
-        tolerance: 5,
-        onPin : function() {
-          if (window.headroom_prevent_pin) {
-            window.headroom_prevent_pin = false;
-            headroom.unpin();
-          }
-        }
-      });
-      headroom.init();
-      if(window.location.hash)
-        headroom.unpin();
-      $(header).addClass('headroom--transition');
-
-      // offset scroll location for banner on hash change
-      // (see: https://github.com/WickyNilliams/headroom.js/issues/38)
-      window.addEventListener("hashchange", function(event) {
-        window.scrollTo(0, window.pageYOffset - (headerHeight + 25));
-      });
-
-      // responsive menu
-      $('.distill-site-header').each(function(i, val) {
-        var topnav = $(this);
-        var toggle = topnav.find('.nav-toggle');
-        toggle.on('click', function() {
-          topnav.toggleClass('responsive');
-        });
-      });
-
-      // nav dropdowns
-      $('.nav-dropbtn').click(function(e) {
-        $(this).next('.nav-dropdown-content').toggleClass('nav-dropdown-active');
-        $(this).parent().siblings('.nav-dropdown')
-           .children('.nav-dropdown-content').removeClass('nav-dropdown-active');
-      });
-      $("body").click(function(e){
-        $('.nav-dropdown-content').removeClass('nav-dropdown-active');
-      });
-      $(".nav-dropdown").click(function(e){
-        e.stopPropagation();
-      });
-    });
-  </script>
-
-  <style type="text/css">
-
-  /* Theme (user-documented overrideables for nav appearance) */
-
-  .distill-site-nav {
-    color: rgba(255, 255, 255, 0.8);
-    background-color: #0F2E3D;
-    font-size: 15px;
-    font-weight: 300;
-  }
-
-  .distill-site-nav a {
-    color: inherit;
-    text-decoration: none;
-  }
-
-  .distill-site-nav a:hover {
-    color: white;
-  }
-
-  @media print {
-    .distill-site-nav {
-      display: none;
-    }
-  }
-
-  .distill-site-header {
-
-  }
-
-  .distill-site-footer {
-
-  }
-
-
-  /* Site Header */
-
-  .distill-site-header {
-    width: 100%;
-    box-sizing: border-box;
-    z-index: 3;
-  }
-
-  .distill-site-header .nav-left {
-    display: inline-block;
-    margin-left: 8px;
-  }
-
-  @media screen and (max-width: 768px) {
-    .distill-site-header .nav-left {
-      margin-left: 0;
-    }
-  }
-
-
-  .distill-site-header .nav-right {
-    float: right;
-    margin-right: 8px;
-  }
-
-  .distill-site-header a,
-  .distill-site-header .title {
-    display: inline-block;
-    text-align: center;
-    padding: 14px 10px 14px 10px;
-  }
-
-  .distill-site-header .title {
-    font-size: 18px;
-    min-width: 150px;
-  }
-
-  .distill-site-header .logo {
-    padding: 0;
-  }
-
-  .distill-site-header .logo img {
-    display: none;
-    max-height: 20px;
-    width: auto;
-    margin-bottom: -4px;
-  }
-
-  .distill-site-header .nav-image img {
-    max-height: 18px;
-    width: auto;
-    display: inline-block;
-    margin-bottom: -3px;
-  }
-
-
-
-  @media screen and (min-width: 1000px) {
-    .distill-site-header .logo img {
-      display: inline-block;
-    }
-    .distill-site-header .nav-left {
-      margin-left: 20px;
-    }
-    .distill-site-header .nav-right {
-      margin-right: 20px;
-    }
-    .distill-site-header .title {
-      padding-left: 12px;
-    }
-  }
-
-
-  .distill-site-header .nav-toggle {
-    display: none;
-  }
-
-  .nav-dropdown {
-    display: inline-block;
-    position: relative;
-  }
-
-  .nav-dropdown .nav-dropbtn {
-    border: none;
-    outline: none;
-    color: rgba(255, 255, 255, 0.8);
-    padding: 16px 10px;
-    background-color: transparent;
-    font-family: inherit;
-    font-size: inherit;
-    font-weight: inherit;
-    margin: 0;
-    margin-top: 1px;
-    z-index: 2;
-  }
-
-  .nav-dropdown-content {
-    display: none;
-    position: absolute;
-    background-color: white;
-    min-width: 200px;
-    border: 1px solid rgba(0,0,0,0.15);
-    border-radius: 4px;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.1);
-    z-index: 1;
-    margin-top: 2px;
-    white-space: nowrap;
-    padding-top: 4px;
-    padding-bottom: 4px;
-  }
-
-  .nav-dropdown-content hr {
-    margin-top: 4px;
-    margin-bottom: 4px;
-    border: none;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  }
-
-  .nav-dropdown-active {
-    display: block;
-  }
-
-  .nav-dropdown-content a, .nav-dropdown-content .nav-dropdown-header {
-    color: black;
-    padding: 6px 24px;
-    text-decoration: none;
-    display: block;
-    text-align: left;
-  }
-
-  .nav-dropdown-content .nav-dropdown-header {
-    display: block;
-    padding: 5px 24px;
-    padding-bottom: 0;
-    text-transform: uppercase;
-    font-size: 14px;
-    color: #999999;
-    white-space: nowrap;
-  }
-
-  .nav-dropdown:hover .nav-dropbtn {
-    color: white;
-  }
-
-  .nav-dropdown-content a:hover {
-    background-color: #ddd;
-    color: black;
-  }
-
-  .nav-right .nav-dropdown-content {
-    margin-left: -45%;
-    right: 0;
-  }
-
-  @media screen and (max-width: 768px) {
-    .distill-site-header a, .distill-site-header .nav-dropdown  {display: none;}
-    .distill-site-header a.nav-toggle {
-      float: right;
-      display: block;
-    }
-    .distill-site-header .title {
-      margin-left: 0;
-    }
-    .distill-site-header .nav-right {
-      margin-right: 0;
-    }
-    .distill-site-header {
-      overflow: hidden;
-    }
-    .nav-right .nav-dropdown-content {
-      margin-left: 0;
-    }
-  }
-
-
-  @media screen and (max-width: 768px) {
-    .distill-site-header.responsive {position: relative; min-height: 500px; }
-    .distill-site-header.responsive a.nav-toggle {
-      position: absolute;
-      right: 0;
-      top: 0;
-    }
-    .distill-site-header.responsive a,
-    .distill-site-header.responsive .nav-dropdown {
-      display: block;
-      text-align: left;
-    }
-    .distill-site-header.responsive .nav-left,
-    .distill-site-header.responsive .nav-right {
-      width: 100%;
-    }
-    .distill-site-header.responsive .nav-dropdown {float: none;}
-    .distill-site-header.responsive .nav-dropdown-content {position: relative;}
-    .distill-site-header.responsive .nav-dropdown .nav-dropbtn {
-      display: block;
-      width: 100%;
-      text-align: left;
-    }
-  }
-
-  /* Site Footer */
-
-  .distill-site-footer {
-    width: 100%;
-    overflow: hidden;
-    box-sizing: border-box;
-    z-index: 3;
-    margin-top: 30px;
-    padding-top: 30px;
-    padding-bottom: 30px;
-    text-align: center;
-  }
-
-  /* Headroom */
-
-  d-title {
-    padding-top: 6rem;
-  }
-
-  @media print {
-    d-title {
-      padding-top: 4rem;
-    }
-  }
-
-  .headroom {
-    z-index: 1000;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-  }
-
-  .headroom--transition {
-    transition: all .4s ease-in-out;
-  }
-
-  .headroom--unpinned {
-    top: -100px;
-  }
-
-  .headroom--pinned {
-    top: 0;
-  }
-
-  /* adjust viewport for navbar height */
-  /* helps vertically center bootstrap (non-distill) content */
-  .min-vh-100 {
-    min-height: calc(100vh - 100px) !important;
-  }
-
-  </style>
-
-  <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
-  <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet"/>
-  <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet"/>
-  <script src="site_libs/headroom-0.9.4/headroom.min.js"></script>
-  <script src="site_libs/autocomplete-0.37.1/autocomplete.min.js"></script>
-  <script src="site_libs/fuse-6.4.1/fuse.min.js"></script>
-
-  <script type="application/javascript">
-
-  function getMeta(metaName) {
-    var metas = document.getElementsByTagName('meta');
-    for (let i = 0; i < metas.length; i++) {
-      if (metas[i].getAttribute('name') === metaName) {
-        return metas[i].getAttribute('content');
-      }
-    }
-    return '';
-  }
-
-  function offsetURL(url) {
-    var offset = getMeta('distill:offset');
-    return offset ? offset + '/' + url : url;
-  }
-
-  function createFuseIndex() {
-
-    // create fuse index
-    var options = {
-      keys: [
-        { name: 'title', weight: 20 },
-        { name: 'categories', weight: 15 },
-        { name: 'description', weight: 10 },
-        { name: 'contents', weight: 5 },
-      ],
-      ignoreLocation: true,
-      threshold: 0
-    };
-    var fuse = new window.Fuse([], options);
-
-    // fetch the main search.json
-    return fetch(offsetURL('search.json'))
-      .then(function(response) {
-        if (response.status == 200) {
-          return response.json().then(function(json) {
-            // index main articles
-            json.articles.forEach(function(article) {
-              fuse.add(article);
-            });
-            // download collections and index their articles
-            return Promise.all(json.collections.map(function(collection) {
-              return fetch(offsetURL(collection)).then(function(response) {
-                if (response.status === 200) {
-                  return response.json().then(function(articles) {
-                    articles.forEach(function(article) {
-                      fuse.add(article);
-                    });
-                  })
-                } else {
-                  return Promise.reject(
-                    new Error('Unexpected status from search index request: ' +
-                              response.status)
-                  );
-                }
-              });
-            })).then(function() {
-              return fuse;
-            });
-          });
-
-        } else {
-          return Promise.reject(
-            new Error('Unexpected status from search index request: ' +
-                        response.status)
-          );
-        }
-      });
-  }
-
-  window.document.addEventListener("DOMContentLoaded", function (event) {
-
-    // get search element (bail if we don't have one)
-    var searchEl = window.document.getElementById('distill-search');
-    if (!searchEl)
-      return;
-
-    createFuseIndex()
-      .then(function(fuse) {
-
-        // make search box visible
-        searchEl.classList.remove('hidden');
-
-        // initialize autocomplete
-        var options = {
-          autoselect: true,
-          hint: false,
-          minLength: 2,
-        };
-        window.autocomplete(searchEl, options, [{
-          source: function(query, callback) {
-            const searchOptions = {
-              isCaseSensitive: false,
-              shouldSort: true,
-              minMatchCharLength: 2,
-              limit: 10,
-            };
-            var results = fuse.search(query, searchOptions);
-            callback(results
-              .map(function(result) { return result.item; })
-            );
-          },
-          templates: {
-            suggestion: function(suggestion) {
-              var img = suggestion.preview && Object.keys(suggestion.preview).length > 0
-                ? `<img src="${offsetURL(suggestion.preview)}"</img>`
-                : '';
-              var html = `
-                <div class="search-item">
-                  <h3>${suggestion.title}</h3>
-                  <div class="search-item-description">
-                    ${suggestion.description || ''}
-                  </div>
-                  <div class="search-item-preview">
-                    ${img}
-                  </div>
-                </div>
-              `;
-              return html;
-            }
-          }
-        }]).on('autocomplete:selected', function(event, suggestion) {
-          window.location.href = offsetURL(suggestion.path);
-        });
-        // remove inline display style on autocompleter (we want to
-        // manage responsive display via css)
-        $('.algolia-autocomplete').css("display", "");
-      })
-      .catch(function(error) {
-        console.log(error);
-      });
-
-  });
-
-  </script>
-
-  <style type="text/css">
-
-  .nav-search {
-    font-size: x-small;
-  }
-
-  /* Algolioa Autocomplete */
-
-  .algolia-autocomplete {
-    display: inline-block;
-    margin-left: 10px;
-    vertical-align: sub;
-    background-color: white;
-    color: black;
-    padding: 6px;
-    padding-top: 8px;
-    padding-bottom: 0;
-    border-radius: 6px;
-    border: 1px #0F2E3D solid;
-    width: 180px;
-  }
-
-
-  @media screen and (max-width: 768px) {
-    .distill-site-nav .algolia-autocomplete {
-      display: none;
-      visibility: hidden;
-    }
-    .distill-site-nav.responsive .algolia-autocomplete {
-      display: inline-block;
-      visibility: visible;
-    }
-    .distill-site-nav.responsive .algolia-autocomplete .aa-dropdown-menu {
-      margin-left: 0;
-      width: 400px;
-      max-height: 400px;
-    }
-  }
-
-  .algolia-autocomplete .aa-input, .algolia-autocomplete .aa-hint {
-    width: 90%;
-    outline: none;
-    border: none;
-  }
-
-  .algolia-autocomplete .aa-hint {
-    color: #999;
-  }
-  .algolia-autocomplete .aa-dropdown-menu {
-    width: 550px;
-    max-height: 70vh;
-    overflow-x: visible;
-    overflow-y: scroll;
-    padding: 5px;
-    margin-top: 3px;
-    margin-left: -150px;
-    background-color: #fff;
-    border-radius: 5px;
-    border: 1px solid #999;
-    border-top: none;
-  }
-
-  .algolia-autocomplete .aa-dropdown-menu .aa-suggestion {
-    cursor: pointer;
-    padding: 5px 4px;
-    border-bottom: 1px solid #eee;
-  }
-
-  .algolia-autocomplete .aa-dropdown-menu .aa-suggestion:last-of-type {
-    border-bottom: none;
-    margin-bottom: 2px;
-  }
-
-  .algolia-autocomplete .aa-dropdown-menu .aa-suggestion .search-item {
-    overflow: hidden;
-    font-size: 0.8em;
-    line-height: 1.4em;
-  }
-
-  .algolia-autocomplete .aa-dropdown-menu .aa-suggestion .search-item h3 {
-    font-size: 1rem;
-    margin-block-start: 0;
-    margin-block-end: 5px;
-  }
-
-  .algolia-autocomplete .aa-dropdown-menu .aa-suggestion .search-item-description {
-    display: inline-block;
-    overflow: hidden;
-    height: 2.8em;
-    width: 80%;
-    margin-right: 4%;
-  }
-
-  .algolia-autocomplete .aa-dropdown-menu .aa-suggestion .search-item-preview {
-    display: inline-block;
-    width: 15%;
-  }
-
-  .algolia-autocomplete .aa-dropdown-menu .aa-suggestion .search-item-preview img {
-    height: 3em;
-    width: auto;
-    display: none;
-  }
-
-  .algolia-autocomplete .aa-dropdown-menu .aa-suggestion .search-item-preview img[src] {
-    display: initial;
-  }
-
-  .algolia-autocomplete .aa-dropdown-menu .aa-suggestion.aa-cursor {
-    background-color: #eee;
-  }
-  .algolia-autocomplete .aa-dropdown-menu .aa-suggestion em {
-    font-weight: bold;
-    font-style: normal;
-  }
-
-  </style>
-
-
   <!--/radix_placeholder_navigation_in_header-->
   <!--radix_placeholder_distill-->
 
@@ -2033,349 +1433,17 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
   </script>
 
-  <style type="text/css">
-  /* base variables */
-
-  /* Edit the CSS properties in this file to create a custom
-     Distill theme. Only edit values in the right column
-     for each row; values shown are the CSS defaults.
-     To return any property to the default,
-     you may set its value to: unset
-     All rows must end with a semi-colon.                      */
-
-  /* Optional: embed custom fonts here with `@import`          */
-  /* This must remain at the top of this file.                 */
-
-
-
-  html {
-    /*-- Main font sizes --*/
-    --title-size:      50px;
-    --body-size:       1.06rem;
-    --code-size:       14px;
-    --aside-size:      12px;
-    --fig-cap-size:    13px;
-    /*-- Main font colors --*/
-    --title-color:     #000000;
-    --header-color:    rgba(0, 0, 0, 0.8);
-    --body-color:      rgba(0, 0, 0, 0.8);
-    --aside-color:     rgba(0, 0, 0, 0.6);
-    --fig-cap-color:   rgba(0, 0, 0, 0.6);
-    /*-- Specify custom fonts ~~~ must be imported above   --*/
-    --heading-font:    sans-serif;
-    --mono-font:       monospace;
-    --body-font:       sans-serif;
-    --navbar-font:     sans-serif;  /* websites + blogs only */
-  }
-
-  /*-- ARTICLE METADATA --*/
-  d-byline {
-    --heading-size:    0.6rem;
-    --heading-color:   rgba(0, 0, 0, 0.5);
-    --body-size:       0.8rem;
-    --body-color:      rgba(0, 0, 0, 0.8);
-  }
-
-  /*-- ARTICLE TABLE OF CONTENTS --*/
-  .d-contents {
-    --heading-size:    18px;
-    --contents-size:   13px;
-  }
-
-  /*-- ARTICLE APPENDIX --*/
-  d-appendix {
-    --heading-size:    15px;
-    --heading-color:   rgba(0, 0, 0, 0.65);
-    --text-size:       0.8em;
-    --text-color:      rgba(0, 0, 0, 0.5);
-  }
-
-  /*-- WEBSITE HEADER + FOOTER --*/
-  /* These properties only apply to Distill sites and blogs  */
-
-  .distill-site-header {
-    --title-size:       18px;
-    --text-color:       rgba(255, 255, 255, 0.8);
-    --text-size:        15px;
-    --hover-color:      white;
-    --bkgd-color:       #0F2E3D;
-  }
-
-  .distill-site-footer {
-    --text-color:       rgba(255, 255, 255, 0.8);
-    --text-size:        15px;
-    --hover-color:      white;
-    --bkgd-color:       #0F2E3D;
-  }
-
-  /*-- Additional custom styles --*/
-  /* Add any additional CSS rules below                      */
-  </style>
-  <style type="text/css">/* base variables */
-
-  /* Edit the CSS properties in this file to create a custom
-     Distill theme. Only edit values in the right column
-     for each row; values shown are the CSS defaults.
-     To return any property to the default,
-     you may set its value to: unset
-     All rows must end with a semi-colon.                      */
-
-  /* Optional: embed custom fonts here with `@import`          */
-  /* This must remain at the top of this file.                 */
-  @import url('https://fonts.googleapis.com/css2?family=Lato');
-  @import url('https://fonts.googleapis.com/css2?family=Fira+Mono');
-  @import url('https://fonts.googleapis.com/css2?family=Montserrat');
-
-  html {
-    /*-- Main font sizes --*/
-    --title-size:      50px;
-    --body-size:       1.0rem;                     /* edited */
-    --code-size:       0.9rem;                     /* edited */
-    --aside-size:      12px;
-    --fig-cap-size:    13px;
-    /*-- Main font colors --*/
-    --title-color:     #000000;
-    --heading-color:   rgba(0, 0, 0, 0.8);
-    --body-color:      #383838;                    /* edited */
-    --aside-color:     rgba(0, 0, 0, 0.6);
-    --fig-cap-color:   rgba(0, 0, 0, 0.6);
-    /*-- Specify custom fonts ~~~ must be imported above   --*/
-    --heading-font:    'Lato', sans-serif;         /* edited */
-    --mono-font:       'Fira Mono', monospace;     /* edited */
-    --body-font:       'Lato', sans-serif;         /* edited */
-    --navbar-font:     'Montserrat', sans-serif;   /* edited */
-  }
-
-  /*-- ARTICLE METADATA --*/
-  d-byline {
-    --heading-size:    0.6rem;
-    --heading-color:   rgba(0, 0, 0, 0.5);
-    --body-size:       0.8rem;
-    --body-color:      rgba(0, 0, 0, 0.8);
-  }
-
-  /*-- ARTICLE TABLE OF CONTENTS --*/
-  .d-contents {
-    --heading-size:    18px;
-    --contents-size:   13px;
-  }
-
-  /*-- ARTICLE APPENDIX --*/
-  d-appendix {
-    --heading-size:    15px;
-    --heading-color:   rgba(0, 0, 0, 0.65);
-    --text-size:       0.8em;
-    --text-color:      rgba(0, 0, 0, 0.5);
-  }
-
-  /*-- WEBSITE HEADER + FOOTER --*/
-  /* These properties only apply to Distill sites and blogs  */
-
-  .distill-site-header {
-    --title-size:       20px;                      /* edited */
-    --text-color:       #FFFFFF;                   /* edited */
-    --text-size:        20px;                      /* edited */
-    --hover-color:      #383838;                   /* edited */
-    --bkgd-color:       rgb(249, 83, 85);          /* edited */
-  }
-
-  .distill-site-footer {
-    --text-color:       rgba(255, 255, 255, 0.8);
-    --text-size:        15px;
-    --hover-color:      white;
-    --bkgd-color:       #0F2E3D;
-  }
-
-
-  /*-- Additional custom styles --*/
-
-  .posts-list .metadata .publishedDate {
-      color: rgb(249, 83, 85);
-  }
-
-  d-article p code {
-    color: #383838;
-    background: rgba(249, 83, 85, 0.1);
-    font-weight: 400;
-    font-size: 0.9em;
-  }
-
-  d-article a {
-      border-bottom: 2px solid rgba(249, 83, 85, 0.4);
-      text-decoration: none;
-  }
-
-  .distill-site-header .title {
-      font-weight: 600; 
-  }
-
-  ul > li::marker {
-    color: rgb(249, 83, 85);
-  }</style>
-  <style type="text/css">
-  /* base style */
-
-  /* FONT FAMILIES */
-
-  :root {
-    --heading-default: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", Arial, sans-serif;
-    --mono-default: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
-    --body-default: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", Arial, sans-serif;
-  }
-
-  body,
-  .posts-list .post-preview p,
-  .posts-list .description p {
-    font-family: var(--body-font), var(--body-default);
-  }
-
-  h1, h2, h3, h4, h5, h6,
-  .posts-list .post-preview h2,
-  .posts-list .description h2 {
-    font-family: var(--heading-font), var(--heading-default);
-  }
-
-  d-article div.sourceCode code,
-  d-article pre code {
-    font-family: var(--mono-font), var(--mono-default);
-  }
-
-
-  /*-- TITLE --*/
-  d-title h1,
-  .posts-list > h1 {
-    color: var(--title-color, black);
-  }
-
-  d-title h1 {
-    font-size: var(--title-size, 50px);
-  }
-
-  /*-- HEADERS --*/
-  d-article h1,
-  d-article h2,
-  d-article h3,
-  d-article h4,
-  d-article h5,
-  d-article h6 {
-    color: var(--header-color, rgba(0, 0, 0, 0.8));
-  }
-
-  /*-- BODY --*/
-  d-article > p,  /* only text inside of <p> tags */
-  d-article > ul, /* lists */
-  d-article > ol {
-    color: var(--body-color, rgba(0, 0, 0, 0.8));
-    font-size: var(--body-size, 1.06rem);
-  }
-
-
-  /*-- CODE --*/
-  d-article div.sourceCode code,
-  d-article pre code {
-    font-size: var(--code-size, 14px);
-  }
-
-  /*-- ASIDE --*/
-  d-article aside {
-    font-size: var(--aside-size, 12px);
-    color: var(--aside-color, rgba(0, 0, 0, 0.6));
-  }
-
-  /*-- FIGURE CAPTIONS --*/
-  figure .caption,
-  figure figcaption,
-  .figure .caption {
-    font-size: var(--fig-cap-size, 13px);
-    color: var(--fig-cap-color, rgba(0, 0, 0, 0.6));
-  }
-
-  /*-- METADATA --*/
-  d-byline h3 {
-    font-size: var(--heading-size, 0.6rem);
-    color: var(--heading-color, rgba(0, 0, 0, 0.5));
-  }
-
-  d-byline {
-    font-size: var(--body-size, 0.8rem);
-    color: var(--body-color, rgba(0, 0, 0, 0.8));
-  }
-
-  d-byline a,
-  d-article d-byline a {
-    color: var(--body-color, rgba(0, 0, 0, 0.8));
-  }
-
-  /*-- TABLE OF CONTENTS --*/
-  .d-contents nav h3 {
-    font-size: var(--heading-size, 18px);
-  }
-
-  .d-contents nav a {
-    font-size: var(--contents-size, 13px);
-  }
-
-  /*-- APPENDIX --*/
-  d-appendix h3 {
-    font-size: var(--heading-size, 15px);
-    color: var(--heading-color, rgba(0, 0, 0, 0.65));
-  }
-
-  d-appendix {
-    font-size: var(--text-size, 0.8em);
-    color: var(--text-color, rgba(0, 0, 0, 0.5));
-  }
-
-  d-appendix d-footnote-list a.footnote-backlink {
-    color: var(--text-color, rgba(0, 0, 0, 0.5));
-  }
-
-  /*-- WEBSITE HEADER + FOOTER --*/
-  .distill-site-header .title {
-    font-size: var(--title-size, 18px);
-    font-family: var(--navbar-font), var(--heading-default);
-  }
-
-  .distill-site-header a,
-  .nav-dropdown .nav-dropbtn {
-    font-family: var(--navbar-font), var(--heading-default);
-  }
-
-  .nav-dropdown .nav-dropbtn {
-    color: var(--text-color, rgba(255, 255, 255, 0.8));
-    font-size: var(--text-size, 15px);
-  }
-
-  .distill-site-header a:hover,
-  .nav-dropdown:hover .nav-dropbtn {
-    color: var(--hover-color, white);
-  }
-
-  .distill-site-header {
-    font-size: var(--text-size, 15px);
-    color: var(--text-color, rgba(255, 255, 255, 0.8));
-    background-color: var(--bkgd-color, #0F2E3D);
-  }
-
-  .distill-site-footer {
-    font-size: var(--text-size, 15px);
-    color: var(--text-color, rgba(255, 255, 255, 0.8));
-    background-color: var(--bkgd-color, #0F2E3D);
-  }
-
-  .distill-site-footer a:hover {
-    color: var(--hover-color, white);
-  }</style>
   <!--/radix_placeholder_distill-->
-  <script src="site_libs/header-attrs-2.7/header-attrs.js"></script>
-  <script src="site_libs/popper-2.6.0/popper.min.js"></script>
-  <link href="site_libs/tippy-6.2.7/tippy.css" rel="stylesheet" />
-  <link href="site_libs/tippy-6.2.7/tippy-light-border.css" rel="stylesheet" />
-  <script src="site_libs/tippy-6.2.7/tippy.umd.min.js"></script>
-  <script src="site_libs/anchor-4.2.2/anchor.min.js"></script>
-  <script src="site_libs/bowser-1.9.3/bowser.min.js"></script>
-  <script src="site_libs/webcomponents-2.0.0/webcomponents.js"></script>
-  <script src="site_libs/distill-2.2.21/template.v2.js"></script>
+  <script src="bandit-problems_files/header-attrs-2.7/header-attrs.js"></script>
+  <script src="bandit-problems_files/jquery-1.11.3/jquery.min.js"></script>
+  <script src="bandit-problems_files/popper-2.6.0/popper.min.js"></script>
+  <link href="bandit-problems_files/tippy-6.2.7/tippy.css" rel="stylesheet" />
+  <link href="bandit-problems_files/tippy-6.2.7/tippy-light-border.css" rel="stylesheet" />
+  <script src="bandit-problems_files/tippy-6.2.7/tippy.umd.min.js"></script>
+  <script src="bandit-problems_files/anchor-4.2.2/anchor.min.js"></script>
+  <script src="bandit-problems_files/bowser-1.9.3/bowser.min.js"></script>
+  <script src="bandit-problems_files/webcomponents-2.0.0/webcomponents.js"></script>
+  <script src="bandit-problems_files/distill-2.2.21/template.v2.js"></script>
   <!--radix_placeholder_site_in_header-->
   <!--/radix_placeholder_site_in_header-->
 
@@ -2387,85 +1455,288 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <!--radix_placeholder_front_matter-->
 
 <script id="distill-front-matter" type="text/json">
-{"title":"Pricing Strategies of Retailers","description":"Final Project Proposal for ECON-712-008","authors":[{"author":"Zhongtian Chen & Yihao Yuan","authorURL":"https://github.com/yihao-yuan","affiliation":"The University of Pennsylvania","affiliationURL":"#","orcidID":""}]}
+{"title":"Bandit Problems","description":"From Bellman Equations to Reinforcement Learning","authors":[{"author":"Amit Gandhi","authorURL":{},"affiliation":"&nbsp;","affiliationURL":"#","orcidID":""}],"publishedDate":"2021-04-17T00:00:00.000+00:00","citationText":"Gandhi, 2021"}
 </script>
 
 <!--/radix_placeholder_front_matter-->
 <!--radix_placeholder_navigation_before_body-->
-<header class="header header--fixed" role="banner">
-<nav class="distill-site-nav distill-site-header">
-<div class="nav-left">
-<span class="logo">
-<img src="images/pennlogo.png"/>
-</span>
-<a href="index.html" class="title">Econ 712</a>
-<input id="distill-search" class="nav-search hidden" type="text" placeholder="Search..."/>
-</div>
-<div class="nav-right">
-<a href="index.html">Home</a>
-<a href="about.html">About</a>
-<a href="https://twitter.com/AmitEcon">
-<i class="fa fa-twitter" aria-hidden="true"></i>
-</a>
-<a href="mailto:akgandhi@upenn.edu">
-<i class="fa fa-envelope" aria-hidden="true"></i>
-</a>
-<a href="javascript:void(0);" class="nav-toggle">&#9776;</a>
-</div>
-</nav>
-</header>
 <!--/radix_placeholder_navigation_before_body-->
 <!--radix_placeholder_site_before_body-->
 <!--/radix_placeholder_site_before_body-->
 
 <div class="d-title">
-<h1>Pricing Strategies of Retailers</h1>
+<h1>Bandit Problems</h1>
 <!--radix_placeholder_categories-->
 <!--/radix_placeholder_categories-->
-<p><p>Final Project Proposal for ECON-712-008</p></p>
+<p><p>From Bellman Equations to Reinforcement Learning</p></p>
 </div>
 
 <div class="d-byline">
-  Zhongtian Chen &amp; Yihao Yuan <a href="https://github.com/yihao-yuan" class="uri">https://github.com/yihao-yuan</a> (The University of Pennsylvania)
+  Amit Gandhi true 
   
-
+<br/>04-17-2021
 </div>
 
 <div class="d-article">
-<h2 id="data">Data</h2>
+<h2 id="introduction">Introduction</h2>
+<p>We introduce <em>Bandit Problems</em> as a class of sequential optimization problems which require algorithmic techniques to study and structure solutions.</p>
 <ul>
-<li>Data source: a large shopping complex in Middle East operating in 15 countries.</li>
-<li>Carrefour data: 66 stores, data from January 2017 to March 2019.
+<li><p>Standard dynamic proogram concerns sequential decision making problems where the transition model and reward function were known</p></li>
+<li><p>In many problems, the model and reward are <font color = "red"> not known </font> in advance</p></li>
+<li><p>Agent must <font color = "red"> learn how to act through experience </font> with the world</p></li>
+<li><p>Here we consider <font color = "red"> reinforcement learning </font> where an agent receives a reinforcement signal</p></li>
+</ul>
+<h3 id="definition-of-intelligence">Definition of intelligence</h3>
+<blockquote>
+<p>Of a device or machine: able to vary its behaviour in response to differing requirements, varying situations, or past events</p>
+</blockquote>
+<p>—Oxford English Dictionary</p>
+<h2 id="challenges-in-reinforcement-learning">Challenges in reinforcement learning}</h2>
 <ul>
-<li>Assortment data: product-package-date level; information includes regular price, promotion price, promotion time, quantities sold, quantities in stock, and wholesale price (cost); product-package information only available for some products (e.g., beverages).</li>
-<li>Consumer data: 4.44 million consumers were in their loyalty rewards program; information includes basic demographics (gender and age).</li>
-<li>Transaction data: about 29 million transactions made by loyalty program consumers per month across all stores; information includes timestamp, item purchased, price for each item, total spendings.</li>
-</ul></li>
-<li>Supplementary data
+<li><p><strong>Exploration</strong> of the world must be balanced with <strong>exploitation</strong> of knowledge gained through experience</p></li>
+<li><p>Reward may be received long after the important choices have been made, so <font color = "red"> credit must be assigned to earlier decisions </font></p></li>
+<li><p>Must <font color = "red"> generalize </font> from limited experience</p></li>
+</ul>
+<h2 id="outline">Outline</h2>
 <ul>
-<li>Credit card data: transactions used by credit card issued by the owner of the shopping complex.</li>
-<li>Wi-Fi data: search history of consumers when shopping within the complex/Carrefour.</li>
+<li><p>Evaluative feedback</p></li>
+<li><p>Model-based methods</p></li>
+<li><p>Model-free methods</p></li>
+<li><p>Generalization</p></li>
+</ul>
+<h2 id="markov-decision-problems">Markov Decision Problems</h2>
+<ul>
+<li><p>Agent chooses action <span class="math inline">\(A_t\)</span> at time <span class="math inline">\(t\)</span> based on observing state <span class="math inline">\(S_t\)</span></p></li>
+<li><p>State evolves probabilistically based on current state and action taken by agent (<font color = "red"> Markov assumption </font> )</p></li>
+<li><p>Objective is to maximize sum of rewards <span class="math inline">\(R_1, \ldots\)</span></p></li>
+<li><p>Problem is known as a <em>Markov decision process</em> (MDPs)</p></li>
+<li><p>Defined by <em>transition model</em> <span class="math inline">\(T(s&#39; \mid s, a)\)</span> and <em>reward model</em> <span class="math inline">\(R(s, a)\)</span> (often assumed deterministic)</p></li>
+</ul>
+<h2 id="optimal-behavior">Optimal Behavior</h2>
+<ul>
+<li><p>In the <em>finite-horizon model</em> agent should optimize expected reward for the next <span class="math inline">\(H\)</span> steps: <span class="math inline">\(E(\sum_{t = 0}^H r_t)\)</span></p></li>
+<li><p>In the <em>infinite-horizon discounted model</em> agent should optimize <span class="math inline">\(E(\sum_{t = 0}^\infty \gamma^t r_t)\)</span></p></li>
+<li><p><em>Discount factor</em> <span class="math inline">\(0 \leq \gamma &lt; 1\)</span> can be thought of as an interest rate (reward now is worth more than reward in the future)</p></li>
+<li><p>Discounting keeps utility of an infinite sequence finite</p></li>
+</ul>
+<h2 id="policies-and-utilities-of-states">Policies and utilities of states</h2>
+<ul>
+<li><p>A <em>policy</em> <span class="math inline">\(\pi\)</span> specifies what action to execute from every possible state</p></li>
+<li><p>Action to execute from state <span class="math inline">\(s\)</span> according to <span class="math inline">\(\pi\)</span> is denoted <span class="math inline">\(\pi(s)\)</span></p></li>
+<li><p>Expected utility of executing <span class="math inline">\(\pi\)</span> when starting from <span class="math inline">\(s\)</span> is denoted <span class="math inline">\(U^\pi(s)\)</span></p></li>
+<li><p>Optimal policy <span class="math inline">\(\pi^*\)</span> is one that maximizes expected utility: <span class="math inline">\(\pi^*(s) = \mathop{\mathrm{arg\,max}}_\pi U^\pi(s)\)</span></p></li>
+</ul>
+<h2 id="iterative-policy-evaluation">Iterative policy evaluation</h2>
+<ul>
+<li><p>Incrementally compute expected utility after <span class="math inline">\(k\)</span> steps of executing <span class="math inline">\(\pi\)</span></p></li>
+<li><p><span class="math inline">\(U_0^\pi(s) = 0\)</span></p></li>
+<li><p><span class="math inline">\(U_1^\pi(s) = R(s, \pi(s))\)</span></p></li>
+<li><p>…</p></li>
+<li><p><span class="math inline">\(U_k^\pi(s) = R(s, \pi(s)) + \gamma \sum_{s&#39;} T(s&#39; \mid s, \pi(s)) U_{k-1}^\pi(s&#39;)\)</span></p></li>
+</ul>
+<p>This kind of iterative calculation is called <strong>dynamic programming</strong></p>
+<h2 id="policy-evaluation">Policy evaluation</h2>
+<ul>
+<li><p>For an infinite horizon, <span class="math display">\[U^\pi(s) = R(s, \pi(s)) + \gamma \sum_{s&#39;} T(s&#39; \mid s, \pi(s)) U^\pi(s&#39;)\]</span></p></li>
+<li><p>Can compute this arbitrarily well with enough iterations of iterative policy evaluation</p></li>
+<li><p>Alternative is to just solve system of <span class="math inline">\(N\)</span> linear equations, where <span class="math inline">\(N\)</span> is the number of states, requiring <span class="math inline">\(O(n^3)\)</span> time</p></li>
+<li><p><span class="math inline">\(U^\pi = R^\pi + \gamma T^\pi U^\pi\)</span> (in matrix form)</p></li>
+<li><p><span class="math inline">\(U^\pi - \gamma T^\pi U^\pi = R^\pi\)</span></p></li>
+<li><p><span class="math inline">\((I - \gamma T^\pi) U^\pi = R^\pi\)</span></p></li>
+<li><p><span class="math inline">\(U^\pi = (I - \gamma T^\pi)^{-1}R^\pi\)</span></p></li>
+</ul>
+<h2 id="policy-iteration">Policy iteration</h2>
+<ul>
+<li><p>Policy iteration is one way to compute an optimal policy <span class="math inline">\(\pi^*\)</span></p></li>
+<li><p>The algorithm starts with any policy <span class="math inline">\(\pi_0\)</span> and iterates the following steps</p></li>
+</ul>
+<p><em>Policy evaluation</em>: given <span class="math inline">\(\pi_i\)</span> compute <span class="math inline">\(U^{\pi_i}\)</span></p>
+<p><br></p>
+<p><em>Policy improvement</em>: compute new policy from <span class="math inline">\(U^{\pi_i}\)</span> <span class="math display">\[\pi_{i+1}(s) = \mathop{\mathrm{arg\,max}}_a [ R(s, a) + \gamma \sum_{s&#39;} T(s&#39; \mid s, a) U^{\pi_i}(s&#39;)]\]</span></p>
+<ul>
+<li><p>Algorithm terminates when there is no more improvement</p></li>
+<li><p>Since every step leads to improvement and there are finitely many policies, algorithm terminates at optimal solution</p></li>
+</ul>
+<h1 id="value-iteration">Value iteration</h1>
+<ul>
+<li><p>An alternative algorithm is <em>value iteration</em></p></li>
+<li><p><strong>Bellman equation</strong> says value of optimal policy is given by <span class="math display">\[U^*(s) = \max_a [R(s, a) + \gamma \sum_{s&#39;} T(s&#39; \mid s, a) U^*(s&#39;)]\]</span></p></li>
+<li><p><span class="math inline">\(U^*_0(s) = 0\)</span> (initialization)</p></li>
+<li><p><span class="math inline">\(U^*_1(s) = \max_a [R(s, a) + \gamma \sum_{s&#39;} T(s&#39; \mid s, a) U_0^*(s&#39;)]\)</span></p></li>
+<li><p>…</p></li>
+<li><p><span class="math inline">\(U^*_k(s) = \max_a [R(s, a) + \gamma \sum_{s&#39;} T(s&#39; \mid s, a) U_{k-1}^*(s&#39;)]\)</span></p></li>
+<li><p><span class="math inline">\(U^*_k \rightarrow U^*\)</span> as <span class="math inline">\(k \rightarrow \infty\)</span></p></li>
+<li><p><span class="math inline">\(\pi(s) = \mathop{\mathrm{arg\,max}}_a [R(s, a) + \gamma \sum_{s&#39;} T(s&#39; \mid s, a) U(s&#39;)]\)</span></p></li>
+</ul>
+<h2 id="convergence-of-value-iteration">Convergence of value iteration</h2>
+<ul>
+<li><p>Let <span class="math inline">\(||U||\)</span> denote the , i.e. <span class="math inline">\(||U|| = \max_s |U(s)|\)</span></p></li>
+<li><p><span class="math inline">\(||U^*_k - U^*_{k-1}||\)</span> is known as the </p></li>
+<li><p>Can be proven that if <span class="math inline">\(||U^*_k - U^*_{k-1}|| &lt; \epsilon(1-\gamma)/\gamma\)</span> then <span class="math inline">\(||U^*_k - U^*|| &lt; \epsilon\)</span></p></li>
+<li><p>Hence, slower convergence for <span class="math inline">\(\gamma\)</span> closer to 1</p></li>
+<li><p>Can also bound <strong>policy loss</strong>: if <span class="math inline">\(||U^*_k - U^*|| &lt; \epsilon\)</span> then <span class="math inline">\(||U^{\pi_k} - U^*|| &lt; 2\epsilon\gamma/(1-\gamma)\)</span></p></li>
+</ul>
+<h2 id="example-grid-world">Example: Grid World</h2>
+<ul>
+<li><p><strong>States</strong>: cells in <span class="math inline">\(10\times10\)</span> grid</p></li>
+<li><p><strong>Actions</strong>: up, down, left, and right</p></li>
+<li><p><strong>Transition model</strong>: 0.7 chance of moving in intended direction, uniform in other directions</p></li>
+<li><p><strong>Reward</strong>: two states have cost (and are not terminal),\ two have reward (and are terminal), <span class="math inline">\(-1\)</span> for wall crash</p></li>
+</ul>
+<p><img src="gw1.png" /></p>
+<p><img src="gw2.png" /></p>
+<p><img src="gw3.png" /> <img src="gw4.png" /></p>
+<p><img src="gw5.png" /></p>
+<p><img src="gw6.png" /></p>
+<p><img src="gw7.png" /></p>
+<p><img src="gw8.png" /></p>
+<p><img src="gw9.png" /></p>
+<p><img src="gw10.png" /></p>
+<p><img src="gw11.png" /></p>
+<h2 id="multi-armed-bandit-problem">Multi-armed bandit problem}</h2>
+<ul>
+<li><p>Multi-armed bandit problems illustrate challenge with <font color = "red"> exploration and exploitation </font> in a single state environment</p></li>
+<li><p>There is a slot machine with <span class="math inline">\(k\)</span> arms</p></li>
+<li><p>Arm <span class="math inline">\(i\)</span> pays off 1 or 0 according to unknown parameter <span class="math inline">\(\theta_i\)</span></p></li>
+<li><p>No deposit to play, but limited to <span class="math inline">\(h\)</span> pulls</p></li>
+<li><p>Many variations on problem, applicable to allocation of clinical trials, adaptive network routing, etc.</p></li>
+</ul>
+<h2 id="bayesian-estimation-of-payoff-probability">Bayesian estimation of payoff probability</h2>
+<ul>
+<li><p>Beta distribution can represent posterior over the win probability <span class="math inline">\(\theta_i\)</span> for arm <span class="math inline">\(i\)</span></p></li>
+<li><p>Uniform prior distribution is given by <span class="math inline">\(Beta(1,1)\)</span></p></li>
+<li><p>Keep track of number of wins <span class="math inline">\(w_i\)</span> and number of losses <span class="math inline">\(\ell_i\)</span> for each arm <span class="math inline">\(i\)</span></p></li>
+<li><p>Posterior for <span class="math inline">\(\theta_i\)</span> is given by <span class="math inline">\(Beta(w_i + 1, \ell_i + 1)\)</span></p></li>
+</ul>
+<h2 id="bayesian-estimation-of-payoff-probability-1">Bayesian estimation of payoff probability</h2>
+<p>Red arm has 1 win and 0 loss and blue arm has 4 wins and 1 loss</p>
+<p><img src="betadist.png" /></p>
+<ul>
+<li><p>Posterior probability of winning: <span class="math inline">\(\rho_i = P(\text{win}_i \mid w_i, \ell_i) = \int_0^1 \theta Beta(w_i + 1, \ell_i + 1)(\theta)\,d\theta = \frac{w_i + 1}{w_i + \ell_i + 2}\)</span></p></li>
+<li><p><span class="math inline">\(\rho_\text{red} = 2/3 = 0.67\)</span> and <span class="math inline">\(\rho_\text{blue} = 5/7 = 0.83\)</span></p></li>
+<li><p>Maximum likelihood estimates: <span class="math inline">\(\hat \theta_\text{red} = 1\)</span> and <span class="math inline">\(\hat \theta_\text{blue} = 0.8\)</span></p></li>
+</ul>
+<center>
+<font size = "6pt"> <em>Should you pull the red arm or blue arm?</em> </font>
+</center>
+<h2 id="ad-hoc-strategies">Ad-hoc strategies</h2>
+<ul>
+<li><p><strong><span class="math inline">\(\epsilon\)</span>-greedy</strong>: Choose random arm with probability <span class="math inline">\(\epsilon\)</span>, otherwise choose <span class="math inline">\(\mathop{\mathrm{arg\,max}}_i \rho_i\)</span></p></li>
+<li><p><strong>Softmax</strong>: Choose arm <span class="math inline">\(i\)</span> with probability proportional to <span class="math inline">\(e^{\lambda \rho_i}\)</span> (<span class="math inline">\(\lambda \geq 0\)</span> is precision parameter)</p></li>
+<li><p><strong>Interval exploration</strong>: Compute <span class="math inline">\(\alpha\%\)</span> confidence interval for <span class="math inline">\(\theta_i\)</span>, choose arm with highest upper bound</p></li>
+</ul>
+<h2 id="dynamic-programming-approach">Dynamic programming approach</h2>
+<ul>
+<li><p>Counts <span class="math inline">\(w_1, \ell_1, \ldots, w_k, \ell_k\)</span> represents a , which summarize belief about payoffs</p></li>
+<li><p>Use dynamic programming to find optimal policy <span class="math inline">\(\pi^*\)</span> mapping belief states to actions (similar to MDP)</p></li>
+<li><p>Expected payoff after pulling <span class="math inline">\(i\)</span> and then acting optimally is denoted <span class="math inline">\(Q^*(w_1, \ell_1, \ldots, w_k, \ell_k, i)\)</span></p></li>
+<li><p><span class="math inline">\(U^*(w_1, \ell_1, \ldots, w_k, \ell_k) = \max_i Q^*(w_1, \ell_1, \ldots, w_k, \ell_k, i)\)</span></p></li>
+<li><p><span class="math inline">\(\pi^*(w_1, \ell_1, \ldots, w_k, \ell_k) = \mathop{\mathrm{arg\,max}}_i Q^*(w_1, \ell_1, \ldots, w_k, \ell_k, i)\)</span></p></li>
+</ul>
+<h2 id="computing-optimal-state-action-utility">Computing optimal state-action utility}</h2>
+<p><span class="math display">\[\begin{align*}
+
+&amp;Q^*(w_1, \ell_1, \ldots, w_k, \ell_k, i) = \\
+&amp;\frac{w_i + 1}{w_i + \ell_i + 2}U^*(\ldots, w_i + 1, \ell_i, \ldots) + \\ 
+&amp;\left(1 - \frac{w_i + 1}{w_i + \ell_i + 2}\right)U^*(\ldots, w_i, \ell_i + 1, \ldots)
+\end{align*}\]</span></p>
+<ul>
+<li><p>When <span class="math inline">\(\sum_i (w_i + \ell_i) = h\)</span> (i.e., no pulls left) then <span class="math inline">\(U^*(w_1, \ell_1, \ldots, w_k, \ell_k) = 0\)</span></p></li>
+<li><p>Solution is <strong>optimal</strong>, but computation is <strong>exponential</strong> in <span class="math inline">\(h\)</span></p></li>
+<li><p><em>Gittins allocation index</em> method can be used to efficiently solve infinite horizon, discounted version</p></li>
+</ul>
+<center>
+Optimal exploration/exploitation difficult in multistate problems
+</center>
+<h2 id="translating-to-a-learning-problem">Translating to a Learning Problem</h2>
+<ul>
+<li><p>Rather than <em>compute</em> the optimal policy, treat the policy and the underlying value function as primitives to be learned</p></li>
+<li><p>In the multi-arm bandit problem we have an on-line learning problem - we learn from data collected via exploration of the problem space, e.g., the agent’s behavior constructs the data.</p></li>
+<li><p>Use exploratory strategies (see above) but applied to the Bellman equation</p></li>
+<li><p>This is so called <em>reinforcement learning</em> - these aim to learn the optimal policy directly without use of a model of <span class="math inline">\(T\)</span> and <span class="math inline">\(R\)</span></p></li>
+</ul>
+<h2 id="incrementally-learning-a-mean">Incrementally Learning a Mean</h2>
+<ul>
+<li><p>Suppose we have a random variable <span class="math inline">\(X\)</span> and we want to estimate the mean from samples <span class="math inline">\(x_1, \ldots, x_k\)</span></p></li>
+<li><p>After <span class="math inline">\(k\)</span> samples <span class="math inline">\(\hat x_k = \frac1k \sum_{i=1}^k x_i\)</span></p></li>
+<li><p>Can show that <span class="math inline">\(\hat x_k = \hat x_{k-1} + \frac1k (x_k - \hat x_{k - 1})\)</span></p></li>
+<li><p>Can be written <span class="math inline">\(\hat x_k = \hat x_{k-1} + \alpha(k) (x_k - \hat x_{k - 1})\)</span></p></li>
+<li><p>Learning rate <span class="math inline">\(\alpha(k)\)</span> can be functions other than <span class="math inline">\(\frac1k\)</span>, loose conditions on learning rate to ensure convergence to mean</p></li>
+<li><p>If learning rate is constant, weight of older samples decay exponentially at the rate <span class="math inline">\((1 - \alpha)\)</span></p></li>
+</ul>
+<p><strong>Update rule: <span class="math inline">\(\hat x \leftarrow \hat x + \alpha(x - \hat x)\)</span></strong></p>
+<h2 id="q-learning">Q-learning</h2>
+<ul>
+<li><p>One algorithm is called <strong>Q-learning</strong></p></li>
+<li><p>Idea is to apply <em>incremental estimation</em> to <span class="math inline">\(Q(s, a) = R(s, a) + \gamma \sum_{s&#39;} T(s&#39; \mid s, a) \max_{a&#39;} Q(s&#39;, a&#39;)\)</span></p></li>
+<li><p>Interpretation of the Q-function: Choose action <span class="math inline">\(a\)</span> and act optimally thereafter.</p></li>
+<li><p>Use sample of next state <span class="math inline">\(s&#39;\)</span> and reward <span class="math inline">\(r\)</span> instead of models</p></li>
+<li><p>Q-learning rule: <span class="math inline">\(Q(s, a) \leftarrow Q(s, a) + \alpha(r + \gamma \max_{a&#39;} Q(s&#39;, a&#39;) - Q(s, a))\)</span></p>
+<ul>
+<li>Recall: <span class="math inline">\(\hat x \leftarrow \hat x + \alpha(x - \hat x)\)</span></li>
 </ul></li>
 </ul>
-<h2 id="research-question">Research Question</h2>
+<h2 id="q-learning-1">Q-learning</h2>
 <ul>
-<li>What are the incentives for stores to offer discounts on products, with many of them sold well below cost?
-<ul>
-<li>Data summary based on first 1 million lines of the assortment data, 14.75% of the product-packages were on sale, and 7.42% of the product-packages were sold below cost.</li>
-<li>There is large varation in margins (25th percentile: 0.9%; 75th percentile: 17.2%). Among those sold under cost, the average margin is -9.1%.</li>
-</ul></li>
-<li>Existing theories that may explain:
-<ul>
-<li>Intertemporal price discrimination (Hendel and Nevo, 2006, 2013). However, it cannot explain why products are sold under cost because the stores can always earn profits from both searchers and non-searchers under the assumption of intertemporal price discrimination.</li>
-<li>Loss leader strategy. Stores may want to offer deep promotions on some products to attract consumers to the store to shop for other products, and maximize the overall profit. We may need to investigate transaction data to confirm whether it is true.</li>
-<li>Inventory management. Some products are perishable, and stores may want to sell them before they perish. Inventory information is available, but more work is needed to investigate whether inventory management is a reason for deep discounts.</li>
-</ul></li>
+<li><p>Q-learning will converge to the optimal policy</p></li>
+<li><p>However, Q-learning typically requires </p></li>
+<li><p>Utility is updated one step at a time</p></li>
+<li><p><strong>Eligibility traces</strong> allow states along a path to be updated</p></li>
 </ul>
-<h2 id="research-plan">Research Plan</h2>
+<p><img src="eligibilitytrace.png" /></p>
+<h2 id="functional-learning-and-generalization">Functional Learning and Generalization</h2>
 <ul>
-<li>Read full data. We have not been able to read the full assortment, which is more than 700 GB in size. We are actively working with HPCC to resolve the problem.</li>
-<li>Conduct more detailed descriptive analyses, and nail down the research question.</li>
-<li>Choose appropriate methods to answer the research question.</li>
+<li><p>Up to this point, we’ve assumed <span class="math inline">\(Q\)</span> can be represented as a table, which is only useful for small discrete problems</p></li>
+<li><p>Problem with larger state spaces is <em>not just the size</em> of <span class="math inline">\(Q\)</span> table, but the <em>amount of experience</em> required to accurately estimate the values</p></li>
+<li><p>Agent must <font color = "red"> generalize </font> from limited experience to states that have not yet been visited</p></li>
+</ul>
+<h2 id="functional-approximations">Functional Approximations</h2>
+<ul>
+<li><p>Many generalization approaches attempt to approximate <span class="math inline">\(Q\)</span> with a function $Q_{}(a,s)</p></li>
+<li><p>One way is to use a <strong>perceptron</strong>, one for each action</p></li>
+</ul>
+<p><img src="perceptron.png" /></p>
+<ul>
+<li><p>Weights associated with edges</p></li>
+<li><p><span class="math inline">\(q = w_1 x_1 + w_2 x_2 + w_3 x_3\)</span></p></li>
+<li><p>Given weights in perceptrons, compute <span class="math inline">\(Q\)</span> for each action from current state <span class="math inline">\(\vec x\)</span></p></li>
+</ul>
+<h2 id="perceptron-q-learning">Perceptron Q-learning</h2>
+<ul>
+<li><p>Q-learning tells us how to adapt the weights after transitioning to <span class="math inline">\(\vec{x}&#39;\)</span> from <span class="math inline">\(\vec{x}\)</span> by action <span class="math inline">\(a\)</span> and receiving <span class="math inline">\(r\)</span></p></li>
+<li><p><span class="math inline">\(q&#39; \leftarrow r + \gamma \max_{a&#39;} Q(\vec{x}&#39;, a&#39;)\)</span></p></li>
+<li><p>Compute error: <span class="math inline">\(Q(\vec{x}, a) - q&#39;\)</span></p></li>
+<li><p>Update weights in perceptron for <span class="math inline">\(a\)</span> to reduce error using some learning rate</p></li>
+</ul>
+<h2 id="neural-networks-aka-deep-rl">Neural networks (aka Deep RL)</h2>
+<ul>
+<li><strong>Neural networks</strong> are networks of perceptrons</li>
+</ul>
+<p><img src="neuralnetwork.png" /></p>
+<ul>
+<li><p>Organized into input layer, hidden layer, and output layer</p></li>
+<li><p>Perceptrons only represent linear functions, but neural networks represent <strong>non-linear</strong> functions</p></li>
+<li><p>Q-learning works the same way as with perceptrons, though the adjustment of weights is tied to the backpropogation algorithms for fitting neural nets.</p></li>
+</ul>
+<h2 id="other-generalization-approaches">Other generalization approaches</h2>
+<ul>
+<li><p>Locally weighted regression</p></li>
+<li><p>Self-organizing maps</p></li>
+<li><p>Decision trees</p></li>
+<li><p>Growing neural gas</p></li>
+<li><p>Support vector machines</p></li>
+<li><p>Gaussian processes</p></li>
+<li><p>Tile coding</p></li>
+<li><p>Radial basis function networks</p></li>
+</ul>
+<center>
+<font size = "6pt"> Many ideas based on supervised and unsupervised methods </font>
+</center>
+<h2 id="policy-function-approximation">Policy Function Approximation</h2>
+<ul>
+<li><p>Rather than functionally approximate the Q function <span class="math inline">\(Q_{\theta}(a,s)\)</span> and then derive a policy <span class="math inline">\(\pi_{\theta}\)</span> from it, it is more efficient to approximate the policy function directly <span class="math inline">\(\pi_{\theta}\)</span> and apply gradient ascent to the policy parameters <span class="math inline">\(\theta\)</span>.</p></li>
+<li><p>We need an ability to <em>simulate</em> a Markov Chain of <span class="math inline">\((s_t,a_t)\)</span> from <span class="math inline">\(s_0\)</span> given a policy <span class="math inline">\(\pi_{\theta}\)</span> to approximate the Bellman.</p></li>
+<li><p>See the <embed src="https://proceedings.neurips.cc/paper/1999/file/464d828b85b0bed98e80ade0a5c43b0f-Paper.pdf" /></p></li>
 </ul>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
@@ -2475,6 +1746,15 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <div class="d-appendix">
 </div>
 
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
 
 <!--radix_placeholder_site_after_body-->
 <!--/radix_placeholder_site_after_body-->
