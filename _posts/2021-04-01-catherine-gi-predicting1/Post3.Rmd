@@ -47,6 +47,7 @@ library(ipred)
 library(glmnet)
 library(caret)
 library(BBmisc)
+library(doMC)
 #library(LongituRF) #Note that this masks REEMtree functions 
 
 #our hospital data
@@ -181,7 +182,9 @@ There wasn't much space to tune this tree, since it's so small. However, we stil
 ```{r, cache = TRUE}
 #Set up parallel computing using doParallel. 
 getDoParWorkers()
-registerDoParallel(cores=2)
+corenum = detectCores(all.tests = FALSE, logical = TRUE)
+registerDoParallel(cores=corenum)
+#registerDoMC(corenum)
 getDoParWorkers()
 ```
 
@@ -428,38 +431,65 @@ Our variable importance plot suggests that functions of net income are again the
 knitr::include_graphics("varimptc.png")
 ```
 
-## REEM forest
-
-We're currently attempting a REEMforest, which is a similar mixed-effects model extension of random forest for longitudinal data. 
-
-```{r, eval = FALSE, echo = FALSE}
+<!-- ## REEM forest -->
+<!-- We're currently attempting a REEMforest, which is a similar mixed-effects model extension of random forest for longitudinal data.  -->
+```{r, eval = FALSE, echo = FALSE, cache=TRUE}
 detach("package:REEMtree", unload=TRUE)
 library(LongituRF)
 
 #set.seed(123)
 #data <- DataLongGenerator(n=20)
-syndata <- select(hcris, -c(outcome_new,cont,sysid))
-syndata$exit_outcome = as.factor(syndata$exit_outcome)   ##needs to be classification for model to run
+cleaned <- dplyr::select(hcris, -outcome_new,-cont,-sysid)
+#cleaned <- select(cleaned, -c(162:216))
 
 # Create reproducible training (70%) and test (30%) sets.
 set.seed(123)
-hosp_split <- initial_split(syndata, prop = .7)
+hosp_split <- initial_split(cleaned, prop = .7)
 hosp_train <- training(hosp_split)
 hosp_test  <- testing(hosp_split)
 
+h <- hosp_train$num_prvdr_num
+t <- hosp_train$year
+x <- dplyr::select(hosp_train,tot_pop,white,highschool,college,unempl,med_inc,uninsur,public_insur,private_insur,elderly,poverty,male,mcaid_exp,wage_index,tacmi,age_hosp,age_sys,bdtot,admtot,ipdtot,paytot,exptot,fte,teach,catholic,cah,minorteach,rural,mcare,mcaid,vi,tot_services,tech_services,mh_services,bought_ss,hsa_sh,hosp_hsa,hrr_sh,hosp_hrr,dist2hosp,occ,netdebt,uncomp,dsh,ptnt_opex,tot_costs,rev_tot,rev_netptnt,net_income,ptnt_income,cash,debt,tot_assets,fa_tot,capex,liquid,rev_adm,levg,ptnt_mgn,ni_mgn,uncomp_mgn,capex_mgn,bought,sysowned,bought_is,absorbing,enter,switch,switch2np,invest,n_boughts,age_enter,p_hist_invest,p_hist_downsize,fp,np,pub,hosp_type_child,hosp_type_gac,hosp_type_ltc,hosp_type_other,hosp_type_pysch,hosp_type_rehab,hosp_type_spec,ch_fte,ch_tot_services,ch_hosp_hsa,ch_hosp_hrr,ch_dist2hosp,ch_tot_pop,ch_admtot,ch_netdebt,ch_ptnt_opex,ch_tot_costs,ch_rev_tot,ch_rev_netptnt,ch_net_income,ch_ptnt_income,ch_cash,ch_debt,ch_tot_assets,ch_capex,ch_rev_adm,ch_liquid,ch_levg,ch_mcaid,ch_mcare,ch_tech_services,ch_mh_services,ch_occ,ch_ptnt_mgn,ch_ni_mgn,ch_uncomp_mgn,ch_capex_mgn,st_1,st_2,st_3,st_4,st_5,st_6,st_7,st_8,st_9,st_10,st_11,st_12,st_13,st_14,st_15,st_16,st_17,st_18,st_19,st_20,st_21,st_22,st_23,st_24,st_25,st_26,st_27,st_28,st_29,st_30,st_31,st_32,st_33,st_34,st_35,st_36,st_37,st_38,st_39,st_40,st_41,st_42,st_43,st_44,st_45,st_46,st_47,st_48,st_49,st_50,st_51,st_52,st_53,st_54,st_5)
+#x <- select(hosp_train,netdebt,uncomp,dsh,ptnt_opex,tot_costs)
+z <- matrix(0, nrow = nrow(x), ncol = 1)
+y <- as.integer(hosp_train$exit_outcome) # having Y as "factor" type makes REEMforest() to throw error
 
-x <- select(hosp_train, -c(num_prvdr_num,year,exit_outcome))
-z <- matrix(1, nrow = nrow(x), ncol = 2)
-y <- as.factor(hosp_train$exit_outcome)
 
+trace(REEMforest, edit = T) # changed "solve()" to "ginv()" ....
+SREEMF <- REEMforest(X=x,Y=y,Z=z,id=h,time=t,mtry=2,ntree=1,sto="none")    ##update to 500 ntree
 
-browser()
-SREEMF <- REEMforest(X=x,Y=y,Z=z,id=hosp_train$num_prvdr_num,time=hosp_train$year,mtry=2,ntree=2,sto="none")    ##update to 500 ntree
-
-#SREEMF <- REEMforest(X=data$X,Y=data$Y,Z=data$Z,id=data$id,time=data$time,mtry=2,ntree=500,sto="none")
 SREEMF$forest # is the fitted random forest (obtained at the last iteration).
 plot(SREEMF$Vraisemblance) #evolution of the log-likelihood.
 SREEMF$OOB 
 ```
 
-For our next post, we plan to show results from our REEMforest and boosted trees. 
+## Boosted trees
+```{r, eval = TRUE, echo = TRUE, cache=TRUE}
+detach("package:REEMtree", unload=TRUE)
+library(xgboost)
+cleaned <- dplyr::select(hcris, -c(outcome_new,num_prvdr_num,cont,sysid))
+cleaned <- dplyr::select(cleaned, -c(162:216))
+
+set.seed(123)
+hosp_split <- initial_split(cleaned, prop = .7)
+hosp_train <- training(hosp_split) 
+hosp_test  <- testing(hosp_split)
+```
+
+```{r, eval = TRUE, echo = FALSE, cache=TRUE}
+cv <- xgb.cv(data =  as.matrix(dplyr::select(hosp_train, -exit_outcome)), label = as.vector(hosp_train$exit_outcome), nrounds = 20, nthread = 10, nfold = 5, metrics = list("rmse","auc"), max_depth = 10, eta = 1, objective = "binary:logistic")
+```
+
+```{r, eval = TRUE, echo = FALSE, cache=TRUE}
+boostmodel <- xgboost(data = as.matrix(dplyr::select(hosp_train, -exit_outcome)), label = as.vector(hosp_train$exit_outcome), max.depth = 10, eta = 1, nthread = 10, nrounds = 20, eval_metric = "rmse", objective = "binary:logistic")
+
+pred_boost <- predict(boostmodel, as.matrix(hosp_test %>% dplyr::select(-exit_outcome)))
+p_error_boost <- Metrics::rmse(actual = hosp_test$exit_outcome, predicted = pred_boost)
+p_error_boost
+
+xgb_importance <- xgb.importance(feature_names = colnames(hosp_train), model = boostmodel)
+xgb_importanceClean <- xgb_importance[,`:=`(Cover=NULL, Frequency=NULL)]
+xgb.plot.importance(importance_matrix = xgb_importance)
+xgb_importanceClean[1:10]
+```
