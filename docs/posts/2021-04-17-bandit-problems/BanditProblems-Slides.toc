@@ -1,6 +1,0 @@
-\beamer@sectionintoc {1}{The multi-armed bandit}{4}{0}{1}
-\beamer@sectionintoc {2}{Two popular algorithms}{8}{0}{2}
-\beamer@sectionintoc {3}{Regret bounds}{11}{0}{3}
-\beamer@sectionintoc {4}{Gittins index}{21}{0}{4}
-\beamer@sectionintoc {5}{Contextual bandits}{24}{0}{5}
-\beamer@sectionintoc {6}{References}{25}{0}{6}
