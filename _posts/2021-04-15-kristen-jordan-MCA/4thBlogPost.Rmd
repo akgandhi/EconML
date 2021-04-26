@@ -1,0 +1,293 @@
+---
+title: "Combining Variables with MCA"
+description: |
+  One step closer to predictive analysis
+author:
+  - name: Kristen Beamer
+  - name: Jordan Peeples
+date: "4-15-2021"
+output: distill::distill_article
+#bibliography: 36423V1.ris
+categories: Jordan and Kristen's project
+---
+
+```{r setup, include=FALSE}
+#take these... you may need them
+library(jsonlite)
+library(tidyverse)
+library(tidyquant)
+library(lubridate)
+library(zoo)
+library(ggfortify)
+library(directlabels)
+library(gghighlight)
+library(plotly)
+library(stargazer)
+# a few more packages 
+library(rsample)
+library(rpart)
+library(rpart.plot)
+library(skimr)
+library(ranger)
+library(arules)
+library(randomForest)
+library(sparsesvd)
+library(FactoMineR)
+library(factoextra)
+library(missMDA)
+
+#import
+urlSchool <- url("https://www.dropbox.com/s/bzoyhrtj3gi4t1t/36423-0001-Data.rda?raw=1")
+urlStudent <- url("https://www.dropbox.com/s/x26tsp84rcn48gj/36423-0002-Data.rda?raw=1")
+load(urlSchool)
+load(urlStudent)
+# rename
+schoolData <- da36423.0001
+studentData1 <- da36423.0002
+
+#make variables NA's
+studentData <- studentData1 %>%
+  select(X3TCREDENG:S2PUBASSIST, P1RELSHP:P2QHELP4, M1SEX:N1TFAIL, 
+         A1GRADEPREK:A2TCHSUBJO, C1FTCNSL:C2FBGRAD, S3FOCUS) %>%
+  mutate_all(na_if, -5) %>%
+  mutate_all(na_if, -4) %>%
+  mutate_all(na_if, -6) %>%
+  mutate_all(na_if, -7) %>%
+  mutate_all(na_if, -8) %>%
+  mutate_all(na_if, -9) %>%
+  mutate(S3FOCUS = dplyr::recode(S3FOCUS, "(1) Taking classes from postsecondary institution" = "Postsecondary",
+                                 "(2) Participating in an apprenticeship program" = "Apprenticeship",
+                                 "(3) Working for pay" = "Work",
+                                 "(4) Serving in the military" = "Military",
+                                 "(5) Starting family or taking care of your/his/her children" = "Childcare",
+                                 "(6) Attending high school or homeschool" = "Continued school",
+                                 "(7) Taking course to prepare for the GED/other high school equivalency exam" = "GED Prep",
+                                 "(8) Equally focused on more than one of these" = "Multiple"))
+
+
+#get rid of variables with majority NA's
+studentData <- studentData[ , colSums(is.na(studentData)) < 12000]
+
+
+#separate surveys initially to combine variables that are very much alike... otherwise this
+#takes way too long
+studentDataStudents <- studentData %>%
+  select(X3TCREDENG:S2HSJOBEVER, S3FOCUS)
+
+studentDataParents <- studentData %>%
+  select(P1RELSHP:P1QHELP)
+
+studentDataTeacher <- studentData %>% 
+  select(M1SEX:N1TFAIL)
+
+studentDataAdmin <- studentData %>% 
+  select(A1SCHCONTROL:A2TCHSUBJ)
+
+studentDataCounsel <- studentData %>% 
+  select(C1CASELOAD:C2FBGRAD)
+```
+
+Much of our prior posts in this project, whether they were about the data or preliminary machine learning analyses, have touched upon the magnitude of our data. Given computational constraints, we have often opted to subset the total data into smaller surveys (student, teacher, administrator, etc...) so that we can perform ML analysis without overwhelming our devices. In our last post we looked at association rules within the subset surveys with a goal of combining some of the variables uncovered through the Apriori algorithm. In this post, we will actually take a look at the underlying structure of all the data and also provide an initial combination of student survey variables, which will be expanded to the entire dataset in our last blog post. Singular value decomposition, principal component analysis, and multiple correspondence analysis help us with our understanding of important features of the data and will also assist in imputation. 
+
+### Singular Value Decomposition
+
+Through singular value decomposition we hope to be able to impute between a lot of the missing values in our data. A further benefit of performing singular value decomposition is that it could assist in truncating our data. In order to perform the singular value decomposition, we must address the NAs in the data. In previous iterations of this project, we replaced categorical missing/blank indicators with NA. These NAs will cause issues with the ``svd()`` command. As I test this process I will experiment on the ``studentDataParents`` data frame before expanding to larger surveys. In the code below I add an additional factor level for the NAs and call it "blank". For now, we are just looking at the categorical data.
+
+```{r SVD 1, include=TRUE}
+# Use fct_explicit_na() to replace NAs with "blank"
+studentDataParents2 <- studentDataParents[, sapply(studentDataParents, class) != "numeric"]
+studentDataParents2 <- studentDataParents2[, sapply(studentDataParents2, class) != "integer"]
+studentDataParents2 <- studentDataParents2 %>% mutate_all(fct_explicit_na, "blank")
+```
+
+Now that the NAs are addressed, we can perform singular value decomposition. First, we need to convert our matrix into a numeric. It is important that we be able to convert it back into a categorical matrix later for interpretation after highlighting which variables are the most important.
+
+First, we perform the singular value decomposition. Then we can examine the arguments of the $\Sigma$ matrix, in order to study the singular values of the data matrix for parents. We examine the singular values through a simple plot. Due to the steep drop off, we examine both a normal scale and a logarithmic y-axis.
+
+```{r SVD 2, include=TRUE}
+parents.mat <- data.matrix(studentDataParents2)
+parents.out <- svd(scale(parents.mat))
+#plotting
+par(mfrow=c(1,2))
+plot(parents.out$d)
+plot(log(parents.out$d))
+```
+
+In these graphs we can see that the singular values decrease rapidly after the first observation. The logarithmic scale shows that they never actually equal 0, instead they just approach it. The smallest singular value is $\sim$ 2.5. It appears as if there is a cut off at around the 20th observation before the values get relatively smaller. This indicates that we may only need to keep $\sim$ 20 features in order to do machine learning, rather than the full set of 87. The hard part here is reattaching the column names. Below, I attempted to convert our decomposition into a version of the full parent data. By recreating the full data frame, we can match the columns to the column names and thus recover which variables are of the highest importance. 
+
+In performing this exercise, I realized that the column order seems to match the order within the matrix. On one hand, we have found the corresponding column names based on their singular values, on the flip side there is uncertainty about the sensitivity of the singular value decomposition to the order of the data. This means that if we are not careful when truncating the data, we could inadvertently eliminate important information.
+
+Now that I have tested the process on just the Parent survey, I will repeat the exercise for the full data set of surveys. 
+
+```{r SVD 3, include=TRUE}
+# Use fct_explicit_na() to replace NAs with "blank"
+studentDataChar<- studentDataStudents[, sapply(studentDataStudents, class) != "numeric"]
+studentDataChar <- studentDataChar[, sapply(studentDataChar, class) != "integer"]
+studentDataChar <- studentDataChar %>% mutate_all(fct_explicit_na, "blank")
+studentDataChar.mat <- data.matrix(studentDataChar)
+data.out <- svd(studentDataChar.mat)
+#plotting
+par(mfrow=c(1,2))
+plot(data.out$d)
+plot(log(data.out$d))
+```
+
+These graphs show an interesting picture of variable importance. Of the 1,300 variables in the selection of surveys we are studying, we see a few which have large singular values and then a steep drop off. This could allow us to truncate our data, somewhere around the inflection point in the right-side graph with the logarithmic scale. By truncating the data from 1,300 features to around 500 features we could use a learner across the surveys rather than just between, as we have done in our prior posts.
+
+However, because of concerns raised with respect to the interpetability of the ``svd()`` function, we are not confident that we should begin truncating our data immediately. Instead, we will postpone our across survey analysis until the we have a better means to study the underlying structure of the data, such as through multiple correspondence analysis.
+
+
+### Combining Variables
+
+To combine variables, we utilize multiple correspondence analysis, which uses a very similar algorithm to the principal component analysis but for categorical variables. PCA does not make as much sense for variables with multiple categories. The beauty of the MCA algorithm in R is that is divides each variable into a binary variable to implement the PCA. With the MCA, we are able to reduce the dimensionality of the dataset by dividing each survey into subtopics and getting a principal component from each subtopic. Getting these subtopics is somewhat labor intensive but is not too difficult given the kind ordering and congruence of the data to the data dictionary. Subtopics are congregated in variables close to each other. 
+
+We use separate subtopics because, from the SVD analysis above, we realized we would lose a lot of information from the surveys if we simply combined each one into a few principal components. The purpose of these blog posts has been to 1. predict student postgraduation outcomes and 2. figure out what is contributing the most to these outcomes. Therefore, we take advantage of the MCA to combine variables that are extremely alike (i.e. 9th grader talked to teacher about which courses to take, and 9th grader talked to counselor about which courses to take) with the goal of reducing dimensionality for our final CART/random forest/bagging analysis. We were only able to accomplish the student survey for this blog post, but now that we are certain which method to use, we plan to do this for the rest of the surveys next time to use for predictive analysis. We only consider qualitative variables since we are using MCA, and qualitative variables are the vast majority of our data. Here are the results below:
+
+```{r combine 1, include=TRUE}
+#students
+#first, only include qualitative variables
+studentDataStudentsMCA <- studentDataStudents %>% select_if(is.factor)
+
+#divide the student data into more general categories
+studentCredits <- studentDataStudentsMCA %>% select(X3T1CREDALG1:X3TNEWBASIC)
+studentBackground <- studentDataStudentsMCA %>% select(S1SEX:S1SCH0809)
+studentExtracurricular <- studentDataStudentsMCA %>% select(S1MCLUB:S1SMUSEUM)
+studentMath <- studentDataStudentsMCA %>% select(S1M8, S1M8GRADE, S1MPERSON1:S1MTCHEASY)
+studentScience <- studentDataStudentsMCA %>% select(S1S8, S1S8GRADE, S1SPERSON1:S1STCHEASY)
+studentThoughts <- studentDataStudentsMCA %>% select(S1SAFE:S1WORKING)
+studentTalks <- studentDataStudentsMCA %>% select(S1MOMTALKM:S1NOTALKPRB)
+studentPeers <- studentDataStudentsMCA %>% select(S1FRNDGRADES:S1SCICOMP)
+studentTime <- studentDataStudentsMCA %>% select(S1HRMHOMEWK:S1HRONLINE)
+studentMathScienceExp <- studentDataStudentsMCA %>% select(S1MYRS:S1IBSCI)
+studentPlanning <- studentDataStudentsMCA %>% select(S1PLAN:S1IBTEST)
+studentFuturePlans <- studentDataStudentsMCA %>% select(S1SUREHSGRAD:S1TALKFUTURE)
+
+#impute the missing values with SVD
+imputeStudentCredits <- imputeMCA(studentCredits, ncp=2, method = "EM", row.w=NULL, coeff.ridge=1, 
+                            threshold=1e-06, ind.sup = NULL, quanti.sup=NULL, quali.sup=NULL,
+                            seed=NULL, maxiter=100)
+imputeStudentBackground <- imputeMCA(studentBackground, ncp=2, method = "EM", row.w=NULL, coeff.ridge=1, 
+                                  threshold=1e-06, ind.sup = NULL, quanti.sup=NULL, quali.sup=NULL,
+                                  seed=NULL, maxiter=100)
+imputeStudentExtracurricular <- imputeMCA(studentExtracurricular, ncp=2, method = "EM", row.w=NULL, coeff.ridge=1, 
+                                     threshold=1e-06, ind.sup = NULL, quanti.sup=NULL, quali.sup=NULL,
+                                     seed=NULL, maxiter=100)
+#imputeStudentMath <- imputeMCA(studentMath, ncp=2, method = "EM", row.w=NULL, coeff.ridge=1, 
+#                                          threshold=1e-06, ind.sup = NULL, quanti.sup=NULL, quali.sup=NULL,
+#                                          seed=NULL, maxiter=100)
+#imputeStudentScience <- imputeMCA(studentScience, ncp=2, method = "EM", row.w=NULL, coeff.ridge=1, 
+#                                      threshold=1e-06, ind.sup = NULL, quanti.sup=NULL, quali.sup=NULL,
+#                                      seed=NULL, maxiter=100)
+imputeStudentThoughts <- imputeMCA(studentThoughts, ncp=2, method = "EM", row.w=NULL, coeff.ridge=1, 
+                                      threshold=1e-06, ind.sup = NULL, quanti.sup=NULL, quali.sup=NULL,
+                                      seed=NULL, maxiter=100)
+imputeStudentTalks <- imputeMCA(studentTalks, ncp=2, method = "EM", row.w=NULL, coeff.ridge=1, 
+                                   threshold=1e-06, ind.sup = NULL, quanti.sup=NULL, quali.sup=NULL,
+                                   seed=NULL, maxiter=100)
+imputeStudentPeers <- imputeMCA(studentPeers, ncp=2, method = "EM", row.w=NULL, coeff.ridge=1, 
+                                threshold=1e-06, ind.sup = NULL, quanti.sup=NULL, quali.sup=NULL,
+                                seed=NULL, maxiter=100)
+imputeStudentTime <- imputeMCA(studentTime, ncp=2, method = "EM", row.w=NULL, coeff.ridge=1, 
+                                threshold=1e-06, ind.sup = NULL, quanti.sup=NULL, quali.sup=NULL,
+                                seed=NULL, maxiter=100)
+#imputeStudentMathScienceExp <- imputeMCA(studentMathScienceExp, ncp=2, method = "EM", row.w=NULL, coeff.ridge=1, 
+#                               threshold=1e-06, ind.sup = NULL, quanti.sup=NULL, quali.sup=NULL,
+#                               seed=NULL, maxiter=100)
+imputeStudentPlanning <- imputeMCA(studentPlanning, ncp=2, method = "EM", row.w=NULL, coeff.ridge=1, 
+                                         threshold=1e-06, ind.sup = NULL, quanti.sup=NULL, quali.sup=NULL,
+                                         seed=NULL, maxiter=100)
+imputeStudentFuturePlans <- imputeMCA(studentFuturePlans, ncp=2, method = "EM", row.w=NULL, coeff.ridge=1, 
+                                   threshold=1e-06, ind.sup = NULL, quanti.sup=NULL, quali.sup=NULL,
+                                   seed=NULL, maxiter=100)
+```
+
+```{r combine 2, include=FALSE}
+
+studentCredits <- imputeStudentCredits$completeObs
+
+```
+
+```{r combine 3, include=TRUE}
+
+#now, use MCA
+
+mcaStudentCredits <- MCA(studentCredits, ncp = 2, graph = FALSE)
+mcaStudentBackground <- MCA(studentBackground, ncp = 2, graph = FALSE, tab.disj=imputeStudentBackground$tab.disj)
+mcaStudentExtracurricular <- MCA(studentExtracurricular, ncp = 2, graph = FALSE, tab.disj=imputeStudentExtracurricular$tab.disj)
+#mcaStudentMath <- MCA(studentMath, ncp = 2, graph = FALSE, tab.disj=imputeStudentMath$tab.disj)
+#mcaStudentScience <- MCA(studentScience, ncp = 2, graph = FALSE, tab.disj=imputeStudentScience$tab.disj)
+mcaStudentThoughts <- MCA(studentThoughts, ncp = 2, graph = FALSE, tab.disj=imputeStudentThoughts$tab.disj)
+mcaStudentTalks <- MCA(studentTalks, ncp = 2, graph = FALSE, tab.disj=imputeStudentTalks$tab.disj)
+mcaStudentPeers <- MCA(studentPeers, ncp = 2, graph = FALSE, tab.disj=imputeStudentPeers$tab.disj)
+mcaStudentTime <- MCA(studentTime, ncp = 2, graph = FALSE, tab.disj=imputeStudentTime$tab.disj)
+#mcaStudentMathScienceExp <- MCA(studentMathScienceExp, ncp = 2, graph = FALSE, tab.disj=imputeStudentMathScienceExp$tab.disj)
+mcaStudentPlanning <- MCA(studentPlanning, ncp = 2, graph = FALSE, tab.disj=imputeStudentPlanning$tab.disj)
+mcaStudentFuturePlans <- MCA(studentFuturePlans, ncp = 2, graph = FALSE, tab.disj=imputeStudentFuturePlans$tab.disj)
+
+#get the coordinates for individuals
+indStudentCredits <- get_mca_ind(mcaStudentCredits)
+indStudentBackground <- get_mca_ind(mcaStudentBackground)
+indStudentExtracurricular <- get_mca_ind(mcaStudentExtracurricular)
+#indStudentMath <- get_mca_ind(mcaStudentMath)
+#indStudentScience <- get_mca_ind(mcaStudentScience)
+indStudentThoughts <- get_mca_ind(mcaStudentThoughts)
+indStudentTalks <- get_mca_ind(mcaStudentTalks)
+indStudentPeers <- get_mca_ind(mcaStudentPeers)
+indStudentTime <- get_mca_ind(mcaStudentTime)
+#indStudentMathScienceExp <- get_mca_ind(mcaStudentMathScienceExp)
+indStudentPlanning <- get_mca_ind(mcaStudentPlanning)
+indStudentFuturePlans <- get_mca_ind(mcaStudentFuturePlans)
+
+mainStudents <- indStudentCredits$coord
+mainStudents <- as.data.frame(mainStudents)
+mainStudents <- mainStudents %>% rename(CreditsDim1 = 'Dim 1', CreditsDim2 = 'Dim 2')
+mainStudents <- cbind(mainStudents, indStudentBackground$coord)
+mainStudents <- mainStudents %>% rename(BackgroundDim1 = 'Dim 1', BackgroundDim2 = 'Dim 2')
+mainStudents <- cbind(mainStudents, indStudentExtracurricular$coord)
+mainStudents <- mainStudents %>% rename(ExtracurricularDim1 = 'Dim 1', ExtracurricularDim2 = 'Dim 2')
+#mainStudents <- cbind(mainStudents, indStudentMath$coord)
+#mainStudents <- mainStudents %>% rename(MathDim1 = 'Dim 1', MathDim2 = 'Dim 2')
+#mainStudents <- cbind(mainStudents, indStudentScience$coord)
+#mainStudents <- mainStudents %>% rename(ScienceDim1 = 'Dim 1', ScienceDim2 = 'Dim 2')
+mainStudents <- cbind(mainStudents, indStudentThoughts$coord)
+mainStudents <- mainStudents %>% rename(ThoughtsDim1 = 'Dim 1', ThoughtsDim2 = 'Dim 2')
+mainStudents <- cbind(mainStudents, indStudentTalks$coord)
+mainStudents <- mainStudents %>% rename(TalksDim1 = 'Dim 1', TalksDim2 = 'Dim 2')
+mainStudents <- cbind(mainStudents, indStudentPeers$coord)
+mainStudents <- mainStudents %>% rename(PeersDim1 = 'Dim 1', PeersDim2 = 'Dim 2')
+mainStudents <- cbind(mainStudents, indStudentTime$coord)
+mainStudents <- mainStudents %>% rename(TimeDim1 = 'Dim 1', TimeDim2 = 'Dim 2')
+#mainStudents <- cbind(mainStudents, indStudentMathScienceExp$coord)
+#mainStudents <- mainStudents %>% rename(MathSciExpDim1 = 'Dim 1', MathSciExpDim2 = 'Dim 2')
+mainStudents <- cbind(mainStudents, indStudentPlanning$coord)
+mainStudents <- mainStudents %>% rename(PlanningDim1 = 'Dim 1', PlanningDim2 = 'Dim 2')
+mainStudents <- cbind(mainStudents, indStudentFuturePlans$coord)
+mainStudents <- mainStudents %>% rename(FuturePlansDim1 = 'Dim 1', FuturePlansDim2 = 'Dim 2')
+```
+
+We wanted to see what exactly was happening within one of the subsurveys, so we have provided a scree plot and which variables contribute the most to the first dimension. This was done for the student course credits.
+
+```{r combine 4, include=TRUE}
+
+#scree plot
+fviz_screeplot(mcaStudentCredits, addlabels = TRUE)
+
+```
+
+
+```{r combine 5, include=TRUE}
+#contribution of variables to dimension 1
+fviz_contrib(mcaStudentCredits, choice = "var", axes = 1, top = 10)
+```
+
+Above, we see that most of the variables contribute to the dimension in some way, as the maximum contribution is 4%. We do not get much meaning for this, as most of these variables are just credit aggregations. We also look at the covariance between the dimensions.
+
+```{r combine 6, include=TRUE}
+corrMatrix <- cor(mainStudents)
+corrMatrix
+```
+
+At this point we have gained valuable information from the MCA analysis. In our next post we will complete the MCA analyses for the remaining surveys. This data combination will allow us to reduce the dimensionality of each survey and the full data. Afterwards, we can successfully perform our final CART/random forest/bagging analyses on the reduced dimension data without too much computational burden. Through this post we have found a clear path to properly reduce dimensionality that will set us up for modeling success through learners. 
+
+
+
