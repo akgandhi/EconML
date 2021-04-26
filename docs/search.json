@@ -1,0 +1,33 @@
+{
+  "articles": [
+    {
+      "path": "about.html",
+      "title": "About this blog",
+      "description": "This is a course blog for Econ 712 at the University of Pennsylvania, Spring 2021 (Covid edition!)",
+      "author": [],
+      "contents": "\nWe will maintain lecture notes and student presentations, as well as empirical experiments and projects, on this blog.\n\n\n\n",
+      "last_modified": "2021-04-26T01:47:09+00:00"
+    },
+    {
+      "path": "article.html",
+      "title": "Pricing Strategies of Retailers",
+      "description": "Final Project Proposal for ECON-712-008\n",
+      "author": [
+        {
+          "name": "Zhongtian Chen & Yihao Yuan",
+          "url": "https://github.com/yihao-yuan"
+        }
+      ],
+      "contents": "\nData\nData source: a large shopping complex in Middle East operating in 15 countries.\nCarrefour data: 66 stores, data from January 2017 to March 2019.\nAssortment data: product-package-date level; information includes regular price, promotion price, promotion time, quantities sold, quantities in stock, and wholesale price (cost); product-package information only available for some products (e.g., beverages).\nConsumer data: 4.44 million consumers were in their loyalty rewards program; information includes basic demographics (gender and age).\nTransaction data: about 29 million transactions made by loyalty program consumers per month across all stores; information includes timestamp, item purchased, price for each item, total spendings.\n\nSupplementary data\nCredit card data: transactions used by credit card issued by the owner of the shopping complex.\nWi-Fi data: search history of consumers when shopping within the complex/Carrefour.\n\nResearch Question\nWhat are the incentives for stores to offer discounts on products, with many of them sold well below cost?\nData summary based on first 1 million lines of the assortment data, 14.75% of the product-packages were on sale, and 7.42% of the product-packages were sold below cost.\nThere is large varation in margins (25th percentile: 0.9%; 75th percentile: 17.2%). Among those sold under cost, the average margin is -9.1%.\n\nExisting theories that may explain:\nIntertemporal price discrimination (Hendel and Nevo, 2006, 2013). However, it cannot explain why products are sold under cost because the stores can always earn profits from both searchers and non-searchers under the assumption of intertemporal price discrimination.\nLoss leader strategy. Stores may want to offer deep promotions on some products to attract consumers to the store to shop for other products, and maximize the overall profit. We may need to investigate transaction data to confirm whether it is true.\nInventory management. Some products are perishable, and stores may want to sell them before they perish. Inventory information is available, but more work is needed to investigate whether inventory management is a reason for deep discounts.\n\nResearch Plan\nRead full data. We have not been able to read the full assortment, which is more than 700 GB in size. We are actively working with HPCC to resolve the problem.\nConduct more detailed descriptive analyses, and nail down the research question.\nChoose appropriate methods to answer the research question.\n\n\n\n",
+      "last_modified": "2021-04-26T01:47:10+00:00"
+    },
+    {
+      "path": "index.html",
+      "title": "Machine Learning and Structural Estimation",
+      "author": [],
+      "contents": "\n\n\n\n",
+      "last_modified": "2021-04-26T01:47:10+00:00"
+    }
+  ],
+  "collections": ["posts/posts.json"]
+}
