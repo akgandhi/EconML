@@ -1487,7 +1487,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <div class="layout-chunk" data-layout="l-body">
 
 </div>
-<p>One of the important observations we have from the data is we have people having social programs even they are not eligible according to the online program descriptions.</p>
+<p>One of the important observations we have from the data is we have people receiving social programs <em> even when they are not eligible <em> according to the program descriptions.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://rdrr.io/r/base/Round.html'>round</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span><span class='op'>(</span><span class='va'>ncps</span><span class='op'>[</span><span class='va'>ncps</span><span class='op'>$</span><span class='va'>hous_elig</span><span class='op'>==</span><span class='fl'>0</span>,<span class='st'>"pub"</span><span class='op'>]</span> , na.rm <span class='op'>=</span> <span class='cn'>TRUE</span> <span class='op'>)</span>, <span class='fl'>4</span><span class='op'>)</span>
@@ -1500,23 +1500,23 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 </div>
 <pre><code>[1] 0.0195</code></pre>
 </div>
-<p>Here we could see that almost 1 percent of not eligible people benefit from public houses and 2 percent of not eligible people benefit from medicare. If we think that small portion of not eligible people are applying for these programs, these ratios become much more important.</p>
-<p>So we could conclude that there is no strict boundaries on who will be approved for the social programs and it shouldn’t be.</p>
-<p>We propose a model to understand approval process and trade-offs inspired by learning processes. An analogy to understand trade-offs is below.</p>
-<p>Assume that you have arrived a school with treats and you are waiting for children in the garden to give them treats. You like some children more than others but you can choose only give a treat or not when a child comes to you. You can’t choose who will want a treat from you. The main trade-off is that, you want to keep treats for your favorable children. However, if you give to an unfavorable children, he/she will inform other children about you and more favorable children will come.</p>
-<p>Similarly, officials are facing a budget constraint while accepting for social programs. On the other hand, depending on the characteristics of the applicant, they have reward from accepting the applicant. Up to now, it is standart budget constraint. In addition to this, each approved applicant will encourage people in the same and/or lower income tier to apply and each rejected will discourage people in the same and/or higher income tier to apply.</p>
+<p>Here we could see that almost 1 percent of not eligible people benefit from public houses and 2 percent of not eligible people benefit from medicare. If we take into consideration the fact that a small portion of not eligible people are applying for these programs overall, these ratios become much more important.</p>
+<p>So we could conclude that the boundaries in place are less strict than one would think on who will be approved for the social programs we examine.</p>
+<p>We propose a <strong>model</strong> to understand the approval process and trade-offs inspired by <strong>learning processes</strong>. An analogy to understand trade-offs is below.</p>
+<p>Assume that you have arrived a school with treats and you are waiting for children in the garden to give them treats. You like some children more than others but you can choose only to give a treat or not when a child comes to you. You can’t choose who will want a treat from you. The main trade-off is that you want to keep treats for your favourite children; however, if you give a treat to a child who is not among your favourites, he/she will <em> inform other children about you and more children from the favourite pool will come <em>.</p>
+<p>Similarly, officials are facing a budget constraint while accepting individuals into social programs. On the other hand, depending on the characteristics of the applicant, they receive a reward from accepting the applicant. In addition to this, each approved applicant will encourage people in the same and/or lower income tier to apply and each rejected one will discourage people in the same and/or higher income tier to apply.</p>
 <p>This second effect creates the dynamic state transitions we need for learning.</p>
 <p>So we could formulate our process as following:</p>
-<p><strong>State:</strong></p>
+<p><strong>State: </strong></p>
 <ul>
 <li>Remaining budget/capacity</li>
 <li>Number of applicants and their characteristics</li>
 </ul>
-<p><strong>Action:</strong></p>
+<p><strong>Action: </strong></p>
 <ul>
 <li>Reject/Approve applicants</li>
 </ul>
-<p><strong>Reward:</strong></p>
+<p><strong>Reward: </strong></p>
 <ul>
 <li>Rewards from approved applicants are function of their characteristics decided by policy makers.</li>
 </ul>
