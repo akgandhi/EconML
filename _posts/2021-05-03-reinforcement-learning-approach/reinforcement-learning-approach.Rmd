@@ -93,7 +93,7 @@ ncps <- dataPrep(ncps)
 
 ```
 
-One of the important observations we have from the data is we have people having social programs even they are not eligible according to the online program descriptions.
+One of the important observations we have from the data is we have people receiving social programs <em> even when they are not eligible <em> according to the program descriptions.
 
 ```{r notelig, echo= TRUE}
 
@@ -101,36 +101,34 @@ round(mean(ncps[ncps$hous_elig==0,"pub"] , na.rm = TRUE ), 4)
 round(mean(ncps[ncps$med_elig==0,"medicare"] , na.rm = TRUE ), 4)
 ```
 
-Here we could see that almost 1 percent of not eligible people benefit from public houses and 2 percent of not eligible people benefit from medicare. If we think that small portion of not eligible people are applying for these programs, these ratios become much more important. 
+Here we could see that almost 1 percent of not eligible people benefit from public houses and 2 percent of not eligible people benefit from medicare. If we take into consideration the fact that a small portion of not eligible people are applying for these programs overall, these ratios become much more important. 
 
+So we could conclude that the boundaries in place are less strict than one would think on who will be approved for the social programs we examine. 
 
-So we could conclude that there is no strict boundaries on who will be approved for the social programs and it shouldn't be. 
+We propose a <b> model <b> to understand the approval process and trade-offs inspired by <b> learning processes <b>. An analogy to understand trade-offs is below. 
 
-We propose a model to understand approval process and trade-offs inspired by learning processes. An analogy to understand trade-offs is below. 
+Assume that you have arrived a school with treats and you are waiting for children in the garden to give them treats. You like some children more than others but you can choose only to give a treat or not when a child comes to you. You can't choose who will want a treat from you. The main trade-off is that you want to keep treats for your favourite children; however, if you give a treat to a child who is not among your favourites, he/she will <em> inform other children about you and more children from the favourite pool will come <em>. 
 
-Assume that you have arrived a school with treats and you are waiting for children in the garden to give them treats. You like some children more than others but you can choose only give a treat or not when a child comes to you. You can't choose who will want a treat from you. The main trade-off is that, you want to keep treats for your favorable children. However, if you give to an unfavorable children, he/she will inform other children about you and more favorable children will come. 
-
-Similarly, officials are facing a budget constraint while accepting for social programs. On the other hand, depending on the characteristics of the applicant, they have reward from accepting the applicant. Up to now, it is standart budget constraint. In addition to this, each approved applicant will encourage people in the same and/or lower income tier to apply and each rejected will discourage people in the same and/or higher income tier to apply. 
+Similarly, officials are facing a budget constraint while accepting individuals into social programs. On the other hand, depending on the characteristics of the applicant, they receive a reward from accepting the applicant. In addition to this, each approved applicant will encourage people in the same and/or lower income tier to apply and each rejected one will discourage people in the same and/or higher income tier to apply. 
 
 This second effect creates the dynamic state transitions we need for learning. 
 
 So we could formulate our process as following:
 
-**State:**
+<b> State: <b> 
 
 - Remaining budget/capacity
 - Number of applicants and their characteristics
   
-**Action:**
+<b> Action: <b> 
 
 - Reject/Approve applicants
   
-**Reward:**
+<b> Reward: <b> 
 
 - Rewards from approved applicants are function of their characteristics decided by policy makers. 
 
-  
-**State Transition: **
+<b> State Transition: <b> 
 
 - Number of future applicants and their distribution in terms of characteristics are probabilistically dependent on past approval/rejection decisions. 
 - This dependence is a black box now but a structural model could be suggested with modeling interactions.
