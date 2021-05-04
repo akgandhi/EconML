@@ -1,0 +1,772 @@
+---
+title: "The Finale"
+description: |
+  Predictive analysis using reduced dimensionality
+author:
+  - name: Kristen Beamer
+  - name: Jordan Peeples
+date: "4-29-2021"
+output: distill::distill_article
+#bibliography: 36423V1.ris
+categories: Jordan and Kristen's project
+---
+
+```{r setup, include=FALSE}
+#take these... you may need them
+library(jsonlite)
+library(tidyverse)
+library(tidyquant)
+library(lubridate)
+library(zoo)
+library(ggfortify)
+library(directlabels)
+library(gghighlight)
+library(plotly)
+library(stargazer)
+# a few more packages 
+library(rsample)
+library(rpart)
+library(rpart.plot)
+library(skimr)
+library(ranger)
+library(arules)
+library(randomForest)
+library(sparsesvd)
+library(FactoMineR)
+library(factoextra)
+library(missMDA)
+library(vip)
+
+#import
+urlSchool <- url("https://www.dropbox.com/s/bzoyhrtj3gi4t1t/36423-0001-Data.rda?raw=1")
+urlStudent <- url("https://www.dropbox.com/s/x26tsp84rcn48gj/36423-0002-Data.rda?raw=1")
+load(urlSchool)
+load(urlStudent)
+# rename
+schoolData <- da36423.0001
+studentData1 <- da36423.0002
+
+#make variables NA's
+studentData <- studentData1 %>%
+  select(X3TCREDENG:S2PUBASSIST, P1RELSHP:P2QHELP4, M1SEX:N1TFAIL, 
+         A1GRADEPREK:A2TCHSUBJO, C1FTCNSL:C2FBGRAD, S3FOCUS, S3CLGFT) %>%
+  mutate_all(na_if, -5) %>%
+  mutate_all(na_if, -4) %>%
+  mutate_all(na_if, -6) %>%
+  mutate_all(na_if, -7) %>%
+  mutate_all(na_if, -8) %>%
+  mutate_all(na_if, -9) %>%
+  mutate(S3FOCUS = dplyr::recode(S3FOCUS, "(1) Taking classes from postsecondary institution" = "Postsecondary",
+                                 "(2) Participating in an apprenticeship program" = "Apprenticeship",
+                                 "(3) Working for pay" = "Work",
+                                 "(4) Serving in the military" = "Military",
+                                 "(5) Starting family or taking care of your/his/her children" = "Childcare",
+                                 "(6) Attending high school or homeschool" = "Continued school",
+                                 "(7) Taking course to prepare for the GED/other high school equivalency exam" = "GED Prep",
+                                 "(8) Equally focused on more than one of these" = "Multiple"))
+
+
+#get rid of variables with majority NA's
+studentData <- studentData[ , colSums(is.na(studentData)) < 12000]
+
+
+#separate surveys initially to combine variables that are very much alike... otherwise this
+#takes way too long
+studentDataStudents <- studentData %>%
+  select(X3TCREDENG:S2HSJOBEVER, S3FOCUS, S3CLGFT)
+
+studentDataParents <- studentData %>%
+  select(P1RELSHP:P1QHELP)
+
+studentDataTeacher <- studentData %>% 
+  select(M1SEX:N1TFAIL)
+
+studentDataAdmin <- studentData %>% 
+  select(A1SCHCONTROL:A2TCHSUBJ)
+
+studentDataCounsel <- studentData %>% 
+  select(C1CASELOAD:C2FBGRAD)
+```
+
+In this post we will combine much of our past work to understand our data in order to perform predictive analysis using a reduced dimension form of the HSLS:09 data. To get our reduced dimension data frame, we will first divide our data into sub-categories, then perform imputation and MCA (multiple correspondence analysis, discussed in the previous blog post), and finally combine the reduced dimension subcategories into a smaller data frame. After this work, we will use learners to perform predictive analysis.
+
+### Subcategorization
+
+The first step here is to divide the categorical variables within the different surveys into smaller categories. This step required heavy use of the data dictionary and an understanding of which variables were related.  We first perform the subdivision for the students survey. Below you can see that we split the student survey variables into those about credits, background, extracurricular activities, math, science, etc. 
+
+```{r students 1}
+###students
+#first, only include qualitative variables
+studentDataStudentsMCA <- studentDataStudents %>% select_if(is.factor)
+
+#divide the student data into more general categories
+studentCredits <- studentDataStudentsMCA %>% select(X3T1CREDALG1:X3TNEWBASIC)
+studentBackground <- studentDataStudentsMCA %>% select(S1SEX:S1SCH0809)
+studentExtracurricular <- studentDataStudentsMCA %>% select(S1MCLUB:S1SMUSEUM)
+studentMath <- studentDataStudentsMCA %>% select(S1M8, S1M8GRADE, S1MPERSON1:S1MTCHEASY)
+studentScience <- studentDataStudentsMCA %>% select(S1S8, S1S8GRADE, S1SPERSON1:S1STCHEASY)
+studentThoughts <- studentDataStudentsMCA %>% select(S1SAFE:S1WORKING)
+studentTalks <- studentDataStudentsMCA %>% select(S1MOMTALKM:S1NOTALKPRB)
+studentPeers <- studentDataStudentsMCA %>% select(S1FRNDGRADES:S1SCICOMP)
+studentTime <- studentDataStudentsMCA %>% select(S1HRMHOMEWK:S1HRONLINE)
+studentMathScienceExp <- studentDataStudentsMCA %>% select(S1MYRS:S1IBSCI)
+studentPlanning <- studentDataStudentsMCA %>% select(S1PLAN:S1IBTEST)
+studentFuturePlans <- studentDataStudentsMCA %>% select(S1SUREHSGRAD:S1TALKFUTURE)
+
+#separately define a group for numeric GPA variables
+studentGPA <- studentData %>% select(X3TGPAENG, X3TGPAMAT, X3TGPAHIMTH, X3TGPASCI, X3TGPAHISCI, X3TGPASOCST,
+                                     X3TGPALANG, X3TGPAACAD, X3TGPACTE, X3TGPANONA, 
+                                     X3TGPASTEM, X3TGPATOT, X3TGPAWGT)
+
+```
+
+Next we subdivide the parents survey. Again we select variables that are similar through the data dictionary and our own familiarity with the features. Some of the categories are parent's background, language, human capital, etc.
+
+```{r parents 1}
+###parents
+# Select Categorical variables
+studentDataParentsMCA <- studentDataParents %>% select_if(is.factor)
+# Create categorical groups
+parentBackground <- studentDataParentsMCA %>% select(P1RELSHP:P1USBORN2)
+parentLanguage <- studentDataParentsMCA %>% select(P1HOMELANG:P1ELLEVER)
+parentHumanCapital <- studentDataParentsMCA %>% select(P1HIDEG1:P1JOBONET2_STEM1)
+parentIncome <- studentDataParentsMCA %>% select(P1INCOMECAT:P1OWNHOME)
+parentChildMentalHealth <- studentDataParentsMCA %>% select(P1SLD:P1FRIEND)
+parentChildBehavior <- studentDataParentsMCA %>% select(P1DROPOUT:P1PERFORM)
+parentInvolvement <- studentDataParentsMCA %>% select(P1PTOMTG:P1ENGHWEFF)
+parentComparison <- studentDataParentsMCA %>% select(P1MTHCOMP:P1ENGCOMP)
+parentExtracurricular <- studentDataParentsMCA %>% select(P1ARTS:P1NOACT)
+parentExpectations <- studentDataParentsMCA %>% select(P1EDUASPIRE:P1START)
+parentCollegeSavings <- studentDataParentsMCA %>% select(P1HELPPAY:P1PREPPAY)
+```
+
+Now we consider the teacher survey. The survey asks teachers questions about their preferred methods of teaching and what they think about other math teachers. Therefore, we are able to combine related questions such as beliefs about school policies, gender beliefs, teaching methods, etc. 
+
+```{r teachers 1}
+###Teachers
+# Only include qualitative variables
+studentDataTeacherMCA <- studentDataTeacher %>% select_if(is.factor)
+
+teacherEducationMath <- studentDataTeacherMCA %>% select(M1HIDEG:M1CERT912)
+teacherBeliefsMath <- studentDataTeacherMCA %>% select(M1TEACHING:M1WORKHARD)
+#keep M1ACHIEVE in mind
+teacherMethodsMath <- studentDataTeacherMCA %>% select(M1GROUP:M1TEST)
+teacherPolicyBeliefsMath <- studentDataTeacherMCA %>% select(M1ADVSENIOR:M1CHAIR)
+teacherGenderBeliefsMath <- studentDataTeacherMCA %>% select(M1ENGCOMP:M1SCICOMP)
+teacherProblemsMath <- studentDataTeacherMCA %>% select(M1TARDY:M1PARENT)
+teacherSelfMath <- studentDataTeacherMCA %>% select(M1RETAIN:M1HOMEFX)
+teacherGeneralMath <- studentDataTeacherMCA %>% select(M1PRESSURES:M1TFAIL)
+
+teacherEducationSci <- studentDataTeacherMCA %>% select(N1HIDEG:N1HIMAJ_STEM, N1BACONT:N1CERTERT912) 
+teacherBeliefsSci <- studentDataTeacherMCA %>% select(N1TEACHING:N1WORKHARD) 
+#keep M1ACHIEVE in mind
+teacherMethodsSci <- studentDataTeacherMCA %>% select(N1GROUP:N1TEST) 
+teacherPolicyBeliefsSci <- studentDataTeacherMCA %>% select(N1ADVSENIOR:N1CHAIR ) 
+teacherGenderBeliefsSci <- studentDataTeacherMCA %>% select(N1ENGCOMP:N1SCICOMP) 
+teacherProblemsSci <- studentDataTeacherMCA %>% select(N1TARDY:N1PARENT) 
+teacherSelfSci <- studentDataTeacherMCA %>% select(N1RETAIN:N1HOMEFX) 
+teacherGeneralSci <- studentDataTeacherMCA %>% select(N1PRESSURES:N1TFAIL) 
+```
+
+We repeat the sub-categorization for the administrator survey. Sub-categories of interest include: math and science programming, programs for struggling 9th graders, programs for 9th graders needing assistance, principal characteristics, and other programming (remedial, AP, IB, etc).
+
+```{r admin 1}
+#first, only include qualitative variables
+studentDataAdminMCA <- studentDataAdmin %>% select_if(is.factor)
+#Divide Admin Data into more general categories
+AdminMathScienceProgramming <-studentDataAdminMCA %>% select(A1MTHSCIFAIR:A1MSNONE, A1ALG1LEVELS)
+Admin9thGradeStruggling <- studentDataAdminMCA %>% select(A1G9SUMMER:A1G9OTHRPROG)
+Admin9thGradeAssistance <- studentDataAdminMCA %>% select(A1G9ABSENTEE:A1G9OTHER)
+AdminProgramming <- studentDataAdminMCA  %>% select(A1OFFERDOPRV:A1OFFERNONE)
+AdminPrincipalMajor <- studentDataAdminMCA %>% select(A1HIMAJ_STEM:A1BAMAJ_STEM)
+AdminSchoolProblems <- studentDataAdminMCA %>% select(A1TARDY:A1RESOURCES)
+AdminCharacteristics<- studentDataAdminMCA %>% select(A1SCHCONTROL, A1NOTIFY, A2CHOICE:A2SUMRSCH)
+```
+
+Finally, we perform the sub-categorization for the counselor survey. Here we sub-categorize into counselor's characteristics, counselor's hours allocations, stated goals of school counseling program, information about the middle-to-high-school transition, etc. They also capture additional information about student career planning, support, and encouragement. through the counselor's office.
+
+```{r counsel 1}
+#Only include qualitative variables
+studentDataCounselMCA <- studentDataCounsel %>% select_if(is.factor)
+#Divide Counselor Data into more general categories
+# CounselCharacteristics <- studentDataCounselMCA %>% select(C1ASSIGNMENT) #Only has 1 feature
+CounselHoursAllocation <- studentDataCounselMCA %>% select(C1HRSSCHED:C1HRSOTHCNSL)
+CounselGoals <- studentDataCounselMCA %>% select(C1GOAL1:C1GOAL3)
+CounselTransitionPrep <- studentDataCounselMCA %>% select(C1TRANSCNSL:C1TRANSOTH)
+CounselPlanning <- studentDataCounselMCA %>% select(C1PLAN:C1SIGNOFF)
+CounselStudentSupport <- studentDataCounselMCA %>% select(C1TECHSUPPRT:C1OTHSUPPORT)
+CounselExtraHelp <- studentDataCounselMCA %>% select(C1STAFF:C1OTHRASSIST)
+CounselEncouragement <- studentDataCounselMCA %>% select(C1PURSUE:C1OTHERHS)
+```
+
+### Imputation
+
+Now that we have generated these sub-categories. We can turn to imputation.  For brevity, we only include the imputation code for the student survey; however, we performed a similar exercise for the parent, teacher, administrator and counselor surveys as well. 
+
+```{r students2, include=TRUE}
+
+#impute the missing values with SVD
+imputeStudentCredits <- imputeMCA(studentCredits, ncp=2, method = "EM", row.w=NULL, coeff.ridge=1, 
+                            threshold=1e-06, ind.sup = NULL, quanti.sup=NULL, quali.sup=NULL,
+                            seed=NULL, maxiter=100)
+imputeStudentBackground <- imputeMCA(studentBackground, ncp=2, method = "EM", row.w=NULL, coeff.ridge=1, 
+                                  threshold=1e-06, ind.sup = NULL, quanti.sup=NULL, quali.sup=NULL,
+                                  seed=NULL, maxiter=100)
+imputeStudentExtracurricular <- imputeMCA(studentExtracurricular, ncp=2, method = "EM", row.w=NULL, coeff.ridge=1, 
+                                     threshold=1e-06, ind.sup = NULL, quanti.sup=NULL, quali.sup=NULL,
+                                     seed=NULL, maxiter=100)
+imputeStudentMath <- imputeMCA(studentMath, ncp=2, method = "EM", row.w=NULL, coeff.ridge=1, 
+                                          threshold=1e-06, ind.sup = NULL, quanti.sup=NULL, quali.sup=NULL,
+                                          seed=NULL, maxiter=100)
+imputeStudentScience <- imputeMCA(studentScience, ncp=2, method = "EM", row.w=NULL, coeff.ridge=1, 
+                                      threshold=1e-06, ind.sup = NULL, quanti.sup=NULL, quali.sup=NULL,
+                                      seed=NULL, maxiter=100)
+imputeStudentThoughts <- imputeMCA(studentThoughts, ncp=2, method = "EM", row.w=NULL, coeff.ridge=1, 
+                                      threshold=1e-06, ind.sup = NULL, quanti.sup=NULL, quali.sup=NULL,
+                                      seed=NULL, maxiter=100)
+imputeStudentTalks <- imputeMCA(studentTalks, ncp=2, method = "EM", row.w=NULL, coeff.ridge=1, 
+                                   threshold=1e-06, ind.sup = NULL, quanti.sup=NULL, quali.sup=NULL,
+                                   seed=NULL, maxiter=100)
+imputeStudentPeers <- imputeMCA(studentPeers, ncp=2, method = "EM", row.w=NULL, coeff.ridge=1, 
+                                threshold=1e-06, ind.sup = NULL, quanti.sup=NULL, quali.sup=NULL,
+                                seed=NULL, maxiter=100)
+imputeStudentTime <- imputeMCA(studentTime, ncp=2, method = "EM", row.w=NULL, coeff.ridge=1, 
+                                threshold=1e-06, ind.sup = NULL, quanti.sup=NULL, quali.sup=NULL,
+                                seed=NULL, maxiter=100)
+imputeStudentMathScienceExp <- imputeMCA(studentMathScienceExp, ncp=2, method = "EM", row.w=NULL, coeff.ridge=1, 
+                               threshold=1e-06, ind.sup = NULL, quanti.sup=NULL, quali.sup=NULL,
+                               seed=NULL, maxiter=100)
+imputeStudentPlanning <- imputeMCA(studentPlanning, ncp=2, method = "EM", row.w=NULL, coeff.ridge=1, 
+                                         threshold=1e-06, ind.sup = NULL, quanti.sup=NULL, quali.sup=NULL,
+                                         seed=NULL, maxiter=100)
+imputeStudentFuturePlans <- imputeMCA(studentFuturePlans, ncp=2, method = "EM", row.w=NULL, coeff.ridge=1, 
+                                   threshold=1e-06, ind.sup = NULL, quanti.sup=NULL, quali.sup=NULL,
+                                   seed=NULL, maxiter=100)
+
+#separately impute numeric GPA variables
+imputeStudentGPA <- imputePCA(studentGPA, ncp=2, method = "EM", row.w=NULL, coeff.ridge=1, 
+                                   threshold=1e-06, ind.sup = NULL, quanti.sup=NULL, quali.sup=NULL,
+                                   seed=NULL, maxiter=100)
+
+#now, use MCA
+mcaStudentCredits <- MCA(studentCredits, ncp = 2, graph = FALSE, tab.disj=imputeStudentCredits$tab.disj)
+mcaStudentBackground <- MCA(studentBackground, ncp = 2, graph = FALSE, tab.disj=imputeStudentBackground$tab.disj)
+mcaStudentExtracurricular <- MCA(studentExtracurricular, ncp = 2, graph = FALSE, tab.disj=imputeStudentExtracurricular$tab.disj)
+mcaStudentMath <- MCA(studentMath, ncp = 2, graph = FALSE, tab.disj=imputeStudentMath$tab.disj)
+mcaStudentScience <- MCA(studentScience, ncp = 2, graph = FALSE, tab.disj=imputeStudentScience$tab.disj)
+mcaStudentThoughts <- MCA(studentThoughts, ncp = 2, graph = FALSE, tab.disj=imputeStudentThoughts$tab.disj)
+mcaStudentTalks <- MCA(studentTalks, ncp = 2, graph = FALSE, tab.disj=imputeStudentTalks$tab.disj)
+mcaStudentPeers <- MCA(studentPeers, ncp = 2, graph = FALSE, tab.disj=imputeStudentPeers$tab.disj)
+mcaStudentTime <- MCA(studentTime, ncp = 2, graph = FALSE, tab.disj=imputeStudentTime$tab.disj)
+mcaStudentMathScienceExp <- MCA(studentMathScienceExp, ncp = 2, graph = FALSE, tab.disj=imputeStudentMathScienceExp$tab.disj)
+mcaStudentPlanning <- MCA(studentPlanning, ncp = 2, graph = FALSE, tab.disj=imputeStudentPlanning$tab.disj)
+mcaStudentFuturePlans <- MCA(studentFuturePlans, ncp = 2, graph = FALSE, tab.disj=imputeStudentFuturePlans$tab.disj)
+pcaStudentGPA <- PCA(imputeStudentGPA$completeObs, ncp = 2, graph = FALSE)
+
+#get the coordinates for individuals
+indStudentCredits <- get_mca_ind(mcaStudentCredits)
+indStudentBackground <- get_mca_ind(mcaStudentBackground)
+indStudentExtracurricular <- get_mca_ind(mcaStudentExtracurricular)
+indStudentMath <- get_mca_ind(mcaStudentMath)
+indStudentScience <- get_mca_ind(mcaStudentScience)
+indStudentThoughts <- get_mca_ind(mcaStudentThoughts)
+indStudentTalks <- get_mca_ind(mcaStudentTalks)
+indStudentPeers <- get_mca_ind(mcaStudentPeers)
+indStudentTime <- get_mca_ind(mcaStudentTime)
+indStudentMathScienceExp <- get_mca_ind(mcaStudentMathScienceExp)
+indStudentPlanning <- get_mca_ind(mcaStudentPlanning)
+indStudentFuturePlans <- get_mca_ind(mcaStudentFuturePlans)
+indStudentGPA <- get_pca_ind(pcaStudentGPA)
+```
+
+```{r parents 2, include=FALSE}
+imputeParentBackground <- imputeMCA(parentBackground, ncp=2, method = "EM", row.w=NULL, coeff.ridge=1, 
+                                      threshold=1e-06, ind.sup = NULL, quanti.sup=NULL, quali.sup=NULL,
+                                      seed=NULL, maxiter=100)
+imputeParentLanguage <- imputeMCA(parentLanguage, ncp=2, method = "EM", row.w=NULL, coeff.ridge=1, 
+                                    threshold=1e-06, ind.sup = NULL, quanti.sup=NULL, quali.sup=NULL,
+                                    seed=NULL, maxiter=100)
+imputeParentHumanCapital <- imputeMCA(parentHumanCapital, ncp=1, method = "EM", row.w=NULL, coeff.ridge=1, 
+                                    threshold=1e-06, ind.sup = NULL, quanti.sup=NULL, quali.sup=NULL,
+                                    seed=NULL, maxiter=100)
+imputeParentIncome <- imputeMCA(parentIncome, ncp=2, method = "EM", row.w=NULL, coeff.ridge=1, 
+                                    threshold=1e-06, ind.sup = NULL, quanti.sup=NULL, quali.sup=NULL,
+                                    seed=NULL, maxiter=100)
+imputeParentChildMentalHealth <- imputeMCA(parentChildMentalHealth, ncp=2, method = "EM", row.w=NULL, coeff.ridge=1, 
+                                    threshold=1e-06, ind.sup = NULL, quanti.sup=NULL, quali.sup=NULL,
+                                    seed=NULL, maxiter=100)
+imputeParentChildBehavior <- imputeMCA(parentChildBehavior, ncp=2, method = "EM", row.w=NULL, coeff.ridge=1, 
+                                           threshold=1e-06, ind.sup = NULL, quanti.sup=NULL, quali.sup=NULL,
+                                           seed=NULL, maxiter=100)
+imputeParentInvolvement <- imputeMCA(parentInvolvement, ncp=2, method = "EM", row.w=NULL, coeff.ridge=1, 
+                                threshold=1e-06, ind.sup = NULL, quanti.sup=NULL, quali.sup=NULL,
+                                seed=NULL, maxiter=100)
+imputeParentComparison <- imputeMCA(parentComparison, ncp=2, method = "EM", row.w=NULL, coeff.ridge=1, 
+                                threshold=1e-06, ind.sup = NULL, quanti.sup=NULL, quali.sup=NULL,
+                                seed=NULL, maxiter=100)
+imputeParentExtracurricular <- imputeMCA(parentExtracurricular, ncp=2, method = "EM", row.w=NULL, coeff.ridge=1, 
+                                threshold=1e-06, ind.sup = NULL, quanti.sup=NULL, quali.sup=NULL,
+                                seed=NULL, maxiter=100)
+imputeParentExpectations <- imputeMCA(parentExpectations, ncp=2, method = "EM", row.w=NULL, coeff.ridge=1, 
+                                threshold=1e-06, ind.sup = NULL, quanti.sup=NULL, quali.sup=NULL,
+                                seed=NULL, maxiter=100)
+imputeParentCollegeSavings <- imputeMCA(parentCollegeSavings, ncp=2, method = "EM", row.w=NULL, coeff.ridge=1, 
+                                      threshold=1e-06, ind.sup = NULL, quanti.sup=NULL, quali.sup=NULL,
+                                      seed=NULL, maxiter=100)
+
+mcaParentBackground <- MCA(parentBackground, ncp = 2, graph = FALSE, tab.disj = imputeParentBackground$tab.disj)
+mcaParentLanguage <- MCA(parentLanguage, ncp = 2, graph = FALSE, tab.disj = imputeParentLanguage$tab.disj)
+mcaParentHumanCapital <- MCA(parentHumanCapital, ncp = 1, graph = FALSE, tab.disj = imputeParentHumanCapital$tab.disj)
+mcaParentIncome <- MCA(parentIncome, ncp = 2, graph = FALSE, tab.disj = imputeParentIncome$tab.disj)
+mcaParentChildMentalHealth <- MCA(parentChildMentalHealth, ncp = 2, graph = FALSE, tab.disj = imputeParentChildMentalHealth$tab.disj)
+mcaParentChildBehavior <- MCA(parentChildBehavior, ncp = 2, graph = FALSE, tab.disj = imputeParentChildBehavior$tab.disj)
+mcaParentInvolvement <- MCA(parentInvolvement, ncp = 2, graph = FALSE, tab.disj = imputeParentInvolvement$tab.disj)
+mcaParentComparison <- MCA(parentComparison, ncp = 2, graph = FALSE, tab.disj = imputeParentComparison$tab.disj)
+mcaParentExtracurricular <- MCA(parentExtracurricular, ncp = 2, graph = FALSE, tab.disj = imputeParentExtracurricular$tab.disj)
+mcaParentExpectations <- MCA(parentExpectations, ncp = 2, graph = FALSE, tab.disj = imputeParentExpectations$tab.disj)
+mcaParentCollegeSavings <- MCA(parentCollegeSavings, ncp = 2, graph = FALSE, tab.disj = imputeParentCollegeSavings$tab.disj)
+
+indParentBackground <- get_mca_ind(mcaParentBackground)
+indParentLanguage <- get_mca_ind(mcaParentLanguage)
+indParentHumanCapital <- get_mca_ind(mcaParentHumanCapital)
+indParentIncome <- get_mca_ind(mcaParentIncome)
+indParentChildMentalHealth <- get_mca_ind(mcaParentChildMentalHealth)
+indParentChildBehavior <- get_mca_ind(mcaParentChildBehavior)
+indParentInvolvement <- get_mca_ind(mcaParentInvolvement)
+indParentComparison <- get_mca_ind(mcaParentComparison)
+indParentExtracurricular <- get_mca_ind(mcaParentExtracurricular)
+indParentExpectations <- get_mca_ind(mcaParentExpectations)
+indParentCollegeSavings <- get_mca_ind(mcaParentCollegeSavings)
+
+```
+
+```{r teachers 2, include=FALSE}
+imputeTeacherEducationMath <- imputeMCA(teacherEducationMath, ncp=2, method = "EM", row.w=NULL, coeff.ridge=1, 
+                                      threshold=1e-06, ind.sup = NULL, quanti.sup=NULL, quali.sup=NULL,
+                                      seed=NULL, maxiter=100)
+imputeTeacherBeliefsMath <- imputeMCA(teacherBeliefsMath, ncp=2, method = "EM", row.w=NULL, coeff.ridge=1, 
+                                      threshold=1e-06, ind.sup = NULL, quanti.sup=NULL, quali.sup=NULL,
+                                      seed=NULL, maxiter=100)
+imputeTeacherMethodsMath <- imputeMCA(teacherMethodsMath, ncp=2, method = "EM", row.w=NULL, coeff.ridge=1, 
+                                      threshold=1e-06, ind.sup = NULL, quanti.sup=NULL, quali.sup=NULL,
+                                      seed=NULL, maxiter=100)
+imputeTeacherPolicyBeliefsMath <- imputeMCA(teacherPolicyBeliefsMath, ncp=2, method = "EM", row.w=NULL, coeff.ridge=1, 
+                                      threshold=1e-06, ind.sup = NULL, quanti.sup=NULL, quali.sup=NULL,
+                                      seed=NULL, maxiter=100)
+imputeTeacherGenderBeliefsMath <- imputeMCA(teacherGenderBeliefsMath, ncp=2, method = "EM", row.w=NULL, coeff.ridge=1, 
+                                      threshold=1e-06, ind.sup = NULL, quanti.sup=NULL, quali.sup=NULL,
+                                      seed=NULL, maxiter=100)
+imputeTeacherProblemsMath <- imputeMCA(teacherProblemsMath, ncp=2, method = "EM", row.w=NULL, coeff.ridge=1, 
+                                      threshold=1e-06, ind.sup = NULL, quanti.sup=NULL, quali.sup=NULL,
+                                      seed=NULL, maxiter=100)
+imputeTeacherSelfMath <- imputeMCA(teacherSelfMath, ncp=2, method = "EM", row.w=NULL, coeff.ridge=1, 
+                                      threshold=1e-06, ind.sup = NULL, quanti.sup=NULL, quali.sup=NULL,
+                                      seed=NULL, maxiter=100)
+imputeTeacherGeneralMath <- imputeMCA(teacherGeneralMath, ncp=2, method = "EM", row.w=NULL, coeff.ridge=1, 
+                                      threshold=1e-06, ind.sup = NULL, quanti.sup=NULL, quali.sup=NULL,
+                                      seed=NULL, maxiter=100)
+
+imputeTeacherEducationSci <- imputeMCA(teacherEducationSci, ncp=2, method = "EM", row.w=NULL, coeff.ridge=1, 
+                                      threshold=1e-06, ind.sup = NULL, quanti.sup=NULL, quali.sup=NULL,
+                                      seed=NULL, maxiter=100)
+imputeTeacherBeliefsSci <- imputeMCA(teacherBeliefsSci, ncp=2, method = "EM", row.w=NULL, coeff.ridge=1, 
+                                      threshold=1e-06, ind.sup = NULL, quanti.sup=NULL, quali.sup=NULL,
+                                      seed=NULL, maxiter=100)
+imputeTeacherMethodsSci <- imputeMCA(teacherMethodsSci, ncp=2, method = "EM", row.w=NULL, coeff.ridge=1, 
+                                      threshold=1e-06, ind.sup = NULL, quanti.sup=NULL, quali.sup=NULL,
+                                      seed=NULL, maxiter=100)
+imputeTeacherPolicyBeliefsSci <- imputeMCA(teacherPolicyBeliefsSci, ncp=2, method = "EM", row.w=NULL, coeff.ridge=1, 
+                                      threshold=1e-06, ind.sup = NULL, quanti.sup=NULL, quali.sup=NULL,
+                                      seed=NULL, maxiter=100)
+imputeTeacherGenderBeliefsSci <- imputeMCA(teacherGenderBeliefsSci, ncp=2, method = "EM", row.w=NULL, coeff.ridge=1, 
+                                      threshold=1e-06, ind.sup = NULL, quanti.sup=NULL, quali.sup=NULL,
+                                      seed=NULL, maxiter=100)
+imputeTeacherProblemsSci <- imputeMCA(teacherProblemsSci, ncp=2, method = "EM", row.w=NULL, coeff.ridge=1, 
+                                      threshold=1e-06, ind.sup = NULL, quanti.sup=NULL, quali.sup=NULL,
+                                      seed=NULL, maxiter=100)
+imputeTeacherSelfSci <- imputeMCA(teacherSelfSci, ncp=2, method = "EM", row.w=NULL, coeff.ridge=1, 
+                                      threshold=1e-06, ind.sup = NULL, quanti.sup=NULL, quali.sup=NULL,
+                                      seed=NULL, maxiter=100)
+imputeTeacherGeneralSci <- imputeMCA(teacherGeneralSci, ncp=2, method = "EM", row.w=NULL, coeff.ridge=1, 
+                                      threshold=1e-06, ind.sup = NULL, quanti.sup=NULL, quali.sup=NULL,
+                                      seed=NULL, maxiter=100)
+
+mcaTeacherEducationMath <- MCA(teacherEducationMath, ncp = 2, graph = FALSE, tab.disj = imputeTeacherEducationMath$tab.disj)
+mcaTeacherBeliefsMath <- MCA(teacherBeliefsMath, ncp = 2, graph = FALSE, tab.disj = imputeTeacherBeliefsMath$tab.disj)
+mcaTeacherMethodsMath <- MCA(teacherMethodsMath, ncp = 2, graph = FALSE, tab.disj = imputeTeacherMethodsMath$tab.disj)
+mcaTeacherPolicyBeliefsMath <- MCA(teacherPolicyBeliefsMath, ncp = 2, graph = FALSE, tab.disj = imputeTeacherPolicyBeliefsMath$tab.disj)
+mcaTeacherGenderBeliefsMath <- MCA(teacherGenderBeliefsMath, ncp = 2, graph = FALSE, tab.disj = imputeTeacherGenderBeliefsMath$tab.disj)
+mcaTeacherProblemsMath <- MCA(teacherProblemsMath, ncp = 2, graph = FALSE, tab.disj = imputeTeacherProblemsMath$tab.disj)
+mcaTeacherSelfMath <- MCA(teacherSelfMath, ncp = 2, graph = FALSE, tab.disj = imputeTeacherSelfMath$tab.disj)
+mcaTeacherGeneralMath <- MCA(teacherGeneralMath, ncp = 2, graph = FALSE, tab.disj = imputeTeacherGeneralMath$tab.disj)
+
+mcaTeacherEducationSci <- MCA(teacherEducationSci, ncp = 2, graph = FALSE, tab.disj = imputeTeacherEducationSci$tab.disj)
+mcaTeacherBeliefsSci <- MCA(teacherBeliefsSci, ncp = 2, graph = FALSE, tab.disj = imputeTeacherBeliefsSci$tab.disj)
+mcaTeacherMethodsSci <- MCA(teacherMethodsSci, ncp = 2, graph = FALSE, tab.disj = imputeTeacherMethodsSci$tab.disj)
+mcaTeacherPolicyBeliefsSci <- MCA(teacherPolicyBeliefsSci, ncp = 2, graph = FALSE, tab.disj = imputeTeacherPolicyBeliefsSci$tab.disj)
+mcaTeacherGenderBeliefsSci <- MCA(teacherGenderBeliefsSci, ncp = 2, graph = FALSE, tab.disj = imputeTeacherGenderBeliefsSci$tab.disj)
+mcaTeacherProblemsSci <- MCA(teacherProblemsSci, ncp = 2, graph = FALSE, tab.disj = imputeTeacherProblemsSci$tab.disj)
+mcaTeacherSelfSci <- MCA(teacherSelfSci, ncp = 2, graph = FALSE, tab.disj = imputeTeacherSelfSci$tab.disj)
+mcaTeacherGeneralSci <- MCA(teacherGeneralSci, ncp = 2, graph = FALSE, tab.disj = imputeTeacherGeneralSci$tab.disj)
+
+indTeacherEducationMath <- get_mca_ind(mcaTeacherEducationMath)
+indTeacherBeliefsMath <- get_mca_ind(mcaTeacherBeliefsMath)
+indTeacherMethodsMath <- get_mca_ind(mcaTeacherMethodsMath)
+indTeacherPolicyBeliefsMath <- get_mca_ind(mcaTeacherPolicyBeliefsMath)
+indTeacherGenderBeliefsMath <- get_mca_ind(mcaTeacherGenderBeliefsMath)
+indTeacherProblemsMath <- get_mca_ind(mcaTeacherProblemsMath)
+indTeacherSelfMath <- get_mca_ind(mcaTeacherSelfMath)
+indTeacherGeneralMath <- get_mca_ind(mcaTeacherGeneralMath)
+
+indTeacherEducationSci <- get_mca_ind(mcaTeacherEducationSci)
+indTeacherBeliefsSci <- get_mca_ind(mcaTeacherBeliefsSci)
+indTeacherMethodsSci <- get_mca_ind(mcaTeacherMethodsSci)
+indTeacherPolicyBeliefsSci <- get_mca_ind(mcaTeacherPolicyBeliefsSci)
+indTeacherGenderBeliefsSci <- get_mca_ind(mcaTeacherGenderBeliefsSci)
+indTeacherProblemsSci <- get_mca_ind(mcaTeacherProblemsSci)
+indTeacherSelfSci <- get_mca_ind(mcaTeacherSelfSci)
+indTeacherGeneralSci <- get_mca_ind(mcaTeacherGeneralSci)
+
+```
+
+```{r admin 2, include=FALSE}
+#impute the missing values with SVD
+imputeAdminCharacteristics <- imputeMCA(AdminCharacteristics, ncp=2, method = "EM", row.w=NULL, coeff.ridge=1, 
+                            threshold=1e-06, ind.sup = NULL, quanti.sup=NULL, quali.sup=NULL,
+                            seed=NULL, maxiter=100)
+imputeAdminMathScienceProgramming <- imputeMCA(AdminMathScienceProgramming, ncp=2, method = "EM", row.w=NULL, coeff.ridge=1, 
+                                  threshold=1e-06, ind.sup = NULL, quanti.sup=NULL, quali.sup=NULL,
+                                  seed=NULL, maxiter=100)
+imputeAdmin9thGradeStruggling <- imputeMCA(Admin9thGradeStruggling, ncp=2, method = "EM", row.w=NULL, coeff.ridge=1, 
+                                     threshold=1e-06, ind.sup = NULL, quanti.sup=NULL, quali.sup=NULL,
+                                     seed=NULL, maxiter=100)
+imputeAdmin9thGradeAssistance <- imputeMCA(Admin9thGradeAssistance, ncp=2, method = "EM", row.w=NULL, coeff.ridge=1, 
+                                          threshold=1e-06, ind.sup = NULL, quanti.sup=NULL, quali.sup=NULL,
+                                          seed=NULL, maxiter=100)
+imputeAdminProgramming <- imputeMCA(AdminProgramming, ncp=2, method = "EM", row.w=NULL, coeff.ridge=1, 
+                                      threshold=1e-06, ind.sup = NULL, quanti.sup=NULL, quali.sup=NULL,
+                                      seed=NULL, maxiter=100)
+imputeAdminPrincipalMajor <- imputeMCA(AdminPrincipalMajor, ncp=2, method = "EM", row.w=NULL, coeff.ridge=1, 
+                                      threshold=1e-06, ind.sup = NULL, quanti.sup=NULL, quali.sup=NULL,
+                                      seed=NULL, maxiter=100)
+imputeAdminSchoolProblems <- imputeMCA(AdminSchoolProblems, ncp=2, method = "EM", row.w=NULL, coeff.ridge=1, 
+                                   threshold=1e-06, ind.sup = NULL, quanti.sup=NULL, quali.sup=NULL,
+                                   seed=NULL, maxiter=100)
+
+#now, use MCA
+mcaAdminCharacteristics <- MCA(AdminCharacteristics, ncp = 2, graph = FALSE, tab.disj=imputeAdminCharacteristics$tab.disj)
+mcaAdminMathScienceProgramming<- MCA(AdminMathScienceProgramming, ncp = 2, graph = FALSE, tab.disj=imputeAdminMathScienceProgramming$tab.disj)
+mcaAdmin9thGradeStruggling <- MCA(Admin9thGradeStruggling, ncp = 2, graph = FALSE, tab.disj=imputeAdmin9thGradeStruggling$tab.disj)
+mcaAdmin9thGradeAssistance <- MCA(Admin9thGradeAssistance, ncp = 2, graph = FALSE, tab.disj=imputeAdmin9thGradeAssistance$tab.disj)
+mcaAdminProgramming <- MCA(AdminProgramming, ncp = 2, graph = FALSE, tab.disj=imputeAdminProgramming$tab.disj)
+mcaAdminPrincipalMajor <- MCA(AdminPrincipalMajor, ncp = 2, graph = FALSE, tab.disj=imputeAdminPrincipalMajor$tab.disj)
+mcaAdminSchoolProblems <- MCA(AdminSchoolProblems, ncp = 2, graph = FALSE, tab.disj=imputeAdminSchoolProblems$tab.disj)
+
+#get the coordinates for individuals
+indAdminCharacteristics <- get_mca_ind(mcaAdminCharacteristics)
+indAdminMathScienceProgramming <- get_mca_ind(mcaAdminMathScienceProgramming)
+indAdmin9thGradeStruggling <- get_mca_ind(mcaAdmin9thGradeStruggling)
+indAdmin9thGradeAssistance <- get_mca_ind(mcaAdmin9thGradeAssistance)
+indAdminProgramming <- get_mca_ind(mcaAdminProgramming)
+indAdminPrincipalMajor <- get_mca_ind(mcaAdminPrincipalMajor)
+indAdminSchoolProblems <- get_mca_ind(mcaAdminSchoolProblems)
+```
+
+```{r counsel 2, include=FALSE}
+#impute the missing values with SVD
+imputeCounselHoursAllocation <- imputeMCA(CounselHoursAllocation, ncp=2, method = "EM", row.w=NULL, coeff.ridge=1, 
+                                  threshold=1e-06, ind.sup = NULL, quanti.sup=NULL, quali.sup=NULL,
+                                  seed=NULL, maxiter=100)
+imputeCounselGoals <- imputeMCA(CounselGoals, ncp=2, method = "EM", row.w=NULL, coeff.ridge=1, 
+                                     threshold=1e-06, ind.sup = NULL, quanti.sup=NULL, quali.sup=NULL,
+                                     seed=NULL, maxiter=100)
+imputeCounselTransitionPrep <- imputeMCA(CounselTransitionPrep, ncp=2, method = "EM", row.w=NULL, coeff.ridge=1, 
+                                          threshold=1e-06, ind.sup = NULL, quanti.sup=NULL, quali.sup=NULL,
+                                          seed=NULL, maxiter=100)
+imputeCounselPlanning <- imputeMCA(CounselPlanning, ncp=2, method = "EM", row.w=NULL, coeff.ridge=1, 
+                                      threshold=1e-06, ind.sup = NULL, quanti.sup=NULL, quali.sup=NULL,
+                                      seed=NULL, maxiter=100)
+imputeCounselStudentSupport <- imputeMCA(CounselStudentSupport, ncp=2, method = "EM", row.w=NULL, coeff.ridge=1, 
+                                      threshold=1e-06, ind.sup = NULL, quanti.sup=NULL, quali.sup=NULL,
+                                      seed=NULL, maxiter=100)
+imputeCounselExtraHelp <- imputeMCA(CounselExtraHelp, ncp=2, method = "EM", row.w=NULL, coeff.ridge=1, 
+                                   threshold=1e-06, ind.sup = NULL, quanti.sup=NULL, quali.sup=NULL,
+                                   seed=NULL, maxiter=100)
+imputeCounselEncouragement <- imputeMCA(CounselEncouragement, ncp=2, method = "EM", row.w=NULL, coeff.ridge=1, 
+                                   threshold=1e-06, ind.sup = NULL, quanti.sup=NULL, quali.sup=NULL,
+                                   seed=NULL, maxiter=100)
+
+#now, use MCA
+mcaCounselHoursAllocation<- MCA(CounselHoursAllocation, ncp = 2, graph = FALSE, tab.disj=imputeCounselHoursAllocation$tab.disj)
+mcaCounselGoals <- MCA(CounselGoals, ncp = 2, graph = FALSE, tab.disj=imputeCounselGoals$tab.disj)
+mcaCounselTransitionPrep <- MCA(CounselTransitionPrep, ncp = 2, graph = FALSE, tab.disj=imputeCounselTransitionPrep$tab.disj)
+mcaCounselPlanning <- MCA(CounselPlanning, ncp = 2, graph = FALSE, tab.disj=imputeCounselPlanning$tab.disj)
+mcaCounselStudentSupport <- MCA(CounselStudentSupport, ncp = 2, graph = FALSE, tab.disj=imputeCounselStudentSupport$tab.disj)
+mcaCounselExtraHelp <- MCA(CounselExtraHelp, ncp = 2, graph = FALSE, tab.disj=imputeCounselExtraHelp$tab.disj)
+mcaCounselEncouragement <- MCA(CounselEncouragement, ncp = 2, graph = FALSE, tab.disj=imputeCounselEncouragement$tab.disj)
+
+#get the coordinates for individuals
+#indCounselCharacteristics <- get_mca_ind(mcaCounselCharacteristics)
+indCounselHoursAllocation <- get_mca_ind(mcaCounselHoursAllocation)
+indCounselGoals <- get_mca_ind(mcaCounselGoals)
+indCounselTransitionPrep <- get_mca_ind(mcaCounselTransitionPrep)
+indCounselPlanning <- get_mca_ind(mcaCounselPlanning)
+indCounselStudentSupport <- get_mca_ind(mcaCounselStudentSupport)
+indCounselExtraHelp <- get_mca_ind(mcaCounselExtraHelp)
+indCounselEncouragement <- get_mca_ind(mcaCounselEncouragement)
+```
+
+### Combination
+
+We combine all the different sub-survey categories to get a data frame with reduced dimensionality. The dimension variables created from the sub-survey categories maximize the variance in each category. Therefore, we are not really losing any information by using these dimensional variables created by MCA. 
+
+```{r combine, include=TRUE}
+#Students combined dataframe
+studentsDF <- as.data.frame(indStudentCredits$coord)
+studentsDF <- cbind(studentsDF, indStudentBackground$coord, indStudentExtracurricular$coord,
+                    indStudentMath$coord, indStudentScience$coord, indStudentThoughts$coord,
+                    indStudentTalks$coord, indStudentPeers$coord, indStudentTime$coord,
+                    indStudentMathScienceExp$coord, indStudentPlanning$coord,
+                    indStudentFuturePlans$coord, indStudentGPA$coord)
+colnames(studentsDF) <- c("CreditsDim1", "CreditsDim2", 
+                          "BackgroundDim1", "BackgroundDim2",
+                          "ExtracurricularDim1", "ExtracurricularDim2",
+                          "MathDim1", "MathDim2",
+                          "ScienceDim1", "ScienceDim2",
+                          "ThoughtsDim1", "ThoughtsDim2",
+                          "TalksDim1", "TalksDim2",
+                          "PeersDim1", "PeersDim2",
+                          "TimeDim1", "TimeDim2",
+                          "MathSciExpDim1", "MathSciExpDim2", 
+                          "PlanningDim1", "PlanningDim2",
+                          "FuturePlansDim1", "FuturePlansDim2",
+                          "GPA1","GPA2")
+#Parents combined dataframe
+parentsDF <- as.data.frame(indParentBackground$coord)
+parentsDF <- cbind(parentsDF, indParentLanguage$coord, indParentHumanCapital$coord,
+                   indParentIncome$coord, indParentChildMentalHealth$coord, 
+                   indParentChildBehavior$coord, indParentInvolvement$coord,
+                   indParentComparison$coord, indParentExtracurricular$coord,
+                   indParentExpectations$coord, indParentCollegeSavings$coord)
+colnames(parentsDF) <- c("ParentBackgroundDim1", "ParentBackgroundDim2", 
+                         "ParentLanguageDim1", "ParentLanguageDim2", 
+                         "ParentHumanCapital_onlyDim",
+                         "ParentIncomeDim1", "ParentIncomeDim2", 
+                         "ParentChildMentalHealthDim1", "ParentChildMentalHealthDim2",
+                         "ParentChildBehaviorDim1", "ParentChildBehaviorDim2",
+                         "ParentInvolvementDim1", "ParentInvolvementDim2",
+                         "ParentComparisonDim1", "ParentComparisonDim2",
+                         "ParentExtracurricularDim1", "ParentExtracurricularDim2",
+                         "ParentExpectationsDim1", "ParentExpectationsDim2",
+                         "ParentCollegeSavingsDim1", "ParentCollegeSavingsDim2")
+#Teachers combined dataframe
+teacherMathDF <- as.data.frame(indTeacherEducationMath$coord)
+teacherMathDF <- cbind(teacherMathDF, indTeacherBeliefsMath$coord, indTeacherMethodsMath$coord,
+                       indTeacherPolicyBeliefsMath$coord,indTeacherGenderBeliefsMath$coord, 
+                       indTeacherProblemsMath$coord, indTeacherSelfMath$coord,
+                       indTeacherGeneralMath$coord)
+colnames(teacherMathDF) <- c("TeacherEducationMathDim1", "TeacherEducationMathDim2",
+                         "TeacherBeliefsMathDim1", "TeacherBeliefsMathDim2",
+                         "TeacherMethodsMathDim1", "TeacherMethodsMathDim2",
+                         "TeacherPolicyBeliefsMathDim1", "TeacherPolicyBeliefsMathDim2",
+                         "teacherGenderBeliefsMathDim1", "teacherGenderBeliefsMathDim2",
+                         "teacherProblemsMathDim1", "teacherProblemsMathDim2",
+                         "teacherSelfMathDim1", "teacherSelfMathDim2",
+                         "teacherGeneralMathDim1", "teacherGeneralMathDim2")
+
+teacherSciDF <- as.data.frame(indTeacherEducationSci$coord)
+teacherSciDF <- cbind(teacherSciDF, indTeacherBeliefsSci$coord, indTeacherMethodsSci$coord, 
+                      indTeacherPolicyBeliefsSci$coord, indTeacherGenderBeliefsSci$coord,
+                      indTeacherProblemsSci$coord, indTeacherSelfSci$coord, 
+                      indTeacherGeneralSci$coord)
+colnames(teacherSciDF) <- c("TeacherEducationSciDim1", "TeacherEducationSciDim2",
+                         "TeacherBeliefsSciDim1", "TeacherBeliefsSciDim2",
+                         "TeacherMethodsSciDim1", "TeacherMethodsSciDim2",
+                         "TeacherPolicyBeliefsSciDim1", "TeacherPolicyBeliefsSciDim2",
+                         "teacherGenderBeliefsSciDim1", "teacherGenderBeliefsSciDim2",
+                         "teacherProblemsSciDim1", "teacherProblemsSciDim2",
+                         "teacherSelfSciDim1", "teacherSelfSciDim2",
+                         "teacherGeneralSciDim1", "teacherGeneralSciDim2")
+
+#Admin combined dataframe
+adminDF <- as.data.frame(indAdminMathScienceProgramming$coord)
+adminDF <- cbind(adminDF, indAdmin9thGradeStruggling$coord, 
+                 indAdmin9thGradeAssistance$coord,
+                 indAdminProgramming$coord, indAdminPrincipalMajor$coord, 
+                 indAdminSchoolProblems$coord,
+                 indAdminCharacteristics$coord)
+colnames(adminDF) <- c( "AdminMathScienceProgrammingDim1", "AdminMathScienceProgrammingDim2",
+                        "Admin9thGradeStrugglingDim1", "Admin9thGradeStrugglingDim2",
+                        "Admin9thGradeAssistanceDim1", "Admin9thGradeAssistanceDim2", 
+                        "AdminProgrammingDim1", "AdminProgrammingDim2",
+                        "AdminPrincipalMajorDim1", "AdminPrincipalMajorDim2",
+                        "AdminSchoolProblemsDim1", "AdminSchoolProblemsDim2",
+                        "AdminCharacteristicsDim1", "AdminCharacteristicsDim2")
+
+#Counselors combined dataframe
+counselDF <- as.data.frame(indCounselHoursAllocation$coord)
+counselDF <- cbind(counselDF, indCounselGoals$coord, indCounselTransitionPrep$coord,
+                   indCounselPlanning$coord, indCounselStudentSupport$coord,
+                   indCounselExtraHelp$coord, indCounselEncouragement$coord)
+colnames(counselDF) <- c("CounselHoursAllocationDim1", "CounselHoursAllocationDim2",
+                         "CounselGoalsDim1", "CounselGoalsDim2",
+                         "CounselTransitionPrepDim1","CounselTransitionPrepDim2",
+                         "CounselPlanningDim1", "CounselPlanningDim2",
+                         "CounselStudentSupportDim1", "CounselStudentSupportDim2",
+                         "CounselExtraHelpDim1", "CounselExtraHelpDim2",
+                         "CounselEncouragementDim1", "CounselEncouragementDim2")
+
+
+postOutcomes <- as.data.frame(studentDataStudents$S3FOCUS)
+colnames(postOutcomes) <- c("S3FOCUS")
+
+postCollege <- as.data.frame(studentDataStudents$S3CLGFT)
+colnames(postCollege) <- c("S3CLGFT")
+```
+
+Now that we have recreated reduced dimensionality data frames for each of the surveys we can put them all together into one. This will be our full data frame. We now have a much smaller version of HSLS:09 with about 23,500 observations of 89 total variables. We can also add in the numeric variables which were suppressed from this MCA work. We summarize the reduced dimensionality data frame below:
+
+```{r combine2}
+#Combine
+mainDF <- cbind(studentsDF, parentsDF, teacherMathDF, teacherSciDF, adminDF, counselDF, postOutcomes)
+
+collegeDF <- cbind(studentsDF, parentsDF, teacherMathDF, teacherSciDF, adminDF, counselDF, postCollege)
+
+skim(mainDF)
+```
+
+### Predictive analysis
+
+Below, we use a random forest approach to determine which variables are most important for our post-high school graduation outcome. Since we are using dimensions from the MCA as inputs, there is no way for us to interpret a regression tree. Therefore, we use both the RSS and Gini index in the random forest to understand how important each variable is in predicting the outcome. 
+
+```{r predict outcomes, include=TRUE}
+
+#don't use imputed values for S3FOCUS... it is what we are trying to predict.
+#instead, just use "blank"
+mainDF <- mainDF %>% mutate_if(is.factor, fct_explicit_na, "blank")
+
+#separate into training and test data...
+set.seed(482405)
+trn = sample(nrow(mainDF),19000)
+trainingData <- mainDF[trn,]
+testData <- mainDF[-trn,]
+
+#now, use a random forest
+rfImpurity <- ranger(formula = S3FOCUS ~ ., data = trainingData, num.trees = 700,
+                     min.node.size = 1, sample.fraction = .80, replace = FALSE,
+                     importance = "impurity", respect.unordered.factors = "order",
+                     verbose = FALSE, seed  = 1392)
+
+rfPermutation <- ranger(formula = S3FOCUS ~ ., data = trainingData, num.trees = 700, 
+                     min.node.size = 1, sample.fraction = .80, replace = FALSE,
+                     importance = "permutation", respect.unordered.factors = "order",
+                     verbose = FALSE, seed  = 1392)
+
+#then graph
+rfGraph1 <- vip::vip(rfImpurity, num_features = 25, bar = FALSE)
+rfGraph2 <- vip::vip(rfPermutation, num_features = 25, bar = FALSE)
+
+rfGraph1
+
+```
+
+In this graph we can see the top 25 MCA dimensions ordered in terms of impurity importance. It is important to note that these features come from across many of the surveys. This is an exciting finding as our previous work had just looked at the student survey. Creating the reduced dimension data frame has allowed us to glean new value from the HSLS:09 survey. 
+
+Important to note is that the first dimension of the students credits is the most important in determining post graduation outcome, followed by the first dimension of student GPA. However, an interesting find is that parent expectations are the next most important determinant. Many could fit a narrative about the role of parental expectations and family roles surrounding students post-high school career and educational aspiration. We then see the second dimension of credits. Again, intuition is strong here because it would make sense for students' high school education (which is captured in the two dimensions of their credits and GPA) to be predictive of their post-graduation focus. This pattern continues with parents' evaluation of the child behavior and parents' income coming next. 
+
+In our prior analyses the student's own statement of future plans had been very predictive of their focus. In the chart we now see that the first dimension of future plans enters 8th in the variable importance plot. We also see the parents' human capital (single dimension) is important. This all aligns with the narrative that both students and their familial background, expectations, income, etc. play a role in determining what happens after high school graduation.
+
+In the remainder of the plot we see a tapering off of variable importance. The majority of these variables are from the student survey with only a few from the Admin and Counselor survey. These admin and counselor variables likely capture data about the school environment, which would also certainly explain what a student does after their high school graduation. However, they are not the most important factors.
+
+```{r predict2, include=TRUE}
+
+rfGraph2
+
+```
+
+This graph shows the top 25 MCA dimensions ordered in terms of permutation importance. We see the same 5 features are in the top 5, albeit in a slightly different order. Much of the top variables are the same. Beyond this point we see more parent-related features than in the impurity plot. These features are of diminishing importance. We see elements from the student, parent, and administrator surveys. This reinforces the importance of our analyses across the entirety of the HSLS:09. 
+
+Finally, we calculate the RMSE to see how well our outcome is predicted. We present it below. 
+
+```{r predict3, include=TRUE}
+predictedImpurity <- predict(rfImpurity, data=testData)$predictions
+predictedImpurity <- as.numeric(as.factor(predictedImpurity))
+actualImpurity <- as.numeric(testData$S3FOCUS)
+
+rmseImpurity <- mean((predictedImpurity-actualImpurity)^2)^0.5
+
+predictedPermutation <- predict(rfPermutation, data=testData)$predictions
+predictedPermutation <- as.numeric(as.factor(predictedPermutation))
+actualPermutation <- as.numeric(testData$S3FOCUS)
+
+rmsePermutation <- mean((predictedPermutation-actualPermutation)^2)^0.5
+
+rmseImpurity
+rmsePermutation
+```
+The RMSE is the same for both methods, as we would expect. Below we now try to predict college attendance post graduation since it was the most populare answer.
+
+```{r predict college, include=TRUE}
+
+#don't use imputed values for S3FOCUS... it is what we are trying to predict.
+#instead, just use "blank"
+collegeDF <- collegeDF %>% mutate_if(is.factor, fct_explicit_na, "blank")
+
+#separate into training and test data...
+set.seed(482405)
+trn = sample(nrow(collegeDF),19000)
+trainingDataCollege <- collegeDF[trn,]
+testDataCollege <- collegeDF[-trn,]
+
+#now, use a random forest
+rfImpurityCollege <- ranger(formula = S3CLGFT ~ ., data = trainingDataCollege, num.trees = 700,
+                     min.node.size = 1, sample.fraction = .80, replace = FALSE,
+                     importance = "impurity", respect.unordered.factors = "order",
+                     verbose = FALSE, seed  = 1392)
+
+#then graph
+rfGraphCollege <- vip::vip(rfImpurityCollege, num_features = 25, bar = FALSE)
+
+rfGraphCollege
+
+```
+Compared to the impurity method with just general student outcomes, parent variables seem to be more important for attending college. Once again, GPA and credits matter the most. Future plans and child behavior become more important in predicting college attendance.
+
+```{r predict college 2, include=TRUE}
+predictedImpurityCollege <- predict(rfImpurityCollege, data=testDataCollege)$predictions
+predictedImpurityCollege <- as.numeric(as.factor(predictedImpurityCollege))
+actualImpurityCollege <- as.numeric(testData$S3CLGFT)
+
+rmseImpurityCollege <- mean((predictedImpurityCollege-actualImpurityCollege)^2)^0.5
+
+rmseImpurityCollege
+
+```
+The RMSE here is much lower since there are less options to predict. Below we look at a regression tree on general outcomes.
+
+```{r notes to self}
+regTree <- rpart(S3FOCUS ~ .,
+                data=trainingData, method="anova")
+
+prp(regTree, type = 5, branch = 1, varlen = 0, box.palette="Blues")
+```
+Just from this tree, we see credits, parent expectations, and child's behavior (according to parents) being the main determinants for student outcomes.
+
+```{r reg tree}
+#get the RMSE
+predictedTree <- predict(regTree, newdata = testData)
+predictedTree <- as.numeric(as.factor(predictedTree))
+actualTree <- as.numeric(testData$S3FOCUS)
+rmseTree <- mean((predictedTree-actualTree)^2)^0.5
+rmseTree
+
+```
+Oddly, the tree has a lower RMSE. This could be happening because the hyperparameters on the random forest are not tuned well enough, or there is some other unknown underlying issue like being overfit on the training data. Either way, the regression tree is not interpretable. 
+
+Now, in reference back to our main questions presented on the first blog post, we want to make sure we have answered or discussed all aspects of our original question:
+"We are interested in studying the determinants of students’ post high school outcomes. We will begin by asking questions about which factors lead a student to pursue post-secondary education. Subsequently, we would like to better understand determinants that influence a student to attend a 2-year or technical college versus a traditional 4-year school. Are these decisions more related to individual characteristics or school fixed effects, or is there another underlying factor? How do student expectations compare to their actual outcomes?"
+
+We did find in this blog post which factors contribute to pursuing a post-secondary education. We did not look into attending a two-year or four-year college, but that can be a future plan. We found that school fixed effects and teachers played a small role in influencing a child's outcome, but parents and their expectations were highly influential. We found through previous blog posts that there is, in fact, a strong correlation between student expectations and actual outcomes. 
+
+Our future plan could be to map this to a structural model where teachers and schools serve as states, and the problem is from the perspective of a student or a parent, depending on how we want to frame this. It does seem that parents gain utility from their children attending college, which is a common mechanism found in macro education and macro family literature.
+
