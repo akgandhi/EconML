@@ -1,7 +1,7 @@
 ---
-title: "DoubleML-application"
+title: "Clustering and PCA Analysis"
 description: |
-  Clustering and PCA Analysis.
+  An analysis of Medicare take-up and a Singular value decomposition exercise
 author:
   - name: Ornella Darova
   - name: Ozgur Seker
