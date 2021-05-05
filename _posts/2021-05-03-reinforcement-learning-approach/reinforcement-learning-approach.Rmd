@@ -1,0 +1,141 @@
+---
+title: "Learning Approach"
+description: |
+  An attempt to approach social programs as a learning problem
+author:
+  - name: Ozgur Seker
+    url: {}
+  - name: Ornella Darova
+    url: {}
+date: 05-03-2021
+output:
+  distill::distill_article:
+    self_contained: false
+categories: Ornella and Ozgur's project
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(cache = TRUE)
+```
+
+```{r prep, echo=FALSE, warning=FALSE}
+library(dplyr)
+library(ranger)   
+library(rsample)
+library(caret)
+library(rpart)
+library(haven)
+library(rlang)
+library(tibble)
+
+ncps <- read_dta("sampleDataFull.dta")
+
+dataPrep <- function(ncps = ncps){
+
+  
+  ### Build eligibility variable for PUBLIC HOUSING
+  ncps <- as.data.frame(ncps)
+  ncps$hous_elig = ifelse(ncps$famincAssigned<ncps$l80|ncps$disabwrk==2|ncps$age>65,1,0) 
+  ncps$hous_elig = ifelse(ncps$disabwrk==0,".",ncps$hous_elig)
+  ncps$hous_elig = as.numeric(ncps$hous_elig)
+  
+  ### Build eligibility variable for MEDICARE
+  
+  ncps$med_elig = ifelse(ncps$disabwrk==2|ncps$age>65,1,0)
+  ncps$med_elig = ifelse(ncps$disabwrk==0,".",ncps$med_elig)
+  ncps$med_elig = as.numeric(ncps$med_elig)
+  
+  
+  # Prepare variables
+  ncps$pub <- ifelse(ncps$pubhous==1,0,1)
+  ncps$pub <- ifelse(ncps$pubhous==0,".",ncps$pub)
+  ncps$pub <- as.numeric(ncps$pub)
+  
+  ncps$medicare <- ifelse(ncps$carely==1,0,1)
+  ncps$medicare <- ifelse(ncps$carely==0,".",ncps$medicare)
+  ncps$medicare <- as.numeric(ncps$medicare)
+  
+  ncps$age <- as.numeric(ncps$age)
+  ncps$male <- ifelse(ncps$sex==2,0,1)
+  
+  ncps$male <- ifelse(ncps$sex==9,".",ncps$male)
+  ncps$male <- as.numeric(ncps$male)
+  
+  ncps$black <- ifelse(ncps$race==200,1,".")
+  ncps$black <- ifelse(ncps$race==100,0,ncps$black)
+  ncps$black <- as.numeric(ncps$black)
+  ncps$asian <- ifelse(ncps$race==651,1,0)
+  ncps$asian <- as.numeric(ncps$asian)
+  
+  ncps$married <- ifelse(ncps$marst==1|ncps$marst==2,1,0)
+  ncps$married <- ifelse(ncps$marst==9,".",ncps$married)
+  ncps$married <- as.numeric(ncps$married)
+  
+  ncps$foreign <- ifelse(ncps$nativity==4|ncps$nativity==5,1,".")
+  ncps$foreign <- ifelse(ncps$nativity==1,0,ncps$foreign)
+  ncps$foreign <- as.numeric(ncps$foreign)
+  
+  ncps$veteran <- ifelse(ncps$vetstat==1,0,".")
+  ncps$veteran <- ifelse(ncps$vetstat==2,1,ncps$veteran)
+  ncps$veteran <- as.numeric(ncps$veteran)
+  
+  ncps$nchildren <- as.numeric(ncps$nchild)
+  
+  ncps$unemployed <- ifelse(ncps$labforce==2,0,1)
+  ncps$unemployed <- ifelse(ncps$labforce==0,".",ncps$unemployed)
+  ncps$unemployed <- as.numeric(ncps$unemployed)
+  
+  return(ncps)
+}
+
+ncps <- dataPrep(ncps)
+
+
+```
+
+One of the important observations we have from the data is we have people receiving social programs <em> even when they are not eligible <em> according to the program descriptions.
+
+```{r notelig, echo= TRUE}
+
+round(mean(ncps[ncps$hous_elig==0,"pub"] , na.rm = TRUE ), 4)
+round(mean(ncps[ncps$med_elig==0,"medicare"] , na.rm = TRUE ), 4)
+```
+
+Here we could see that almost 1 percent of not eligible people benefit from public houses and 2 percent of not eligible people benefit from medicare. If we take into consideration the fact that a small portion of not eligible people are applying for these programs overall, these ratios become much more important. 
+
+So we could conclude that the boundaries in place are less strict than one would think on who will be approved for the social programs we examine. 
+
+We propose a **model** to understand the approval process and trade-offs inspired by **learning processes**. An analogy to understand trade-offs is below. 
+
+Assume that you have arrived a school with treats and you are waiting for children in the garden to give them treats. You like some children more than others but you can choose only to give a treat or not when a child comes to you. You can't choose who will want a treat from you. The main trade-off is that you want to keep treats for your favourite children; however, if you give a treat to a child who is not among your favourites, he/she will <em> inform other children about you and more children from the favourite pool will come <em>. 
+
+Similarly, officials are facing a budget constraint while accepting individuals into social programs. On the other hand, depending on the characteristics of the applicant, they receive a reward from accepting the applicant. In addition to this, each approved applicant will encourage people in the same and/or lower income tier to apply and each rejected one will discourage people in the same and/or higher income tier to apply. 
+
+This second effect creates the dynamic state transitions we need for learning. 
+
+So we could formulate our process as following:
+
+**State: **
+
+- Remaining budget/capacity
+- Number of applicants and their characteristics
+  
+**Action: **
+
+- Reject/Approve applicants
+  
+**Reward: **
+
+- Rewards from approved applicants are function of their characteristics decided by policy makers. 
+
+**State Transition: **
+
+- Number of future applicants and their distribution in terms of characteristics are probabilistically dependent on past approval/rejection decisions. 
+- This dependence is a black box now but a structural model could be suggested with modeling interactions.
+- This part could be estimated if we have the track of applications with their date and approval status. 
+
+  
+
+
+
+

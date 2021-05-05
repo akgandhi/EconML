@@ -92,8 +92,8 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
 
   <!--  https://schema.org/Article -->
-  <meta property="article:published" itemprop="datePublished" content="2021-04-13" />
-  <meta property="article:created" itemprop="dateCreated" content="2021-04-13" />
+  <meta property="article:published" itemprop="datePublished" content="2021-04-20" />
+  <meta property="article:created" itemprop="dateCreated" content="2021-04-20" />
   <meta name="article:author" content="Ornella Darova" />
   <meta name="article:author" content="Ozgur Seker" />
 
@@ -112,7 +112,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   <!--radix_placeholder_rmarkdown_metadata-->
 
   <script type="text/json" id="radix-rmarkdown-metadata">
-  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","author","date","output","categories"]}},"value":[{"type":"character","attributes":{},"value":["DoubleML-application"]},{"type":"character","attributes":{},"value":["A first attempt in predicting take-up of welfare programs.\n"]},{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name"]}},"value":[{"type":"character","attributes":{},"value":["Ornella Darova"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","url"]}},"value":[{"type":"character","attributes":{},"value":["Ozgur Seker"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":[]}},"value":[]}]}]},{"type":"character","attributes":{},"value":["2021-04-13"]},{"type":"character","attributes":{},"value":["distill::distill_article"]},{"type":"character","attributes":{},"value":["Ornella and Ozgur's project"]}]}
+  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","author","date","output","categories"]}},"value":[{"type":"character","attributes":{},"value":["DoubleML-application"]},{"type":"character","attributes":{},"value":["A first attempt in predicting take-up of welfare programs.\n"]},{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name"]}},"value":[{"type":"character","attributes":{},"value":["Ornella Darova"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","url"]}},"value":[{"type":"character","attributes":{},"value":["Ozgur Seker"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":[]}},"value":[]}]}]},{"type":"character","attributes":{},"value":["2021-04-20"]},{"type":"character","attributes":{},"value":["distill::distill_article"]},{"type":"character","attributes":{},"value":["Ornella and Ozgur's project"]}]}
   </script>
   <!--/radix_placeholder_rmarkdown_metadata-->
   
@@ -1456,7 +1456,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <!--radix_placeholder_front_matter-->
 
 <script id="distill-front-matter" type="text/json">
-{"title":"DoubleML-application","description":"A first attempt in predicting take-up of welfare programs.","authors":[{"author":"Ornella Darova","authorURL":"#","affiliation":"&nbsp;","affiliationURL":"#","orcidID":""},{"author":"Ozgur Seker","authorURL":{},"affiliation":"&nbsp;","affiliationURL":"#","orcidID":""}],"publishedDate":"2021-04-13T00:00:00.000+00:00","citationText":"Darova & Seker, 2021"}
+{"title":"DoubleML-application","description":"A first attempt in predicting take-up of welfare programs.","authors":[{"author":"Ornella Darova","authorURL":"#","affiliation":"&nbsp;","affiliationURL":"#","orcidID":""},{"author":"Ozgur Seker","authorURL":{},"affiliation":"&nbsp;","affiliationURL":"#","orcidID":""}],"publishedDate":"2021-04-20T00:00:00.000+00:00","citationText":"Darova & Seker, 2021"}
 </script>
 
 <!--/radix_placeholder_front_matter-->
@@ -1480,11 +1480,13 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   
 ,   Ozgur Seker true 
   
-<br />2021-04-13
+<br />2021-04-20
 </div>
 
 <div class="d-article">
-<p>In previous posts, we have prepared our data and set eligibility variable. In this post, we will create a setup for double ML package applications.</p>
+<h1 id="introduction">Introduction</h1>
+<p>In previous posts, we prepared our data and set the eligibility variables for different programs. We also started inspecting possible predictors of the take-up of welfare programs through random forests.</p>
+<p>In this post, we will create a setup for double ML package applications.</p>
 <div class="layout-chunk" data-layout="l-body">
 
 </div>
@@ -1498,7 +1500,8 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 </code></pre>
 </div>
 </div>
-<p>The function below prepares data and apply doubleML with random forest. If argument subset is true, it uses the subset of data according to given arguments.</p>
+<h1 id="doubleml">DoubleML</h1>
+<p>The function below prepares data and applies doubleML with random forest. If the argument subset is true, it uses the subset of data according to given arguments.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class="va">effectByDML</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span> <span class="op">=</span> <span class="va">ncps</span>, <span class="va">yvar</span>, <span class="va">dvar</span>, <span class="va">xvars</span>, <span class="va">subset</span><span class="op">=</span><span class="cn">FALSE</span>, <span class="va">subsetcols</span> <span class="op">=</span> <span class="cn">NA</span>, <span class="va">subsetvars</span> <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span><span class="op">{</span>
@@ -1538,29 +1541,31 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 </code></pre>
 </div>
 </div>
-<p>Before running the code, we detect ordered variables in our dataset and make all other variables categorical variable.</p>
+<p>Before running the code, we detect ordered variables in our dataset and convert all categorical variables to factor variables.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class="va">orderedVars</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">&quot;heatval&quot;</span>, <span class="st">&quot;stampmo&quot;</span>, <span class="st">&quot;atelunch&quot;</span>, <span class="st">&quot;frelunch&quot;</span>, <span class="st">&quot;faminc&quot;</span>, <span class="st">&quot;unitsstr&quot;</span>, 
                  <span class="st">&quot;age&quot;</span>, <span class="st">&quot;famsize&quot;</span>, <span class="st">&quot;nchild&quot;</span>, <span class="st">&quot;nchlt5&quot;</span>, <span class="st">&quot;famunit&quot;</span>, <span class="st">&quot;eldch&quot;</span>, <span class="st">&quot;yngch&quot;</span>, <span class="st">&quot;durunem2&quot;</span>,
-                 <span class="st">&quot;uhrsworkt&quot;</span>, <span class="st">&quot;educ&quot;</span>, <span class="st">&quot;firmsize&quot;</span>, <span class="st">&quot;health&quot;</span>, <span class="st">&quot;famincAssigned&quot;</span>, <span class="st">&quot;hhincome&quot;</span>, <span class="st">&quot;income_county&quot;</span><span class="op">)</span>
+                 <span class="st">&quot;uhrsworkt&quot;</span>, <span class="st">&quot;educ&quot;</span>, <span class="st">&quot;firmsize&quot;</span>, <span class="st">&quot;health&quot;</span>, <span class="st">&quot;famincAssigned&quot;</span>, <span class="st">&quot;hhincome&quot;</span>, 
+                 <span class="st">&quot;income_county&quot;</span>, <span class="st">&quot;phone&quot;</span>, <span class="st">&quot;black&quot;</span>, <span class="st">&quot;vetstat&quot;</span>, <span class="st">&quot;citizen&quot;</span>, <span class="st">&quot;nativity&quot;</span>, <span class="st">&quot;empstat&quot;</span>, <span class="st">&quot;union&quot;</span><span class="op">)</span>
 
-<span class="va">ncps</span> <span class="op">&lt;-</span> <span class="va">ncps</span> <span class="op">%&gt;%</span> <span class="fu">mutate_all</span><span class="op">(</span> <span class="va">as.factor</span><span class="op">)</span>
+<span class="va">ncps</span> <span class="op">&lt;-</span> <span class="va">ncps</span> <span class="op">%&gt;%</span> <span class="fu">mutate_all</span><span class="op">(</span><span class="va">as.factor</span><span class="op">)</span>
 <span class="va">ncps</span> <span class="op">&lt;-</span> <span class="va">ncps</span> <span class="op">%&gt;%</span> <span class="fu">mutate_at</span><span class="op">(</span><span class="va">orderedVars</span>, <span class="va">as.numeric</span><span class="op">)</span>
 </code></pre>
 </div>
 </div>
 <p>We set our output interest as y, variables we want to estimate their effects as dlist, all covariates as xvars, and the variables that their effects should be normalized as dlistNormalize.</p>
+<h2 id="public-housing">Public housing</h2>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class="va">y</span> <span class="op">&lt;-</span> <span class="st">&quot;pub&quot;</span>
-<span class="va">dlist</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">&quot;famsize&quot;</span>, <span class="st">&quot;famincAssigned&quot;</span>, <span class="st">&quot;income_county&quot;</span>, <span class="st">&quot;nchild&quot;</span><span class="op">)</span>
+<span class="va">dlist</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">&quot;famsize&quot;</span>, <span class="st">&quot;famincAssigned&quot;</span>, <span class="st">&quot;income_county&quot;</span>, <span class="st">&quot;nchild&quot;</span>, <span class="st">&quot;phone&quot;</span>, <span class="st">&quot;black&quot;</span>, <span class="st">&quot;vetstat&quot;</span>, <span class="st">&quot;citizen&quot;</span>, <span class="st">&quot;nativity&quot;</span>, <span class="st">&quot;empstat&quot;</span>, <span class="st">&quot;union&quot;</span><span class="op">)</span>
 <span class="va">dlistNormalize</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">&quot;famincAssigned&quot;</span>, <span class="st">&quot;income_county&quot;</span><span class="op">)</span>
-<span class="va">xvars</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">&quot;famsize&quot;</span>,<span class="st">&quot;famincAssigned&quot;</span>, <span class="st">&quot;age&quot;</span>, <span class="st">&quot;empstat&quot;</span>, <span class="st">&quot;labforce&quot;</span>, <span class="st">&quot;famunit&quot;</span>, <span class="st">&quot;firmsize&quot;</span>, <span class="st">&quot;health&quot;</span>, <span class="st">&quot;income_county&quot;</span>,<span class="st">&quot;phinsur&quot;</span>, <span class="st">&quot;nchild&quot;</span>, <span class="st">&quot;black&quot;</span>, <span class="st">&quot;disabwrk&quot;</span>, <span class="st">&quot;sex&quot;</span><span class="op">)</span>
+<span class="va">xvars</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">&quot;famsize&quot;</span>,<span class="st">&quot;famincAssigned&quot;</span>, <span class="st">&quot;age&quot;</span>, <span class="st">&quot;empstat&quot;</span>, <span class="st">&quot;labforce&quot;</span>, <span class="st">&quot;famunit&quot;</span>, <span class="st">&quot;firmsize&quot;</span>, <span class="st">&quot;health&quot;</span>, <span class="st">&quot;income_county&quot;</span>, <span class="st">&quot;phinsur&quot;</span>, <span class="st">&quot;nchild&quot;</span>, <span class="st">&quot;black&quot;</span>, <span class="st">&quot;disabwrk&quot;</span>, <span class="st">&quot;sex&quot;</span><span class="op">)</span>
 </code></pre>
 </div>
 </div>
-<p>We are interested in estimating effect on take-up rate for all and for only eligible people. Difference between these two might also give us some intuition. The code below prepares a table for results.</p>
+<p>We are interested in estimating effect on take-up rate of public housing for all, and subsequently exclusively for eligible people. The code below prepares a table for results.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class="va">resultsObjectsAll</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="op">)</span>
@@ -1599,47 +1604,71 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 </div>
 <pre><code>[1] &quot;Calculating effect of famsize on take up rate for all&quot;
 [1] &quot;Calculating effect of famsize on take up rate for eligible only&quot;
-Growing trees.. Progress: 67%. Estimated remaining time: 1 minute, 48 seconds.
 [1] &quot;Calculating effect of famincAssigned on take up rate for all&quot;
 [1] &quot;Calculating effect of famincAssigned on take up rate for eligible only&quot;
 [1] &quot;Calculating effect of income_county on take up rate for all&quot;
 [1] &quot;Calculating effect of income_county on take up rate for eligible only&quot;
-Growing trees.. Progress: 33%. Estimated remaining time: 32 minutes, 39 seconds.
 [1] &quot;Calculating effect of nchild on take up rate for all&quot;
-Growing trees.. Progress: 48%. Estimated remaining time: 7 minutes, 38 seconds.
-[1] &quot;Calculating effect of nchild on take up rate for eligible only&quot;</code></pre>
+[1] &quot;Calculating effect of nchild on take up rate for eligible only&quot;
+[1] &quot;Calculating effect of phone on take up rate for all&quot;
+[1] &quot;Calculating effect of phone on take up rate for eligible only&quot;
+[1] &quot;Calculating effect of black on take up rate for all&quot;
+[1] &quot;Calculating effect of black on take up rate for eligible only&quot;
+[1] &quot;Calculating effect of vetstat on take up rate for all&quot;
+[1] &quot;Calculating effect of vetstat on take up rate for eligible only&quot;
+[1] &quot;Calculating effect of citizen on take up rate for all&quot;
+[1] &quot;Calculating effect of citizen on take up rate for eligible only&quot;
+[1] &quot;Calculating effect of nativity on take up rate for all&quot;
+[1] &quot;Calculating effect of nativity on take up rate for eligible only&quot;
+[1] &quot;Calculating effect of empstat on take up rate for all&quot;
+[1] &quot;Calculating effect of empstat on take up rate for eligible only&quot;
+Growing trees.. Progress: 3%. Estimated remaining time: 8 hours, 26 minutes, 1 seconds.
+Growing trees.. Progress: 20%. Estimated remaining time: 2 hours, 19 minutes, 12 seconds.
+Growing trees.. Progress: 75%. Estimated remaining time: 5 minutes, 16 seconds.
+Growing trees.. Progress: 8%. Estimated remaining time: 2 hours, 53 minutes, 50 seconds.
+Growing trees.. Progress: 66%. Estimated remaining time: 8 minutes, 55 seconds.
+Growing trees.. Progress: 6%. Estimated remaining time: 4 hours, 25 minutes, 17 seconds.
+Growing trees.. Progress: 61%. Estimated remaining time: 13 minutes, 4 seconds.
+[1] &quot;Calculating effect of union on take up rate for all&quot;
+Growing trees.. Progress: 58%. Estimated remaining time: 17 minutes, 32 seconds.
+Growing trees.. Progress: 42%. Estimated remaining time: 47 minutes, 9 seconds.
+Growing trees.. Progress: 21%. Estimated remaining time: 32 minutes, 13 seconds.
+[1] &quot;Calculating effect of union on take up rate for eligible only&quot;</code></pre>
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span><span class="op">(</span><span class="va">resultsDF</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">&quot;d_var&quot;</span>, <span class="st">&quot;coef_all&quot;</span>, <span class="st">&quot;t_stat_all&quot;</span>, <span class="st">&quot;coef_elig&quot;</span>, <span class="st">&quot;t_stat_elig&quot;</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/print.dataframe.html">print.data.frame</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html">as.data.frame</a></span><span class="op">(</span> <span class="va">resultsDF</span><span class="op">)</span> <span class="op">)</span>
 </code></pre>
 </div>
-<pre><code>           d_var  coef_all t_stat_all coef_elig t_stat_elig
-1        famsize  0.000442   1.022335  0.000709     1.09072
-2 famincAssigned -0.042727 -75.337132 -0.083409  -53.882513
-3  income_county  0.001601   2.873297  0.001224    1.435922
-4         nchild  0.011367   14.55351  0.013188   12.468708</code></pre>
+<pre><code>            d_var  coef_all t_stat_all coef_elig t_stat_elig
+1         famsize   4.9e-05   0.113022  0.000473     0.73086
+2  famincAssigned -0.042596  -75.17981   -0.0834  -53.833391
+3   income_county  0.001568    2.81427  0.001165    1.366655
+4          nchild  0.010907  13.923144  0.012621   11.942372
+5           phone -0.001851  -1.335905 -0.000111   -0.061274
+6           black   0.06768  42.611013  0.089519   40.642379
+7         vetstat -0.021251  -8.757995 -0.031192     -8.5331
+8         citizen -0.002913  -8.909176 -0.004551   -9.440911
+9        nativity  0.000429   1.359427  0.000367    0.758449
+10        empstat  0.001004   1.086722  0.002039    1.655936
+11          union -0.001892  -1.569632 -0.006475   -2.731691</code></pre>
 </div>
-<p>We see that income per capita of the county has positive effect on take-up rates in full data but it is actually because of when per-capita income is high, it makes more people eligible due to increasing poverty levels. When we run it for only eligible people we see that this effect becomes insignificant.</p>
-<p>Family income is still important factor on take-up rate in eligible people.</p>
-<p>One observation we have is that, when we remove number of childs from covariates, we suddenly start to see significant effect of family size on take-up rates. However it is not significant when the number of childrens is included. On the other hand, even though family size is included in covariates, effect of the nchild is significant.</p>
+<p>We see that income per capita of the county has a positive effect on the take-up rates in full data: this is due to the fact that when per-capita income is high, more people are eligible due to increasing poverty levels, as eligibility is set in terms of a percentage of the median income in the corresponding county. When we run the same empirical strategy exclusively for the pool of eligible individuals, we observe that this effect, indeed, becomes not significant.</p>
+<p>The family income still represents an important factor for the take-up rate for the pool of eligible individuals.</p>
+<p>We can observe that, when we remove the number of children from the covariates, we suddenly start to see a significant effect of family size on take-up rates. However, it is not significant when the number of children is included. On the other hand, even though family size is included in covariates, effect of the number of children is significant.</p>
+<p>Correlation between family size and number of children is about 0.6, so we could expect the 60% of the effect of nchild as family size effect when we remove nchild. However the effect estimated with doubleML is much lower than that.</p>
 <div class="layout-chunk" data-layout="l-body">
-<pre><code>Growing trees.. Progress: 71%. Estimated remaining time: 1 minute, 57 seconds.</code></pre>
 <pre><code>    d_var coef_all t_stat_all coef_elig t_stat_elig
-1 famsize 0.002471   7.260921  0.003043    5.863601</code></pre>
+1 famsize 0.002304   6.769922  0.002831    5.461015</code></pre>
 </div>
-<p>I also wanted to check effects of nchild, family size, and nchlt5 (number of childrent younger than 5) when nchlt is also included.</p>
+<p>We also wanted to check effects of the number of children, family size, and the variable nchlt5 (number of children that are younger than 5) when nchlt is also included.</p>
 <div class="layout-chunk" data-layout="l-body">
-<pre><code>Growing trees.. Progress: 23%. Estimated remaining time: 14 minutes, 40 seconds.
-Growing trees.. Progress: 39%. Estimated remaining time: 29 minutes, 19 seconds.
-Growing trees.. Progress: 9%. Estimated remaining time: 46 minutes, 50 seconds.
-Growing trees.. Progress: 17%. Estimated remaining time: 1 hour, 18 minutes, 46 seconds.</code></pre>
 <pre><code>    d_var  coef_all t_stat_all coef_elig t_stat_elig
-1 famsize -0.000128  -0.293397  -8.7e-05    -0.13432
-2  nchild  0.011889  14.015881  0.013895   12.000901
-3  nchlt5  0.004345   2.982506  0.004722    2.326201</code></pre>
+1 famsize -0.000406  -0.932127 -0.000385   -0.597012
+2  nchild   0.01143  13.428632  0.013509   11.664781
+3  nchlt5   0.00399   2.728017  0.004484    2.200761</code></pre>
 </div>
-<p>After including nchlt5, significance of family size has decreased more and we see that nchlt5 has significant effect on take-up rates but it is lower than number of all children.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<p>After including nchlt5, the significance of the family size decreases more, while we can observe that the variable nchlt5 has a significant effect on take-up rates, but it is lower than the number of all children. In other words: the number of children seems to have a strong effect, and the younger children drive a large part of this impact, while once taken into consideration the number of children, the effect of family size per se is not that relevant. This impaact could come from several factors: first of all, it could be the case that households with a higher number of very young children are given priority in these programs; moreover, it could be the case that households with very young children are more easily approached by several institutions that might inform them: hospitals, kindergartens and so on.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>

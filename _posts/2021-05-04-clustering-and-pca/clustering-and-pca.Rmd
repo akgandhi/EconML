@@ -1,0 +1,299 @@
+---
+title: "Clustering and PCA Analysis"
+description: |
+  An analysis of Medicare take-up and a Singular value decomposition exercise
+author:
+  - name: Ornella Darova
+  - name: Ozgur Seker
+    url: {}
+date: "`r Sys.Date()`"
+output: distill::distill_article
+categories: Ornella and Ozgur's project
+---
+
+# Clustering
+
+## Medicare
+
+We perform a clustering exercise at the state level, focusing on the take-up of the Medicare program.
+```{r prep, echo=FALSE,warnings=FALSE, message=FALSE,include=FALSE}
+library(dplyr)
+library(ranger)   
+library(rsample)
+library(caret)
+library(rpart)
+library(haven)
+library(rlang)
+library(tibble)
+
+ncps <- read_dta("/Users/ornelladarova/Dropbox/Penn/ML/Predicting Take-Up Rate/sampleDataFull.dta")
+
+dataPrep <- function(ncps = ncps){
+
+  
+  ### Build eligibility variable for PUBLIC HOUSING
+  ncps <- as.data.frame(ncps)
+  ncps$hous_elig = ifelse(ncps$famincAssigned<ncps$l80|ncps$disabwrk==2|ncps$age>65,1,0) 
+  ncps$hous_elig = ifelse(ncps$disabwrk==0,".",ncps$hous_elig)
+  ncps$hous_elig = as.numeric(ncps$hous_elig)
+  
+  ### Build eligibility variable for MEDICARE
+  
+  ncps$med_elig = ifelse(ncps$disabwrk==2|ncps$age>65,1,0)
+  ncps$med_elig = ifelse(ncps$disabwrk==0,".",ncps$med_elig)
+  ncps$med_elig = as.numeric(ncps$med_elig)
+  
+  
+  # Prepare variables
+  ncps$pub <- ifelse(ncps$pubhous==1,0,1)
+  ncps$pub <- ifelse(ncps$pubhous==0,".",ncps$pub)
+  ncps$pub <- as.numeric(ncps$pub)
+  
+  ncps$medicare <- ifelse(ncps$carely==1,0,1)
+  ncps$medicare <- ifelse(ncps$carely==0,".",ncps$medicare)
+  ncps$medicare <- as.numeric(ncps$medicare)
+  
+  ncps$age <- as.numeric(ncps$age)
+  ncps$male <- ifelse(ncps$sex==2,0,1)
+  
+  ncps$male <- ifelse(ncps$sex==9,".",ncps$male)
+  ncps$male <- as.numeric(ncps$male)
+  
+  ncps$black <- ifelse(ncps$race==200,1,".")
+  ncps$black <- ifelse(ncps$race==100,0,ncps$black)
+  ncps$black <- as.numeric(ncps$black)
+  ncps$asian <- ifelse(ncps$race==651,1,0)
+  ncps$asian <- as.numeric(ncps$asian)
+  
+  ncps$married <- ifelse(ncps$marst==1|ncps$marst==2,1,0)
+  ncps$married <- ifelse(ncps$marst==9,".",ncps$married)
+  ncps$married <- as.numeric(ncps$married)
+  
+  ncps$foreign <- ifelse(ncps$nativity==4|ncps$nativity==5,1,".")
+  ncps$foreign <- ifelse(ncps$nativity==1,0,ncps$foreign)
+  ncps$foreign <- as.numeric(ncps$foreign)
+  
+  ncps$veteran <- ifelse(ncps$vetstat==1,0,".")
+  ncps$veteran <- ifelse(ncps$vetstat==2,1,ncps$veteran)
+  ncps$veteran <- as.numeric(ncps$veteran)
+  
+  ncps$nchildren <- as.numeric(ncps$nchild)
+  
+  ncps$unemployed <- ifelse(ncps$labforce==2,0,1)
+  ncps$unemployed <- ifelse(ncps$labforce==0,".",ncps$unemployed)
+  ncps$unemployed <- as.numeric(ncps$unemployed)
+  
+  ncps$phone <- ifelse(ncps$phone==0|ncps$phone==9,NA,ncps$phone)
+  ncps$phone <- ifelse(ncps$phone==1,0,ncps$phone)
+  ncps$phone <- ifelse(ncps$phone==2|ncps$phone==3,1,ncps$phone)
+  
+  return(ncps)
+}
+
+ncps <- dataPrep(ncps)
+
+
+```
+
+```{r clusters, echo=TRUE,warnings=FALSE,message=FALSE}
+library(cluster)
+library(factoextra)
+
+# Consider eligible individuals for medicare
+ncps_el = subset(ncps, ncps$med_elig==1)
+ncps_sub = select(ncps_el,c("famincAssigned","pub","medicare","male","black",
+               "married","foreign","veteran","nchildren","unemployed",
+               "phone","is_largefmly","health","statefip"))
+ncps_sub[c("famincAssigned","pub","medicare","male","black",
+               "married","foreign","veteran","nchildren","unemployed",
+               "phone","is_largefmly","health")] = ncps_sub[c("famincAssigned","pub","medicare","male","black",
+               "married","foreign","veteran","nchildren","unemployed",
+               "phone","is_largefmly","health")] %>% mutate_all(as.numeric)
+
+```
+
+```{r clusters_1, echo=TRUE,warnings=FALSE,message=FALSE}
+# Consider first those who actually take up the program
+take_up = subset(ncps_sub,medicare==1)
+take_up = take_up[c("famincAssigned","pub","male","black",
+               "married","foreign","veteran","nchildren","unemployed",
+               "phone","is_largefmly","health","statefip")]
+
+# Aggregate at the state level
+ncps_statefip <- aggregate(take_up, by=list(take_up$statefip), FUN=mean, na.rm = TRUE)
+ncps_statefip$famincAssigned <- scale(ncps_statefip$famincAssigned)
+
+## Elbow method to find optimal number of clusters
+set.seed(123)
+
+# Function to compute total within-cluster sum of square 
+wss <- function(k) {
+  kmeans(na.omit(ncps_statefip), k, nstart = 10 )$tot.withinss
+}
+
+# Compute wss
+k.values <- 1:10
+
+# Extract wss for different numbers of clusters
+library(purrr)
+wss_values <- purrr::map_dbl(k.values, wss)
+
+plot(k.values, wss_values,
+       type="b", pch = 19, frame = FALSE, 
+       xlab="Number of clusters K",
+       ylab="Total within-clusters sum of squares")
+
+## 4 clusters seems to be sufficient
+# Clustering
+
+rownames(ncps_statefip) = ncps_statefip$statefip
+
+ncps_statefip = select(ncps_statefip,c("famincAssigned","pub","male","black",
+               "married","foreign","veteran","nchildren","unemployed",
+               "phone","is_largefmly","health"))
+k2 <- kmeans(na.omit(ncps_statefip), centers = 4, nstart = 25)
+str(k2)
+
+
+fviz_cluster(k2, data = na.omit(ncps_statefip))
+
+na.omit(ncps_statefip) %>%
+  mutate(Cluster = k2$cluster) %>%
+  group_by(Cluster) %>%
+  summarise_all("mean")
+
+na.omit(ncps_statefip) %>%
+  mutate(Cluster = k2$cluster) %>%
+  group_by(Cluster)
+
+```
+
+The formed clusters are the following:
+
+1) Connecticut, District of Columbia, Hawaii, Marayland, New Hampshire, New Jersey, Virginia, Washington
+2) Arizona, Delaware, Georgia, Illinoi, Indiana, Iowa, Maine, Michigan, Minnesota, Nebraska, Nevada, New Mexico, Oklahoma, Oregon, Pennsylvania, Tennessee
+3) California, Colorado, Kansas, Massachussetts, Missouri, New York, Utah
+4) Alabama, Arkansas, Florida, Idaho, Kentucky, Louisiana, Montana, North Carolina, North Dakota, Ohio, South Carolina, Texas, West Virginia, Wisconsin
+
+
+```{r clusters_2, echo=FALSE,warnings=FALSE,message=FALSE}
+# Consider now those who do not take up the program
+take_up = subset(ncps_sub,medicare==0)
+take_up = take_up[c("famincAssigned","pub","male","black",
+               "married","foreign","veteran","nchildren","unemployed",
+               "phone","is_largefmly","health","statefip")]
+
+# Aggregate at the state level
+ncps_statefip <- aggregate(take_up, by=list(take_up$statefip), FUN=mean, na.rm = TRUE)
+ncps_statefip$famincAssigned <- scale(ncps_statefip$famincAssigned)
+
+## Elbow method to find optimal number of clusters
+set.seed(123)
+
+# Function to compute total within-cluster sum of square 
+wss <- function(k) {
+  kmeans(na.omit(ncps_statefip), k, nstart = 10 )$tot.withinss
+}
+
+# Compute wss
+k.values <- 1:10
+
+# Extract wss for different numbers of clusters
+library(purrr)
+wss_values <- purrr::map_dbl(k.values, wss)
+
+plot(k.values, wss_values,
+       type="b", pch = 19, frame = FALSE, 
+       xlab="Number of clusters K",
+       ylab="Total within-clusters sum of squares")
+
+## 4 clusters seems to be sufficient
+# Clustering
+
+rownames(ncps_statefip) = ncps_statefip$statefip
+
+ncps_statefip = select(ncps_statefip,c("famincAssigned","pub","male","black",
+               "married","foreign","veteran","nchildren","unemployed",
+               "phone","is_largefmly","health"))
+k2 <- kmeans(na.omit(ncps_statefip), centers = 4, nstart = 25)
+str(k2)
+
+
+fviz_cluster(k2, data = na.omit(ncps_statefip))
+
+na.omit(ncps_statefip) %>%
+  mutate(Cluster = k2$cluster) %>%
+  group_by(Cluster) %>%
+  summarise_all("mean")
+
+na.omit(ncps_statefip) %>%
+  mutate(Cluster = k2$cluster) %>%
+  group_by(Cluster)
+
+```
+
+The formed clusters are the following:
+
+1) Connecticut, Maryland, New Hampshire
+2) Alabama, Arizona, Arkansas, Idaho, Iowa, Maine, Montana, New Mexico, Ohio, Oklahoma, Oregon, South Carolina, Texas, West Virginia
+3) California, Georgia, Hawaii, Massachussetts, Minnesota, Missouri, New Jersey, New York, Utah, Virginia, Washington
+4) Colorado, Delaware, District of Columbia, Florida, Illinois, Indiana, Kansas, Kentucky, Louisiana, Michigan, Nebraska, North Carolina, North Dakota, Pennsylvania, Tennessee, Wisconsin
+
+
+# Principal Component Analysis
+
+We are going to perform now a Singular value decomposition exercise.
+
+
+```{r pca, echo=TRUE,warnings=FALSE,message=FALSE}
+ncps_statefip <- aggregate(ncps_sub, by=list(ncps_sub$statefip), FUN=mean, na.rm = TRUE)
+ncps_statefip$Group.1 <- NULL
+ncps.pca <- prcomp(na.omit(ncps_statefip), center = TRUE,scale. = TRUE)
+
+summary(ncps.pca)
+str(ncps.pca)
+
+# Visualize eigenvalues (scree plot). Show the percentage of variances explained by each principal component
+
+fviz_eig(ncps.pca)
+
+# Graph of states States with a similar profile are grouped together
+
+fviz_pca_ind(ncps.pca,
+             col.ind = "cos2", # Color by the quality of representation
+             gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
+             repel = TRUE
+             )
+
+# Graph of variables. Positive correlated variables point to the same side of the plot. Negative correlated variables point to opposite sides of the graph
+
+fviz_pca_var(ncps.pca,
+             col.var = "contrib", # Color by contributions to the PC
+             gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
+             repel = TRUE
+             )
+
+groups <- as.factor(ncps_sub$pub[1:dim(ncps_statefip)[1]])
+
+fviz_pca_ind(ncps.pca,
+             col.ind = groups, # color by groups
+             palette = c("#00AFBB",  "#FC4E07"),
+             addEllipses = TRUE, # Concentration ellipses
+             ellipse.type = "confidence",
+             legend.title = "Groups",
+             repel = TRUE
+             )
+
+groups <- as.factor(ncps_sub$medicare[1:dim(ncps_statefip)[1]])
+
+fviz_pca_ind(ncps.pca,
+             col.ind = groups, # color by groups
+             palette = c("#00AFBB",  "#FC4E07"),
+             addEllipses = TRUE, # Concentration ellipses
+             ellipse.type = "confidence",
+             legend.title = "Groups",
+             repel = TRUE
+             )
+
+
+```
