@@ -1,0 +1,4004 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1"/>
+  <meta name="generator" content="distill" />
+
+  <style type="text/css">
+  /* Hide doc at startup (prevent jankiness while JS renders/transforms) */
+  body {
+    visibility: hidden;
+  }
+  </style>
+
+ <!--radix_placeholder_import_source-->
+ <!--/radix_placeholder_import_source-->
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css" data-origin="pandoc">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(data-line-number);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ad0000; } /* Alert */
+code span.an { color: #5e5e5e; } /* Annotation */
+code span.at { color: #20794d; } /* Attribute */
+code span.bn { color: #ad0000; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007ba5; } /* ControlFlow */
+code span.ch { color: #20794d; } /* Char */
+code span.cn { color: #8f5902; } /* Constant */
+code span.co { color: #5e5e5e; } /* Comment */
+code span.cv { color: #5e5e5e; font-style: italic; } /* CommentVar */
+code span.do { color: #5e5e5e; font-style: italic; } /* Documentation */
+code span.dt { color: #ad0000; } /* DataType */
+code span.dv { color: #ad0000; } /* DecVal */
+code span.er { color: #ad0000; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #ad0000; } /* Float */
+code span.fu { color: #4758ab; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #5e5e5e; } /* Information */
+code span.kw { color: #007ba5; } /* Keyword */
+code span.op { color: #5e5e5e; } /* Operator */
+code span.ot { color: #007ba5; } /* Other */
+code span.pp { color: #ad0000; } /* Preprocessor */
+code span.sc { color: #20794d; } /* SpecialChar */
+code span.ss { color: #20794d; } /* SpecialString */
+code span.st { color: #20794d; } /* String */
+code span.va { color: #111111; } /* Variable */
+code span.vs { color: #20794d; } /* VerbatimString */
+code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
+</style>
+
+  <!--radix_placeholder_meta_tags-->
+<title>Econ 712: Price Elasticities from Algorithmic and Structural Models</title>
+
+<meta property="description" itemprop="description" content="Statistical Inference and Machine Learning"/>
+
+
+<!--  https://schema.org/Article -->
+<meta property="article:published" itemprop="datePublished" content="2021-03-27"/>
+<meta property="article:created" itemprop="dateCreated" content="2021-03-27"/>
+<meta name="article:author" content="Jonathan Arnold"/>
+<meta name="article:author" content="Sheng Chao Ho"/>
+
+<!--  https://developers.facebook.com/docs/sharing/webmasters#markup -->
+<meta property="og:title" content="Econ 712: Price Elasticities from Algorithmic and Structural Models"/>
+<meta property="og:type" content="article"/>
+<meta property="og:description" content="Statistical Inference and Machine Learning"/>
+<meta property="og:locale" content="en_US"/>
+<meta property="og:site_name" content="Econ 712"/>
+
+<!--  https://dev.twitter.com/cards/types/summary -->
+<meta property="twitter:card" content="summary"/>
+<meta property="twitter:title" content="Econ 712: Price Elasticities from Algorithmic and Structural Models"/>
+<meta property="twitter:description" content="Statistical Inference and Machine Learning"/>
+
+<!--/radix_placeholder_meta_tags-->
+  <!--radix_placeholder_rmarkdown_metadata-->
+
+<script type="text/json" id="radix-rmarkdown-metadata">
+{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","author","date","output","categories","preview","header-includes"]}},"value":[{"type":"character","attributes":{},"value":["Price Elasticities from Algorithmic and Structural Models"]},{"type":"character","attributes":{},"value":["Statistical Inference and Machine Learning"]},{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name"]}},"value":[{"type":"character","attributes":{},"value":["Jonathan Arnold"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name"]}},"value":[{"type":"character","attributes":{},"value":["Sheng Chao Ho"]}]}]},{"type":"character","attributes":{},"value":["03-27-2021"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["self_contained"]}},"value":[{"type":"logical","attributes":{},"value":[false]}]}]},{"type":"character","attributes":{},"value":["Jonathan and Sheng"]},{"type":"character","attributes":{},"value":["preview_image.jpeg"]},{"type":"character","attributes":{},"value":["\\usepackage{caption}","\\usepackage{dcolumn}"]}]}
+</script>
+<!--/radix_placeholder_rmarkdown_metadata-->
+  
+  <script type="text/json" id="radix-resource-manifest">
+  {"type":"character","attributes":{},"value":["jonathan-sheng-algorithmic-demand-estimation-causal_files/anchor-4.2.2/anchor.min.js","jonathan-sheng-algorithmic-demand-estimation-causal_files/bowser-1.9.3/bowser.min.js","jonathan-sheng-algorithmic-demand-estimation-causal_files/distill-2.2.21/template.v2.js","jonathan-sheng-algorithmic-demand-estimation-causal_files/figure-html5/unnamed-chunk-10-1.png","jonathan-sheng-algorithmic-demand-estimation-causal_files/figure-html5/unnamed-chunk-11-1.png","jonathan-sheng-algorithmic-demand-estimation-causal_files/figure-html5/unnamed-chunk-12-1.png","jonathan-sheng-algorithmic-demand-estimation-causal_files/figure-html5/unnamed-chunk-13-1.png","jonathan-sheng-algorithmic-demand-estimation-causal_files/figure-html5/unnamed-chunk-14-1.png","jonathan-sheng-algorithmic-demand-estimation-causal_files/figure-html5/unnamed-chunk-15-1.png","jonathan-sheng-algorithmic-demand-estimation-causal_files/figure-html5/unnamed-chunk-16-1.png","jonathan-sheng-algorithmic-demand-estimation-causal_files/figure-html5/unnamed-chunk-17-1.png","jonathan-sheng-algorithmic-demand-estimation-causal_files/figure-html5/unnamed-chunk-18-1.png","jonathan-sheng-algorithmic-demand-estimation-causal_files/figure-html5/unnamed-chunk-4-1.png","jonathan-sheng-algorithmic-demand-estimation-causal_files/figure-html5/unnamed-chunk-5-1.png","jonathan-sheng-algorithmic-demand-estimation-causal_files/figure-html5/unnamed-chunk-6-1.png","jonathan-sheng-algorithmic-demand-estimation-causal_files/figure-html5/unnamed-chunk-7-1.png","jonathan-sheng-algorithmic-demand-estimation-causal_files/jquery-1.11.3/jquery.min.js","jonathan-sheng-algorithmic-demand-estimation-causal_files/popper-2.6.0/popper.min.js","jonathan-sheng-algorithmic-demand-estimation-causal_files/tippy-6.2.7/tippy-bundle.umd.min.js","jonathan-sheng-algorithmic-demand-estimation-causal_files/tippy-6.2.7/tippy-light-border.css","jonathan-sheng-algorithmic-demand-estimation-causal_files/tippy-6.2.7/tippy.css","jonathan-sheng-algorithmic-demand-estimation-causal_files/tippy-6.2.7/tippy.umd.min.js","jonathan-sheng-algorithmic-demand-estimation-causal_files/webcomponents-2.0.0/webcomponents.js","Model_panel_cleaned.dta","preview_image.jpeg"]}
+  </script>
+  <!--radix_placeholder_navigation_in_header-->
+<meta name="distill:offset" content="../.."/>
+
+<script type="application/javascript">
+
+  window.headroom_prevent_pin = false;
+
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+
+    // initialize headroom for banner
+    var header = $('header').get(0);
+    var headerHeight = header.offsetHeight;
+    var headroom = new Headroom(header, {
+      tolerance: 5,
+      onPin : function() {
+        if (window.headroom_prevent_pin) {
+          window.headroom_prevent_pin = false;
+          headroom.unpin();
+        }
+      }
+    });
+    headroom.init();
+    if(window.location.hash)
+      headroom.unpin();
+    $(header).addClass('headroom--transition');
+
+    // offset scroll location for banner on hash change
+    // (see: https://github.com/WickyNilliams/headroom.js/issues/38)
+    window.addEventListener("hashchange", function(event) {
+      window.scrollTo(0, window.pageYOffset - (headerHeight + 25));
+    });
+
+    // responsive menu
+    $('.distill-site-header').each(function(i, val) {
+      var topnav = $(this);
+      var toggle = topnav.find('.nav-toggle');
+      toggle.on('click', function() {
+        topnav.toggleClass('responsive');
+      });
+    });
+
+    // nav dropdowns
+    $('.nav-dropbtn').click(function(e) {
+      $(this).next('.nav-dropdown-content').toggleClass('nav-dropdown-active');
+      $(this).parent().siblings('.nav-dropdown')
+         .children('.nav-dropdown-content').removeClass('nav-dropdown-active');
+    });
+    $("body").click(function(e){
+      $('.nav-dropdown-content').removeClass('nav-dropdown-active');
+    });
+    $(".nav-dropdown").click(function(e){
+      e.stopPropagation();
+    });
+  });
+</script>
+
+<style type="text/css">
+
+/* Theme (user-documented overrideables for nav appearance) */
+
+.distill-site-nav {
+  color: rgba(255, 255, 255, 0.8);
+  background-color: #0F2E3D;
+  font-size: 15px;
+  font-weight: 300;
+}
+
+.distill-site-nav a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.distill-site-nav a:hover {
+  color: white;
+}
+
+@media print {
+  .distill-site-nav {
+    display: none;
+  }
+}
+
+.distill-site-header {
+
+}
+
+.distill-site-footer {
+
+}
+
+
+/* Site Header */
+
+.distill-site-header {
+  width: 100%;
+  box-sizing: border-box;
+  z-index: 3;
+}
+
+.distill-site-header .nav-left {
+  display: inline-block;
+  margin-left: 8px;
+}
+
+@media screen and (max-width: 768px) {
+  .distill-site-header .nav-left {
+    margin-left: 0;
+  }
+}
+
+
+.distill-site-header .nav-right {
+  float: right;
+  margin-right: 8px;
+}
+
+.distill-site-header a,
+.distill-site-header .title {
+  display: inline-block;
+  text-align: center;
+  padding: 14px 10px 14px 10px;
+}
+
+.distill-site-header .title {
+  font-size: 18px;
+  min-width: 150px;
+}
+
+.distill-site-header .logo {
+  padding: 0;
+}
+
+.distill-site-header .logo img {
+  display: none;
+  max-height: 20px;
+  width: auto;
+  margin-bottom: -4px;
+}
+
+.distill-site-header .nav-image img {
+  max-height: 18px;
+  width: auto;
+  display: inline-block;
+  margin-bottom: -3px;
+}
+
+
+
+@media screen and (min-width: 1000px) {
+  .distill-site-header .logo img {
+    display: inline-block;
+  }
+  .distill-site-header .nav-left {
+    margin-left: 20px;
+  }
+  .distill-site-header .nav-right {
+    margin-right: 20px;
+  }
+  .distill-site-header .title {
+    padding-left: 12px;
+  }
+}
+
+
+.distill-site-header .nav-toggle {
+  display: none;
+}
+
+.nav-dropdown {
+  display: inline-block;
+  position: relative;
+}
+
+.nav-dropdown .nav-dropbtn {
+  border: none;
+  outline: none;
+  color: rgba(255, 255, 255, 0.8);
+  padding: 16px 10px;
+  background-color: transparent;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  margin: 0;
+  margin-top: 1px;
+  z-index: 2;
+}
+
+.nav-dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: white;
+  min-width: 200px;
+  border: 1px solid rgba(0,0,0,0.15);
+  border-radius: 4px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.1);
+  z-index: 1;
+  margin-top: 2px;
+  white-space: nowrap;
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+.nav-dropdown-content hr {
+  margin-top: 4px;
+  margin-bottom: 4px;
+  border: none;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.nav-dropdown-active {
+  display: block;
+}
+
+.nav-dropdown-content a, .nav-dropdown-content .nav-dropdown-header {
+  color: black;
+  padding: 6px 24px;
+  text-decoration: none;
+  display: block;
+  text-align: left;
+}
+
+.nav-dropdown-content .nav-dropdown-header {
+  display: block;
+  padding: 5px 24px;
+  padding-bottom: 0;
+  text-transform: uppercase;
+  font-size: 14px;
+  color: #999999;
+  white-space: nowrap;
+}
+
+.nav-dropdown:hover .nav-dropbtn {
+  color: white;
+}
+
+.nav-dropdown-content a:hover {
+  background-color: #ddd;
+  color: black;
+}
+
+.nav-right .nav-dropdown-content {
+  margin-left: -45%;
+  right: 0;
+}
+
+@media screen and (max-width: 768px) {
+  .distill-site-header a, .distill-site-header .nav-dropdown  {display: none;}
+  .distill-site-header a.nav-toggle {
+    float: right;
+    display: block;
+  }
+  .distill-site-header .title {
+    margin-left: 0;
+  }
+  .distill-site-header .nav-right {
+    margin-right: 0;
+  }
+  .distill-site-header {
+    overflow: hidden;
+  }
+  .nav-right .nav-dropdown-content {
+    margin-left: 0;
+  }
+}
+
+
+@media screen and (max-width: 768px) {
+  .distill-site-header.responsive {position: relative; min-height: 500px; }
+  .distill-site-header.responsive a.nav-toggle {
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
+  .distill-site-header.responsive a,
+  .distill-site-header.responsive .nav-dropdown {
+    display: block;
+    text-align: left;
+  }
+  .distill-site-header.responsive .nav-left,
+  .distill-site-header.responsive .nav-right {
+    width: 100%;
+  }
+  .distill-site-header.responsive .nav-dropdown {float: none;}
+  .distill-site-header.responsive .nav-dropdown-content {position: relative;}
+  .distill-site-header.responsive .nav-dropdown .nav-dropbtn {
+    display: block;
+    width: 100%;
+    text-align: left;
+  }
+}
+
+/* Site Footer */
+
+.distill-site-footer {
+  width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+  z-index: 3;
+  margin-top: 30px;
+  padding-top: 30px;
+  padding-bottom: 30px;
+  text-align: center;
+}
+
+/* Headroom */
+
+d-title {
+  padding-top: 6rem;
+}
+
+@media print {
+  d-title {
+    padding-top: 4rem;
+  }
+}
+
+.headroom {
+  z-index: 1000;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+.headroom--transition {
+  transition: all .4s ease-in-out;
+}
+
+.headroom--unpinned {
+  top: -100px;
+}
+
+.headroom--pinned {
+  top: 0;
+}
+
+/* adjust viewport for navbar height */
+/* helps vertically center bootstrap (non-distill) content */
+.min-vh-100 {
+  min-height: calc(100vh - 100px) !important;
+}
+
+</style>
+
+<script src="../../site_libs/jquery-1.11.3/jquery.min.js"></script>
+<link href="../../site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet"/>
+<link href="../../site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet"/>
+<script src="../../site_libs/headroom-0.9.4/headroom.min.js"></script>
+<script src="../../site_libs/autocomplete-0.37.1/autocomplete.min.js"></script>
+<script src="../../site_libs/fuse-6.4.1/fuse.min.js"></script>
+
+<script type="application/javascript">
+
+function getMeta(metaName) {
+  var metas = document.getElementsByTagName('meta');
+  for (let i = 0; i < metas.length; i++) {
+    if (metas[i].getAttribute('name') === metaName) {
+      return metas[i].getAttribute('content');
+    }
+  }
+  return '';
+}
+
+function offsetURL(url) {
+  var offset = getMeta('distill:offset');
+  return offset ? offset + '/' + url : url;
+}
+
+function createFuseIndex() {
+
+  // create fuse index
+  var options = {
+    keys: [
+      { name: 'title', weight: 20 },
+      { name: 'categories', weight: 15 },
+      { name: 'description', weight: 10 },
+      { name: 'contents', weight: 5 },
+    ],
+    ignoreLocation: true,
+    threshold: 0
+  };
+  var fuse = new window.Fuse([], options);
+
+  // fetch the main search.json
+  return fetch(offsetURL('search.json'))
+    .then(function(response) {
+      if (response.status == 200) {
+        return response.json().then(function(json) {
+          // index main articles
+          json.articles.forEach(function(article) {
+            fuse.add(article);
+          });
+          // download collections and index their articles
+          return Promise.all(json.collections.map(function(collection) {
+            return fetch(offsetURL(collection)).then(function(response) {
+              if (response.status === 200) {
+                return response.json().then(function(articles) {
+                  articles.forEach(function(article) {
+                    fuse.add(article);
+                  });
+                })
+              } else {
+                return Promise.reject(
+                  new Error('Unexpected status from search index request: ' +
+                            response.status)
+                );
+              }
+            });
+          })).then(function() {
+            return fuse;
+          });
+        });
+
+      } else {
+        return Promise.reject(
+          new Error('Unexpected status from search index request: ' +
+                      response.status)
+        );
+      }
+    });
+}
+
+window.document.addEventListener("DOMContentLoaded", function (event) {
+
+  // get search element (bail if we don't have one)
+  var searchEl = window.document.getElementById('distill-search');
+  if (!searchEl)
+    return;
+
+  createFuseIndex()
+    .then(function(fuse) {
+
+      // make search box visible
+      searchEl.classList.remove('hidden');
+
+      // initialize autocomplete
+      var options = {
+        autoselect: true,
+        hint: false,
+        minLength: 2,
+      };
+      window.autocomplete(searchEl, options, [{
+        source: function(query, callback) {
+          const searchOptions = {
+            isCaseSensitive: false,
+            shouldSort: true,
+            minMatchCharLength: 2,
+            limit: 10,
+          };
+          var results = fuse.search(query, searchOptions);
+          callback(results
+            .map(function(result) { return result.item; })
+          );
+        },
+        templates: {
+          suggestion: function(suggestion) {
+            var img = suggestion.preview && Object.keys(suggestion.preview).length > 0
+              ? `<img src="${offsetURL(suggestion.preview)}"</img>`
+              : '';
+            var html = `
+              <div class="search-item">
+                <h3>${suggestion.title}</h3>
+                <div class="search-item-description">
+                  ${suggestion.description || ''}
+                </div>
+                <div class="search-item-preview">
+                  ${img}
+                </div>
+              </div>
+            `;
+            return html;
+          }
+        }
+      }]).on('autocomplete:selected', function(event, suggestion) {
+        window.location.href = offsetURL(suggestion.path);
+      });
+      // remove inline display style on autocompleter (we want to
+      // manage responsive display via css)
+      $('.algolia-autocomplete').css("display", "");
+    })
+    .catch(function(error) {
+      console.log(error);
+    });
+
+});
+
+</script>
+
+<style type="text/css">
+
+.nav-search {
+  font-size: x-small;
+}
+
+/* Algolioa Autocomplete */
+
+.algolia-autocomplete {
+  display: inline-block;
+  margin-left: 10px;
+  vertical-align: sub;
+  background-color: white;
+  color: black;
+  padding: 6px;
+  padding-top: 8px;
+  padding-bottom: 0;
+  border-radius: 6px;
+  border: 1px #0F2E3D solid;
+  width: 180px;
+}
+
+
+@media screen and (max-width: 768px) {
+  .distill-site-nav .algolia-autocomplete {
+    display: none;
+    visibility: hidden;
+  }
+  .distill-site-nav.responsive .algolia-autocomplete {
+    display: inline-block;
+    visibility: visible;
+  }
+  .distill-site-nav.responsive .algolia-autocomplete .aa-dropdown-menu {
+    margin-left: 0;
+    width: 400px;
+    max-height: 400px;
+  }
+}
+
+.algolia-autocomplete .aa-input, .algolia-autocomplete .aa-hint {
+  width: 90%;
+  outline: none;
+  border: none;
+}
+
+.algolia-autocomplete .aa-hint {
+  color: #999;
+}
+.algolia-autocomplete .aa-dropdown-menu {
+  width: 550px;
+  max-height: 70vh;
+  overflow-x: visible;
+  overflow-y: scroll;
+  padding: 5px;
+  margin-top: 3px;
+  margin-left: -150px;
+  background-color: #fff;
+  border-radius: 5px;
+  border: 1px solid #999;
+  border-top: none;
+}
+
+.algolia-autocomplete .aa-dropdown-menu .aa-suggestion {
+  cursor: pointer;
+  padding: 5px 4px;
+  border-bottom: 1px solid #eee;
+}
+
+.algolia-autocomplete .aa-dropdown-menu .aa-suggestion:last-of-type {
+  border-bottom: none;
+  margin-bottom: 2px;
+}
+
+.algolia-autocomplete .aa-dropdown-menu .aa-suggestion .search-item {
+  overflow: hidden;
+  font-size: 0.8em;
+  line-height: 1.4em;
+}
+
+.algolia-autocomplete .aa-dropdown-menu .aa-suggestion .search-item h3 {
+  font-size: 1rem;
+  margin-block-start: 0;
+  margin-block-end: 5px;
+}
+
+.algolia-autocomplete .aa-dropdown-menu .aa-suggestion .search-item-description {
+  display: inline-block;
+  overflow: hidden;
+  height: 2.8em;
+  width: 80%;
+  margin-right: 4%;
+}
+
+.algolia-autocomplete .aa-dropdown-menu .aa-suggestion .search-item-preview {
+  display: inline-block;
+  width: 15%;
+}
+
+.algolia-autocomplete .aa-dropdown-menu .aa-suggestion .search-item-preview img {
+  height: 3em;
+  width: auto;
+  display: none;
+}
+
+.algolia-autocomplete .aa-dropdown-menu .aa-suggestion .search-item-preview img[src] {
+  display: initial;
+}
+
+.algolia-autocomplete .aa-dropdown-menu .aa-suggestion.aa-cursor {
+  background-color: #eee;
+}
+.algolia-autocomplete .aa-dropdown-menu .aa-suggestion em {
+  font-weight: bold;
+  font-style: normal;
+}
+
+</style>
+
+
+<!--/radix_placeholder_navigation_in_header-->
+  <!--radix_placeholder_distill-->
+
+<style type="text/css">
+
+body {
+  background-color: white;
+}
+
+.pandoc-table {
+  width: 100%;
+}
+
+.pandoc-table>caption {
+  margin-bottom: 10px;
+}
+
+.pandoc-table th:not([align]) {
+  text-align: left;
+}
+
+.pagedtable-footer {
+  font-size: 15px;
+}
+
+d-byline .byline {
+  grid-template-columns: 2fr 2fr;
+}
+
+d-byline .byline h3 {
+  margin-block-start: 1.5em;
+}
+
+d-byline .byline .authors-affiliations h3 {
+  margin-block-start: 0.5em;
+}
+
+.authors-affiliations .orcid-id {
+  width: 16px;
+  height:16px;
+  margin-left: 4px;
+  margin-right: 4px;
+  vertical-align: middle;
+  padding-bottom: 2px;
+}
+
+d-title .dt-tags {
+  margin-top: 1em;
+  grid-column: text;
+}
+
+.dt-tags .dt-tag {
+  text-decoration: none;
+  display: inline-block;
+  color: rgba(0,0,0,0.6);
+  padding: 0em 0.4em;
+  margin-right: 0.5em;
+  margin-bottom: 0.4em;
+  font-size: 70%;
+  border: 1px solid rgba(0,0,0,0.2);
+  border-radius: 3px;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+d-article table.gt_table td,
+d-article table.gt_table th {
+  border-bottom: none;
+}
+
+.html-widget {
+  margin-bottom: 2.0em;
+}
+
+.l-screen-inset {
+  padding-right: 16px;
+}
+
+.l-screen .caption {
+  margin-left: 10px;
+}
+
+.shaded {
+  background: rgb(247, 247, 247);
+  padding-top: 20px;
+  padding-bottom: 20px;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.shaded .html-widget {
+  margin-bottom: 0;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.shaded .shaded-content {
+  background: white;
+}
+
+.text-output {
+  margin-top: 0;
+  line-height: 1.5em;
+}
+
+.hidden {
+  display: none !important;
+}
+
+d-article {
+  padding-top: 2.5rem;
+  padding-bottom: 30px;
+}
+
+d-appendix {
+  padding-top: 30px;
+}
+
+d-article>p>img {
+  width: 100%;
+}
+
+d-article h2 {
+  margin: 1rem 0 1.5rem 0;
+}
+
+d-article h3 {
+  margin-top: 1.5rem;
+}
+
+d-article iframe {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  margin-bottom: 2.0em;
+  width: 100%;
+}
+
+/* Tweak code blocks */
+
+d-article div.sourceCode code,
+d-article pre code {
+  font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+}
+
+d-article pre,
+d-article div.sourceCode,
+d-article div.sourceCode pre {
+  overflow: auto;
+}
+
+d-article div.sourceCode {
+  background-color: white;
+}
+
+d-article div.sourceCode pre {
+  padding-left: 10px;
+  font-size: 12px;
+  border-left: 2px solid rgba(0,0,0,0.1);
+}
+
+d-article pre {
+  font-size: 12px;
+  color: black;
+  background: none;
+  margin-top: 0;
+  text-align: left;
+  white-space: pre;
+  word-spacing: normal;
+  word-break: normal;
+  word-wrap: normal;
+  line-height: 1.5;
+
+  -moz-tab-size: 4;
+  -o-tab-size: 4;
+  tab-size: 4;
+
+  -webkit-hyphens: none;
+  -moz-hyphens: none;
+  -ms-hyphens: none;
+  hyphens: none;
+}
+
+d-article pre a {
+  border-bottom: none;
+}
+
+d-article pre a:hover {
+  border-bottom: none;
+  text-decoration: underline;
+}
+
+d-article details {
+  grid-column: text;
+  margin-bottom: 0.8em;
+}
+
+@media(min-width: 768px) {
+
+d-article pre,
+d-article div.sourceCode,
+d-article div.sourceCode pre {
+  overflow: visible !important;
+}
+
+d-article div.sourceCode pre {
+  padding-left: 18px;
+  font-size: 14px;
+}
+
+d-article pre {
+  font-size: 14px;
+}
+
+}
+
+figure img.external {
+  background: white;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.1);
+  padding: 18px;
+  box-sizing: border-box;
+}
+
+/* CSS for d-contents */
+
+.d-contents {
+  grid-column: text;
+  color: rgba(0,0,0,0.8);
+  font-size: 0.9em;
+  padding-bottom: 1em;
+  margin-bottom: 1em;
+  padding-bottom: 0.5em;
+  margin-bottom: 1em;
+  padding-left: 0.25em;
+  justify-self: start;
+}
+
+@media(min-width: 1000px) {
+  .d-contents.d-contents-float {
+    height: 0;
+    grid-column-start: 1;
+    grid-column-end: 4;
+    justify-self: center;
+    padding-right: 3em;
+    padding-left: 2em;
+  }
+}
+
+.d-contents nav h3 {
+  font-size: 18px;
+  margin-top: 0;
+  margin-bottom: 1em;
+}
+
+.d-contents li {
+  list-style-type: none
+}
+
+.d-contents nav > ul {
+  padding-left: 0;
+}
+
+.d-contents ul {
+  padding-left: 1em
+}
+
+.d-contents nav ul li {
+  margin-top: 0.6em;
+  margin-bottom: 0.2em;
+}
+
+.d-contents nav a {
+  font-size: 13px;
+  border-bottom: none;
+  text-decoration: none
+  color: rgba(0, 0, 0, 0.8);
+}
+
+.d-contents nav a:hover {
+  text-decoration: underline solid rgba(0, 0, 0, 0.6)
+}
+
+.d-contents nav > ul > li > a {
+  font-weight: 600;
+}
+
+.d-contents nav > ul > li > ul {
+  font-weight: inherit;
+}
+
+.d-contents nav > ul > li > ul > li {
+  margin-top: 0.2em;
+}
+
+
+.d-contents nav ul {
+  margin-top: 0;
+  margin-bottom: 0.25em;
+}
+
+.d-article-with-toc h2:nth-child(2) {
+  margin-top: 0;
+}
+
+
+/* Figure */
+
+.figure {
+  position: relative;
+  margin-bottom: 2.5em;
+  margin-top: 1.5em;
+}
+
+.figure img {
+  width: 100%;
+}
+
+.figure .caption {
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 12px;
+  line-height: 1.5em;
+}
+
+.figure img.external {
+  background: white;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.1);
+  padding: 18px;
+  box-sizing: border-box;
+}
+
+.figure .caption a {
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.figure .caption b,
+.figure .caption strong, {
+  font-weight: 600;
+  color: rgba(0, 0, 0, 1.0);
+}
+
+/* Citations */
+
+d-article .citation {
+  color: inherit;
+  cursor: inherit;
+}
+
+div.hanging-indent{
+  margin-left: 1em; text-indent: -1em;
+}
+
+/* Citation hover box */
+
+.tippy-box[data-theme~=light-border] {
+  background-color: rgba(250, 250, 250, 0.95);
+}
+
+.tippy-content > p {
+  margin-bottom: 0;
+  padding: 2px;
+}
+
+
+/* Tweak 1000px media break to show more text */
+
+@media(min-width: 1000px) {
+  .base-grid,
+  distill-header,
+  d-title,
+  d-abstract,
+  d-article,
+  d-appendix,
+  distill-appendix,
+  d-byline,
+  d-footnote-list,
+  d-citation-list,
+  distill-footer {
+    grid-template-columns: [screen-start] 1fr [page-start kicker-start] 80px [middle-start] 50px [text-start kicker-end] 65px 65px 65px 65px 65px 65px 65px 65px [text-end gutter-start] 65px [middle-end] 65px [page-end gutter-end] 1fr [screen-end];
+    grid-column-gap: 16px;
+  }
+
+  .grid {
+    grid-column-gap: 16px;
+  }
+
+  d-article {
+    font-size: 1.06rem;
+    line-height: 1.7em;
+  }
+  figure .caption, .figure .caption, figure figcaption {
+    font-size: 13px;
+  }
+}
+
+@media(min-width: 1180px) {
+  .base-grid,
+  distill-header,
+  d-title,
+  d-abstract,
+  d-article,
+  d-appendix,
+  distill-appendix,
+  d-byline,
+  d-footnote-list,
+  d-citation-list,
+  distill-footer {
+    grid-template-columns: [screen-start] 1fr [page-start kicker-start] 60px [middle-start] 60px [text-start kicker-end] 60px 60px 60px 60px 60px 60px 60px 60px [text-end gutter-start] 60px [middle-end] 60px [page-end gutter-end] 1fr [screen-end];
+    grid-column-gap: 32px;
+  }
+
+  .grid {
+    grid-column-gap: 32px;
+  }
+}
+
+
+/* Get the citation styles for the appendix (not auto-injected on render since
+   we do our own rendering of the citation appendix) */
+
+d-appendix .citation-appendix,
+.d-appendix .citation-appendix {
+  font-size: 11px;
+  line-height: 15px;
+  border-left: 1px solid rgba(0, 0, 0, 0.1);
+  padding-left: 18px;
+  border: 1px solid rgba(0,0,0,0.1);
+  background: rgba(0, 0, 0, 0.02);
+  padding: 10px 18px;
+  border-radius: 3px;
+  color: rgba(150, 150, 150, 1);
+  overflow: hidden;
+  margin-top: -12px;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+/* Include appendix styles here so they can be overridden */
+
+d-appendix {
+  contain: layout style;
+  font-size: 0.8em;
+  line-height: 1.7em;
+  margin-top: 60px;
+  margin-bottom: 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  color: rgba(0,0,0,0.5);
+  padding-top: 60px;
+  padding-bottom: 48px;
+}
+
+d-appendix h3 {
+  grid-column: page-start / text-start;
+  font-size: 15px;
+  font-weight: 500;
+  margin-top: 1em;
+  margin-bottom: 0;
+  color: rgba(0,0,0,0.65);
+}
+
+d-appendix h3 + * {
+  margin-top: 1em;
+}
+
+d-appendix ol {
+  padding: 0 0 0 15px;
+}
+
+@media (min-width: 768px) {
+  d-appendix ol {
+    padding: 0 0 0 30px;
+    margin-left: -30px;
+  }
+}
+
+d-appendix li {
+  margin-bottom: 1em;
+}
+
+d-appendix a {
+  color: rgba(0, 0, 0, 0.6);
+}
+
+d-appendix > * {
+  grid-column: text;
+}
+
+d-appendix > d-footnote-list,
+d-appendix > d-citation-list,
+d-appendix > distill-appendix {
+  grid-column: screen;
+}
+
+/* Include footnote styles here so they can be overridden */
+
+d-footnote-list {
+  contain: layout style;
+}
+
+d-footnote-list > * {
+  grid-column: text;
+}
+
+d-footnote-list a.footnote-backlink {
+  color: rgba(0,0,0,0.3);
+  padding-left: 0.5em;
+}
+
+
+
+/* Anchor.js */
+
+.anchorjs-link {
+  /*transition: all .25s linear; */
+  text-decoration: none;
+  border-bottom: none;
+}
+*:hover > .anchorjs-link {
+  margin-left: -1.125em !important;
+  text-decoration: none;
+  border-bottom: none;
+}
+
+/* Social footer */
+
+.social_footer {
+  margin-top: 30px;
+  margin-bottom: 0;
+  color: rgba(0,0,0,0.67);
+}
+
+.disqus-comments {
+  margin-right: 30px;
+}
+
+.disqus-comment-count {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.4);
+  cursor: pointer;
+}
+
+#disqus_thread {
+  margin-top: 30px;
+}
+
+.article-sharing a {
+  border-bottom: none;
+  margin-right: 8px;
+}
+
+.article-sharing a:hover {
+  border-bottom: none;
+}
+
+.sidebar-section.subscribe {
+  font-size: 12px;
+  line-height: 1.6em;
+}
+
+.subscribe p {
+  margin-bottom: 0.5em;
+}
+
+
+.article-footer .subscribe {
+  font-size: 15px;
+  margin-top: 45px;
+}
+
+
+.sidebar-section.custom {
+  font-size: 12px;
+  line-height: 1.6em;
+}
+
+.custom p {
+  margin-bottom: 0.5em;
+}
+
+/* Styles for listing layout (hide title) */
+.layout-listing d-title, .layout-listing .d-title {
+  display: none;
+}
+
+/* Styles for posts lists (not auto-injected) */
+
+
+.posts-with-sidebar {
+  padding-left: 45px;
+  padding-right: 45px;
+}
+
+.posts-list .description h2,
+.posts-list .description p {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", Arial, sans-serif;
+}
+
+.posts-list .description h2 {
+  font-weight: 700;
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.posts-list h2.post-tag {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+  padding-bottom: 12px;
+}
+.posts-list {
+  margin-top: 60px;
+  margin-bottom: 24px;
+}
+
+.posts-list .post-preview {
+  text-decoration: none;
+  overflow: hidden;
+  display: block;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  padding: 24px 0;
+}
+
+.post-preview-last {
+  border-bottom: none !important;
+}
+
+.posts-list .posts-list-caption {
+  grid-column: screen;
+  font-weight: 400;
+}
+
+.posts-list .post-preview h2 {
+  margin: 0 0 6px 0;
+  line-height: 1.2em;
+  font-style: normal;
+  font-size: 24px;
+}
+
+.posts-list .post-preview p {
+  margin: 0 0 12px 0;
+  line-height: 1.4em;
+  font-size: 16px;
+}
+
+.posts-list .post-preview .thumbnail {
+  box-sizing: border-box;
+  margin-bottom: 24px;
+  position: relative;
+  max-width: 500px;
+}
+.posts-list .post-preview img {
+  width: 100%;
+  display: block;
+}
+
+.posts-list .metadata {
+  font-size: 12px;
+  line-height: 1.4em;
+  margin-bottom: 18px;
+}
+
+.posts-list .metadata > * {
+  display: inline-block;
+}
+
+.posts-list .metadata .publishedDate {
+  margin-right: 2em;
+}
+
+.posts-list .metadata .dt-authors {
+  display: block;
+  margin-top: 0.3em;
+  margin-right: 2em;
+}
+
+.posts-list .dt-tags {
+  display: block;
+  line-height: 1em;
+}
+
+.posts-list .dt-tags .dt-tag {
+  display: inline-block;
+  color: rgba(0,0,0,0.6);
+  padding: 0.3em 0.4em;
+  margin-right: 0.2em;
+  margin-bottom: 0.4em;
+  font-size: 60%;
+  border: 1px solid rgba(0,0,0,0.2);
+  border-radius: 3px;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.posts-list img {
+  opacity: 1;
+}
+
+.posts-list img[data-src] {
+  opacity: 0;
+}
+
+.posts-more {
+  clear: both;
+}
+
+
+.posts-sidebar {
+  font-size: 16px;
+}
+
+.posts-sidebar h3 {
+  font-size: 16px;
+  margin-top: 0;
+  margin-bottom: 0.5em;
+  font-weight: 400;
+  text-transform: uppercase;
+}
+
+.sidebar-section {
+  margin-bottom: 30px;
+}
+
+.categories ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+.categories li {
+  color: rgba(0, 0, 0, 0.8);
+  margin-bottom: 0;
+}
+
+.categories li>a {
+  border-bottom: none;
+}
+
+.categories li>a:hover {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.4);
+}
+
+.categories .active {
+  font-weight: 600;
+}
+
+.categories .category-count {
+  color: rgba(0, 0, 0, 0.4);
+}
+
+
+@media(min-width: 768px) {
+  .posts-list .post-preview h2 {
+    font-size: 26px;
+  }
+  .posts-list .post-preview .thumbnail {
+    float: right;
+    width: 30%;
+    margin-bottom: 0;
+  }
+  .posts-list .post-preview .description {
+    float: left;
+    width: 45%;
+  }
+  .posts-list .post-preview .metadata {
+    float: left;
+    width: 20%;
+    margin-top: 8px;
+  }
+  .posts-list .post-preview p {
+    margin: 0 0 12px 0;
+    line-height: 1.5em;
+    font-size: 16px;
+  }
+  .posts-with-sidebar .posts-list {
+    float: left;
+    width: 75%;
+  }
+  .posts-with-sidebar .posts-sidebar {
+    float: right;
+    width: 20%;
+    margin-top: 60px;
+    padding-top: 24px;
+    padding-bottom: 24px;
+  }
+}
+
+
+/* Improve display for browsers without grid (IE/Edge <= 15) */
+
+.downlevel {
+  line-height: 1.6em;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", Arial, sans-serif;
+  margin: 0;
+}
+
+.downlevel .d-title {
+  padding-top: 6rem;
+  padding-bottom: 1.5rem;
+}
+
+.downlevel .d-title h1 {
+  font-size: 50px;
+  font-weight: 700;
+  line-height: 1.1em;
+  margin: 0 0 0.5rem;
+}
+
+.downlevel .d-title p {
+  font-weight: 300;
+  font-size: 1.2rem;
+  line-height: 1.55em;
+  margin-top: 0;
+}
+
+.downlevel .d-byline {
+  padding-top: 0.8em;
+  padding-bottom: 0.8em;
+  font-size: 0.8rem;
+  line-height: 1.8em;
+}
+
+.downlevel .section-separator {
+  border: none;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.downlevel .d-article {
+  font-size: 1.06rem;
+  line-height: 1.7em;
+  padding-top: 1rem;
+  padding-bottom: 2rem;
+}
+
+
+.downlevel .d-appendix {
+  padding-left: 0;
+  padding-right: 0;
+  max-width: none;
+  font-size: 0.8em;
+  line-height: 1.7em;
+  margin-bottom: 0;
+  color: rgba(0,0,0,0.5);
+  padding-top: 40px;
+  padding-bottom: 48px;
+}
+
+.downlevel .footnotes ol {
+  padding-left: 13px;
+}
+
+.downlevel .base-grid,
+.downlevel .distill-header,
+.downlevel .d-title,
+.downlevel .d-abstract,
+.downlevel .d-article,
+.downlevel .d-appendix,
+.downlevel .distill-appendix,
+.downlevel .d-byline,
+.downlevel .d-footnote-list,
+.downlevel .d-citation-list,
+.downlevel .distill-footer,
+.downlevel .appendix-bottom,
+.downlevel .posts-container {
+  padding-left: 40px;
+  padding-right: 40px;
+}
+
+@media(min-width: 768px) {
+  .downlevel .base-grid,
+  .downlevel .distill-header,
+  .downlevel .d-title,
+  .downlevel .d-abstract,
+  .downlevel .d-article,
+  .downlevel .d-appendix,
+  .downlevel .distill-appendix,
+  .downlevel .d-byline,
+  .downlevel .d-footnote-list,
+  .downlevel .d-citation-list,
+  .downlevel .distill-footer,
+  .downlevel .appendix-bottom,
+  .downlevel .posts-container {
+  padding-left: 150px;
+  padding-right: 150px;
+  max-width: 900px;
+}
+}
+
+.downlevel pre code {
+  display: block;
+  border-left: 2px solid rgba(0, 0, 0, .1);
+  padding: 0 0 0 20px;
+  font-size: 14px;
+}
+
+.downlevel code, .downlevel pre {
+  color: black;
+  background: none;
+  font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+  text-align: left;
+  white-space: pre;
+  word-spacing: normal;
+  word-break: normal;
+  word-wrap: normal;
+  line-height: 1.5;
+
+  -moz-tab-size: 4;
+  -o-tab-size: 4;
+  tab-size: 4;
+
+  -webkit-hyphens: none;
+  -moz-hyphens: none;
+  -ms-hyphens: none;
+  hyphens: none;
+}
+
+.downlevel .posts-list .post-preview {
+  color: inherit;
+}
+
+
+
+</style>
+
+<script type="application/javascript">
+
+function is_downlevel_browser() {
+  if (bowser.isUnsupportedBrowser({ msie: "12", msedge: "16"},
+                                 window.navigator.userAgent)) {
+    return true;
+  } else {
+    return window.load_distill_framework === undefined;
+  }
+}
+
+// show body when load is complete
+function on_load_complete() {
+
+  // add anchors
+  if (window.anchors) {
+    window.anchors.options.placement = 'left';
+    window.anchors.add('d-article > h2, d-article > h3, d-article > h4, d-article > h5');
+  }
+
+
+  // set body to visible
+  document.body.style.visibility = 'visible';
+
+  // force redraw for leaflet widgets
+  if (window.HTMLWidgets) {
+    var maps = window.HTMLWidgets.findAll(".leaflet");
+    $.each(maps, function(i, el) {
+      var map = this.getMap();
+      map.invalidateSize();
+      map.eachLayer(function(layer) {
+        if (layer instanceof L.TileLayer)
+          layer.redraw();
+      });
+    });
+  }
+
+  // trigger 'shown' so htmlwidgets resize
+  $('d-article').trigger('shown');
+}
+
+function init_distill() {
+
+  init_common();
+
+  // create front matter
+  var front_matter = $('<d-front-matter></d-front-matter>');
+  $('#distill-front-matter').wrap(front_matter);
+
+  // create d-title
+  $('.d-title').changeElementType('d-title');
+
+  // create d-byline
+  var byline = $('<d-byline></d-byline>');
+  $('.d-byline').replaceWith(byline);
+
+  // create d-article
+  var article = $('<d-article></d-article>');
+  $('.d-article').wrap(article).children().unwrap();
+
+  // move posts container into article
+  $('.posts-container').appendTo($('d-article'));
+
+  // create d-appendix
+  $('.d-appendix').changeElementType('d-appendix');
+
+  // flag indicating that we have appendix items
+  var appendix = $('.appendix-bottom').children('h3').length > 0;
+
+  // replace footnotes with <d-footnote>
+  $('.footnote-ref').each(function(i, val) {
+    appendix = true;
+    var href = $(this).attr('href');
+    var id = href.replace('#', '');
+    var fn = $('#' + id);
+    var fn_p = $('#' + id + '>p');
+    fn_p.find('.footnote-back').remove();
+    var text = fn_p.html();
+    var dtfn = $('<d-footnote></d-footnote>');
+    dtfn.html(text);
+    $(this).replaceWith(dtfn);
+  });
+  // remove footnotes
+  $('.footnotes').remove();
+
+  // move refs into #references-listing
+  $('#references-listing').replaceWith($('#refs'));
+
+  $('h1.appendix, h2.appendix').each(function(i, val) {
+    $(this).changeElementType('h3');
+  });
+  $('h3.appendix').each(function(i, val) {
+    var id = $(this).attr('id');
+    $('.d-contents a[href="#' + id + '"]').parent().remove();
+    appendix = true;
+    $(this).nextUntil($('h1, h2, h3')).addBack().appendTo($('d-appendix'));
+  });
+
+  // show d-appendix if we have appendix content
+  $("d-appendix").css('display', appendix ? 'grid' : 'none');
+
+  // localize layout chunks to just output
+  $('.layout-chunk').each(function(i, val) {
+
+    // capture layout
+    var layout = $(this).attr('data-layout');
+
+    // apply layout to markdown level block elements
+    var elements = $(this).children().not('details, div.sourceCode, pre, script');
+    elements.each(function(i, el) {
+      var layout_div = $('<div class="' + layout + '"></div>');
+      if (layout_div.hasClass('shaded')) {
+        var shaded_content = $('<div class="shaded-content"></div>');
+        $(this).wrap(shaded_content);
+        $(this).parent().wrap(layout_div);
+      } else {
+        $(this).wrap(layout_div);
+      }
+    });
+
+
+    // unwrap the layout-chunk div
+    $(this).children().unwrap();
+  });
+
+  // remove code block used to force  highlighting css
+  $('.distill-force-highlighting-css').parent().remove();
+
+  // remove empty line numbers inserted by pandoc when using a
+  // custom syntax highlighting theme
+  $('code.sourceCode a:empty').remove();
+
+  // load distill framework
+  load_distill_framework();
+
+  // wait for window.distillRunlevel == 4 to do post processing
+  function distill_post_process() {
+
+    if (!window.distillRunlevel || window.distillRunlevel < 4)
+      return;
+
+    // hide author/affiliations entirely if we have no authors
+    var front_matter = JSON.parse($("#distill-front-matter").html());
+    var have_authors = front_matter.authors && front_matter.authors.length > 0;
+    if (!have_authors)
+      $('d-byline').addClass('hidden');
+
+    // article with toc class
+    $('.d-contents').parent().addClass('d-article-with-toc');
+
+    // strip links that point to #
+    $('.authors-affiliations').find('a[href="#"]').removeAttr('href');
+
+    // add orcid ids
+    $('.authors-affiliations').find('.author').each(function(i, el) {
+      var orcid_id = front_matter.authors[i].orcidID;
+      if (orcid_id) {
+        var a = $('<a></a>');
+        a.attr('href', 'https://orcid.org/' + orcid_id);
+        var img = $('<img></img>');
+        img.addClass('orcid-id');
+        img.attr('alt', 'ORCID ID');
+        img.attr('src','data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo1N0NEMjA4MDI1MjA2ODExOTk0QzkzNTEzRjZEQTg1NyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDozM0NDOEJGNEZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDozM0NDOEJGM0ZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IE1hY2ludG9zaCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkZDN0YxMTc0MDcyMDY4MTE5NUZFRDc5MUM2MUUwNEREIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjU3Q0QyMDgwMjUyMDY4MTE5OTRDOTM1MTNGNkRBODU3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+84NovQAAAR1JREFUeNpiZEADy85ZJgCpeCB2QJM6AMQLo4yOL0AWZETSqACk1gOxAQN+cAGIA4EGPQBxmJA0nwdpjjQ8xqArmczw5tMHXAaALDgP1QMxAGqzAAPxQACqh4ER6uf5MBlkm0X4EGayMfMw/Pr7Bd2gRBZogMFBrv01hisv5jLsv9nLAPIOMnjy8RDDyYctyAbFM2EJbRQw+aAWw/LzVgx7b+cwCHKqMhjJFCBLOzAR6+lXX84xnHjYyqAo5IUizkRCwIENQQckGSDGY4TVgAPEaraQr2a4/24bSuoExcJCfAEJihXkWDj3ZAKy9EJGaEo8T0QSxkjSwORsCAuDQCD+QILmD1A9kECEZgxDaEZhICIzGcIyEyOl2RkgwAAhkmC+eAm0TAAAAABJRU5ErkJggg==');
+        a.append(img);
+        $(this).append(a);
+      }
+    });
+
+    // hide elements of author/affiliations grid that have no value
+    function hide_byline_column(caption) {
+      $('d-byline').find('h3:contains("' + caption + '")').parent().css('visibility', 'hidden');
+    }
+
+    // affiliations
+    var have_affiliations = false;
+    for (var i = 0; i<front_matter.authors.length; ++i) {
+      var author = front_matter.authors[i];
+      if (author.affiliation !== "&nbsp;") {
+        have_affiliations = true;
+        break;
+      }
+    }
+    if (!have_affiliations)
+      $('d-byline').find('h3:contains("Affiliations")').css('visibility', 'hidden');
+
+    // published date
+    if (!front_matter.publishedDate)
+      hide_byline_column("Published");
+
+    // document object identifier
+    var doi = $('d-byline').find('h3:contains("DOI")');
+    var doi_p = doi.next().empty();
+    if (!front_matter.doi) {
+      // if we have a citation and valid citationText then link to that
+      if ($('#citation').length > 0 && front_matter.citationText) {
+        doi.html('Citation');
+        $('<a href="#citation"></a>')
+          .text(front_matter.citationText)
+          .appendTo(doi_p);
+      } else {
+        hide_byline_column("DOI");
+      }
+    } else {
+      $('<a></a>')
+         .attr('href', "https://doi.org/" + front_matter.doi)
+         .html(front_matter.doi)
+         .appendTo(doi_p);
+    }
+
+     // change plural form of authors/affiliations
+    if (front_matter.authors.length === 1) {
+      var grid = $('.authors-affiliations');
+      grid.children('h3:contains("Authors")').text('Author');
+      grid.children('h3:contains("Affiliations")').text('Affiliation');
+    }
+
+    // remove d-appendix and d-footnote-list local styles
+    $('d-appendix > style:first-child').remove();
+    $('d-footnote-list > style:first-child').remove();
+
+    // move appendix-bottom entries to the bottom
+    $('.appendix-bottom').appendTo('d-appendix').children().unwrap();
+    $('.appendix-bottom').remove();
+
+    // hoverable references
+    $('span.citation[data-cites]').each(function() {
+      var refHtml = $('#ref-' + $(this).attr('data-cites')).html();
+      window.tippy(this, {
+        allowHTML: true,
+        content: refHtml,
+        maxWidth: 500,
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'light-border',
+        placement: 'bottom-start'
+      });
+    });
+
+    // clear polling timer
+    clearInterval(tid);
+
+    // show body now that everything is ready
+    on_load_complete();
+  }
+
+  var tid = setInterval(distill_post_process, 50);
+  distill_post_process();
+
+}
+
+function init_downlevel() {
+
+  init_common();
+
+   // insert hr after d-title
+  $('.d-title').after($('<hr class="section-separator"/>'));
+
+  // check if we have authors
+  var front_matter = JSON.parse($("#distill-front-matter").html());
+  var have_authors = front_matter.authors && front_matter.authors.length > 0;
+
+  // manage byline/border
+  if (!have_authors)
+    $('.d-byline').remove();
+  $('.d-byline').after($('<hr class="section-separator"/>'));
+  $('.d-byline a').remove();
+
+  // remove toc
+  $('.d-contents').remove();
+
+  // move appendix elements
+  $('h1.appendix, h2.appendix').each(function(i, val) {
+    $(this).changeElementType('h3');
+  });
+  $('h3.appendix').each(function(i, val) {
+    $(this).nextUntil($('h1, h2, h3')).addBack().appendTo($('.d-appendix'));
+  });
+
+
+  // inject headers into references and footnotes
+  var refs_header = $('<h3></h3>');
+  refs_header.text('References');
+  $('#refs').prepend(refs_header);
+
+  var footnotes_header = $('<h3></h3');
+  footnotes_header.text('Footnotes');
+  $('.footnotes').children('hr').first().replaceWith(footnotes_header);
+
+  // move appendix-bottom entries to the bottom
+  $('.appendix-bottom').appendTo('.d-appendix').children().unwrap();
+  $('.appendix-bottom').remove();
+
+  // remove appendix if it's empty
+  if ($('.d-appendix').children().length === 0)
+    $('.d-appendix').remove();
+
+  // prepend separator above appendix
+  $('.d-appendix').before($('<hr class="section-separator" style="clear: both"/>'));
+
+  // trim code
+  $('pre>code').each(function(i, val) {
+    $(this).html($.trim($(this).html()));
+  });
+
+  // move posts-container right before article
+  $('.posts-container').insertBefore($('.d-article'));
+
+  $('body').addClass('downlevel');
+
+  on_load_complete();
+}
+
+
+function init_common() {
+
+  // jquery plugin to change element types
+  (function($) {
+    $.fn.changeElementType = function(newType) {
+      var attrs = {};
+
+      $.each(this[0].attributes, function(idx, attr) {
+        attrs[attr.nodeName] = attr.nodeValue;
+      });
+
+      this.replaceWith(function() {
+        return $("<" + newType + "/>", attrs).append($(this).contents());
+      });
+    };
+  })(jQuery);
+
+  // prevent underline for linked images
+  $('a > img').parent().css({'border-bottom' : 'none'});
+
+  // mark non-body figures created by knitr chunks as 100% width
+  $('.layout-chunk').each(function(i, val) {
+    var figures = $(this).find('img, .html-widget');
+    if ($(this).attr('data-layout') !== "l-body") {
+      figures.css('width', '100%');
+    } else {
+      figures.css('max-width', '100%');
+      figures.filter("[width]").each(function(i, val) {
+        var fig = $(this);
+        fig.css('width', fig.attr('width') + 'px');
+      });
+
+    }
+  });
+
+  // auto-append index.html to post-preview links in file: protocol
+  // and in rstudio ide preview
+  $('.post-preview').each(function(i, val) {
+    if (window.location.protocol === "file:")
+      $(this).attr('href', $(this).attr('href') + "index.html");
+  });
+
+  // get rid of index.html references in header
+  if (window.location.protocol !== "file:") {
+    $('.distill-site-header a[href]').each(function(i,val) {
+      $(this).attr('href', $(this).attr('href').replace("index.html", "./"));
+    });
+  }
+
+  // add class to pandoc style tables
+  $('tr.header').parent('thead').parent('table').addClass('pandoc-table');
+  $('.kable-table').children('table').addClass('pandoc-table');
+
+  // add figcaption style to table captions
+  $('caption').parent('table').addClass("figcaption");
+
+  // initialize posts list
+  if (window.init_posts_list)
+    window.init_posts_list();
+
+  // implmement disqus comment link
+  $('.disqus-comment-count').click(function() {
+    window.headroom_prevent_pin = true;
+    $('#disqus_thread').toggleClass('hidden');
+    if (!$('#disqus_thread').hasClass('hidden')) {
+      var offset = $(this).offset();
+      $(window).resize();
+      $('html, body').animate({
+        scrollTop: offset.top - 35
+      });
+    }
+  });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  if (is_downlevel_browser())
+    init_downlevel();
+  else
+    window.addEventListener('WebComponentsReady', init_distill);
+});
+
+</script>
+
+<style type="text/css">
+/* base variables */
+
+/* Edit the CSS properties in this file to create a custom
+   Distill theme. Only edit values in the right column
+   for each row; values shown are the CSS defaults.
+   To return any property to the default,
+   you may set its value to: unset
+   All rows must end with a semi-colon.                      */
+
+/* Optional: embed custom fonts here with `@import`          */
+/* This must remain at the top of this file.                 */
+
+
+
+html {
+  /*-- Main font sizes --*/
+  --title-size:      50px;
+  --body-size:       1.06rem;
+  --code-size:       14px;
+  --aside-size:      12px;
+  --fig-cap-size:    13px;
+  /*-- Main font colors --*/
+  --title-color:     #000000;
+  --header-color:    rgba(0, 0, 0, 0.8);
+  --body-color:      rgba(0, 0, 0, 0.8);
+  --aside-color:     rgba(0, 0, 0, 0.6);
+  --fig-cap-color:   rgba(0, 0, 0, 0.6);
+  /*-- Specify custom fonts ~~~ must be imported above   --*/
+  --heading-font:    sans-serif;
+  --mono-font:       monospace;
+  --body-font:       sans-serif;
+  --navbar-font:     sans-serif;  /* websites + blogs only */
+}
+
+/*-- ARTICLE METADATA --*/
+d-byline {
+  --heading-size:    0.6rem;
+  --heading-color:   rgba(0, 0, 0, 0.5);
+  --body-size:       0.8rem;
+  --body-color:      rgba(0, 0, 0, 0.8);
+}
+
+/*-- ARTICLE TABLE OF CONTENTS --*/
+.d-contents {
+  --heading-size:    18px;
+  --contents-size:   13px;
+}
+
+/*-- ARTICLE APPENDIX --*/
+d-appendix {
+  --heading-size:    15px;
+  --heading-color:   rgba(0, 0, 0, 0.65);
+  --text-size:       0.8em;
+  --text-color:      rgba(0, 0, 0, 0.5);
+}
+
+/*-- WEBSITE HEADER + FOOTER --*/
+/* These properties only apply to Distill sites and blogs  */
+
+.distill-site-header {
+  --title-size:       18px;
+  --text-color:       rgba(255, 255, 255, 0.8);
+  --text-size:        15px;
+  --hover-color:      white;
+  --bkgd-color:       #0F2E3D;
+}
+
+.distill-site-footer {
+  --text-color:       rgba(255, 255, 255, 0.8);
+  --text-size:        15px;
+  --hover-color:      white;
+  --bkgd-color:       #0F2E3D;
+}
+
+/*-- Additional custom styles --*/
+/* Add any additional CSS rules below                      */
+</style>
+<style type="text/css">/* base variables */
+
+/* Edit the CSS properties in this file to create a custom
+   Distill theme. Only edit values in the right column
+   for each row; values shown are the CSS defaults.
+   To return any property to the default,
+   you may set its value to: unset
+   All rows must end with a semi-colon.                      */
+
+/* Optional: embed custom fonts here with `@import`          */
+/* This must remain at the top of this file.                 */
+@import url('https://fonts.googleapis.com/css2?family=Lato');
+@import url('https://fonts.googleapis.com/css2?family=Fira+Mono');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat');
+
+html {
+  /*-- Main font sizes --*/
+  --title-size:      50px;
+  --body-size:       1.0rem;                     /* edited */
+  --code-size:       0.9rem;                     /* edited */
+  --aside-size:      12px;
+  --fig-cap-size:    13px;
+  /*-- Main font colors --*/
+  --title-color:     #000000;
+  --heading-color:   rgba(0, 0, 0, 0.8);
+  --body-color:      #383838;                    /* edited */
+  --aside-color:     rgba(0, 0, 0, 0.6);
+  --fig-cap-color:   rgba(0, 0, 0, 0.6);
+  /*-- Specify custom fonts ~~~ must be imported above   --*/
+  --heading-font:    'Lato', sans-serif;         /* edited */
+  --mono-font:       'Fira Mono', monospace;     /* edited */
+  --body-font:       'Lato', sans-serif;         /* edited */
+  --navbar-font:     'Montserrat', sans-serif;   /* edited */
+}
+
+/*-- ARTICLE METADATA --*/
+d-byline {
+  --heading-size:    0.6rem;
+  --heading-color:   rgba(0, 0, 0, 0.5);
+  --body-size:       0.8rem;
+  --body-color:      rgba(0, 0, 0, 0.8);
+}
+
+/*-- ARTICLE TABLE OF CONTENTS --*/
+.d-contents {
+  --heading-size:    18px;
+  --contents-size:   13px;
+}
+
+/*-- ARTICLE APPENDIX --*/
+d-appendix {
+  --heading-size:    15px;
+  --heading-color:   rgba(0, 0, 0, 0.65);
+  --text-size:       0.8em;
+  --text-color:      rgba(0, 0, 0, 0.5);
+}
+
+/*-- WEBSITE HEADER + FOOTER --*/
+/* These properties only apply to Distill sites and blogs  */
+
+.distill-site-header {
+  --title-size:       20px;                      /* edited */
+  --text-color:       #FFFFFF;                   /* edited */
+  --text-size:        20px;                      /* edited */
+  --hover-color:      #383838;                   /* edited */
+  --bkgd-color:       rgb(249, 83, 85);          /* edited */
+}
+
+.distill-site-footer {
+  --text-color:       rgba(255, 255, 255, 0.8);
+  --text-size:        15px;
+  --hover-color:      white;
+  --bkgd-color:       #0F2E3D;
+}
+
+
+/*-- Additional custom styles --*/
+
+.posts-list .metadata .publishedDate {
+    color: rgb(249, 83, 85);
+}
+
+d-article p code {
+  color: #383838;
+  background: rgba(249, 83, 85, 0.1);
+  font-weight: 400;
+  font-size: 0.9em;
+}
+
+d-article a {
+    border-bottom: 2px solid rgba(249, 83, 85, 0.4);
+    text-decoration: none;
+}
+
+.distill-site-header .title {
+    font-weight: 600; 
+}
+
+ul > li::marker {
+  color: rgb(249, 83, 85);
+}</style>
+<style type="text/css">
+/* base style */
+
+/* FONT FAMILIES */
+
+:root {
+  --heading-default: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", Arial, sans-serif;
+  --mono-default: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+  --body-default: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", Arial, sans-serif;
+}
+
+body,
+.posts-list .post-preview p,
+.posts-list .description p {
+  font-family: var(--body-font), var(--body-default);
+}
+
+h1, h2, h3, h4, h5, h6,
+.posts-list .post-preview h2,
+.posts-list .description h2 {
+  font-family: var(--heading-font), var(--heading-default);
+}
+
+d-article div.sourceCode code,
+d-article pre code {
+  font-family: var(--mono-font), var(--mono-default);
+}
+
+
+/*-- TITLE --*/
+d-title h1,
+.posts-list > h1 {
+  color: var(--title-color, black);
+}
+
+d-title h1 {
+  font-size: var(--title-size, 50px);
+}
+
+/*-- HEADERS --*/
+d-article h1,
+d-article h2,
+d-article h3,
+d-article h4,
+d-article h5,
+d-article h6 {
+  color: var(--header-color, rgba(0, 0, 0, 0.8));
+}
+
+/*-- BODY --*/
+d-article > p,  /* only text inside of <p> tags */
+d-article > ul, /* lists */
+d-article > ol {
+  color: var(--body-color, rgba(0, 0, 0, 0.8));
+  font-size: var(--body-size, 1.06rem);
+}
+
+
+/*-- CODE --*/
+d-article div.sourceCode code,
+d-article pre code {
+  font-size: var(--code-size, 14px);
+}
+
+/*-- ASIDE --*/
+d-article aside {
+  font-size: var(--aside-size, 12px);
+  color: var(--aside-color, rgba(0, 0, 0, 0.6));
+}
+
+/*-- FIGURE CAPTIONS --*/
+figure .caption,
+figure figcaption,
+.figure .caption {
+  font-size: var(--fig-cap-size, 13px);
+  color: var(--fig-cap-color, rgba(0, 0, 0, 0.6));
+}
+
+/*-- METADATA --*/
+d-byline h3 {
+  font-size: var(--heading-size, 0.6rem);
+  color: var(--heading-color, rgba(0, 0, 0, 0.5));
+}
+
+d-byline {
+  font-size: var(--body-size, 0.8rem);
+  color: var(--body-color, rgba(0, 0, 0, 0.8));
+}
+
+d-byline a,
+d-article d-byline a {
+  color: var(--body-color, rgba(0, 0, 0, 0.8));
+}
+
+/*-- TABLE OF CONTENTS --*/
+.d-contents nav h3 {
+  font-size: var(--heading-size, 18px);
+}
+
+.d-contents nav a {
+  font-size: var(--contents-size, 13px);
+}
+
+/*-- APPENDIX --*/
+d-appendix h3 {
+  font-size: var(--heading-size, 15px);
+  color: var(--heading-color, rgba(0, 0, 0, 0.65));
+}
+
+d-appendix {
+  font-size: var(--text-size, 0.8em);
+  color: var(--text-color, rgba(0, 0, 0, 0.5));
+}
+
+d-appendix d-footnote-list a.footnote-backlink {
+  color: var(--text-color, rgba(0, 0, 0, 0.5));
+}
+
+/*-- WEBSITE HEADER + FOOTER --*/
+.distill-site-header .title {
+  font-size: var(--title-size, 18px);
+  font-family: var(--navbar-font), var(--heading-default);
+}
+
+.distill-site-header a,
+.nav-dropdown .nav-dropbtn {
+  font-family: var(--navbar-font), var(--heading-default);
+}
+
+.nav-dropdown .nav-dropbtn {
+  color: var(--text-color, rgba(255, 255, 255, 0.8));
+  font-size: var(--text-size, 15px);
+}
+
+.distill-site-header a:hover,
+.nav-dropdown:hover .nav-dropbtn {
+  color: var(--hover-color, white);
+}
+
+.distill-site-header {
+  font-size: var(--text-size, 15px);
+  color: var(--text-color, rgba(255, 255, 255, 0.8));
+  background-color: var(--bkgd-color, #0F2E3D);
+}
+
+.distill-site-footer {
+  font-size: var(--text-size, 15px);
+  color: var(--text-color, rgba(255, 255, 255, 0.8));
+  background-color: var(--bkgd-color, #0F2E3D);
+}
+
+.distill-site-footer a:hover {
+  color: var(--hover-color, white);
+}</style>
+<!--/radix_placeholder_distill-->
+  <script src="../../site_libs/jquery-1.11.3/jquery.min.js"></script>
+  <script src="../../site_libs/popper-2.6.0/popper.min.js"></script>
+  <link href="../../site_libs/tippy-6.2.7/tippy.css" rel="stylesheet" />
+  <link href="../../site_libs/tippy-6.2.7/tippy-light-border.css" rel="stylesheet" />
+  <script src="../../site_libs/tippy-6.2.7/tippy.umd.min.js"></script>
+  <script src="../../site_libs/anchor-4.2.2/anchor.min.js"></script>
+  <script src="../../site_libs/bowser-1.9.3/bowser.min.js"></script>
+  <script src="../../site_libs/webcomponents-2.0.0/webcomponents.js"></script>
+  <script src="../../site_libs/distill-2.2.21/template.v2.js"></script>
+  <!--radix_placeholder_site_in_header-->
+<!--/radix_placeholder_site_in_header-->
+
+
+</head>
+
+<body>
+
+<!--radix_placeholder_front_matter-->
+
+<script id="distill-front-matter" type="text/json">
+{"title":"Price Elasticities from Algorithmic and Structural Models","description":"Statistical Inference and Machine Learning","authors":[{"author":"Jonathan Arnold","authorURL":"#","affiliation":"&nbsp;","affiliationURL":"#","orcidID":""},{"author":"Sheng Chao Ho","authorURL":"#","affiliation":"&nbsp;","affiliationURL":"#","orcidID":""}],"publishedDate":"2021-03-27T00:00:00.000+00:00","citationText":"Arnold & Ho, 2021"}
+</script>
+
+<!--/radix_placeholder_front_matter-->
+<!--radix_placeholder_navigation_before_body-->
+<header class="header header--fixed" role="banner">
+<nav class="distill-site-nav distill-site-header">
+<div class="nav-left">
+<span class="logo">
+<img src="../../images/pennlogo.png"/>
+</span>
+<a href="../../index.html" class="title">Econ 712</a>
+<input id="distill-search" class="nav-search hidden" type="text" placeholder="Search..."/>
+</div>
+<div class="nav-right">
+<a href="../../index.html">Home</a>
+<a href="../../about.html">About</a>
+<a href="https://twitter.com/AmitEcon">
+<i class="fa fa-twitter" aria-hidden="true"></i>
+</a>
+<a href="mailto:akgandhi@upenn.edu">
+<i class="fa fa-envelope" aria-hidden="true"></i>
+</a>
+<a href="javascript:void(0);" class="nav-toggle">&#9776;</a>
+</div>
+</nav>
+</header>
+<!--/radix_placeholder_navigation_before_body-->
+<!--radix_placeholder_site_before_body-->
+<!--/radix_placeholder_site_before_body-->
+
+<div class="d-title">
+<h1>Price Elasticities from Algorithmic and Structural Models</h1>
+<!--radix_placeholder_categories-->
+<div class="dt-tags">
+  <a href="../../index.html#category:Jonathan_and_Sheng" class="dt-tag">Jonathan and Sheng</a>
+</div>
+<!--/radix_placeholder_categories-->
+<p>Statistical Inference and Machine Learning</p>
+</div>
+
+<div class="d-byline">
+  
+  Jonathan Arnold
+  
+,   
+  Sheng Chao Ho
+  
+<br/>03-27-2021
+</div>
+
+<div class="d-article">
+<!-- i followed https://cran.r-project.org/web/packages/BLPestimatoR/vignettes/blp_intro.html for using BLPestimatoR -->
+<h2 id="introduction">Introduction</h2>
+<p>In our last post, we analyzed the predictive accuracy of four algorithmic models of automobile demand: LASSO, CART, Random Forest, and XGBoost. What we found was mediocre predictive performance from LASSO, better performance from CART, and exceptional performance from Random Forest and XGBoost. Random Forest emerged as the clear victor in terms of predictive accuracy, with an <span class="math inline">\(R^2\)</span> of above 0.9 and a very low RMSE to match.</p>
+<p>But we immediately saw issues with interpretability, even with the relatively interpretable CART algorithm. What we want to address in this post is how we can try to analyze the output of these models in a more economic way: what do they tell us about own-price elasticities of demand for these automobiles, if anything? Does the exceptional predictive performance of Random Forest transfer over to producing “good” estimates for elasticities?</p>
+<p>In addition, we will compare the results of these models from this economic perspective to those from more traditional structural models of demand. Specifically, we will estimate various logit and IV logit models of demand, and finish off by attempting an estimation of the RC logit model in the style of BLP. We’ll compare the own-price elasticities resulting from these models, and see which of the models has the most desirable properties.</p>
+<h2 id="algorithmic-models">Algorithmic Models</h2>
+<p>Algorithmic models don’t generally have analytical formulas for partial effects, which we would need in order to calculate the own-price elasticities of demand resulting from these models. Instead, we will approximate these effects numerically.</p>
+<p>Each algorithmic model will give us a function <span class="math inline">\(s(p,X)\)</span>, where the <span class="math inline">\(p\)</span> is the price, <span class="math inline">\(X\)</span> is a vector of features or covariates, and the function <span class="math inline">\(s(\cdot)\)</span> outputs a market share. Thus, letting <span class="math inline">\(j\)</span> be the car model and <span class="math inline">\(t\)</span> be the market, we can approximate the implied own-price elasticity of demand from an algorithmic model as follows: <span class="math display">\[\begin{align*}
+\varepsilon_{jt} = \frac{\partial s(p_{jt},X_{jt})}{\partial p_{jt}} \frac{p_{jt}}{s(p_{jt},X_{jt})} \approx \frac{s(p_{jt}+500,X_{jt})-s(p_{jt}-500,X_{jt})}{1000}\frac{p_{jt}}{s(p_{jt},X_{jt})}
+\end{align*}\]</span> You might ask, why are we using such a large step size to approximate the derivative? Well, the majority of the algorithmic models we’re using are tree-based, meaning that they approximate the function <span class="math inline">\(s(p,X)\)</span> with a piecewise-constant function. Thus, if we make the step size too small, the derivative will always be exactly zero.</p>
+<h1 id="lasso">LASSO</h1>
+<p>We’ll start off as usual with LASSO. First, we need to load and process the data:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='co'># Load data</span>
+<span class='va'>df_raw</span> <span class='op'>&lt;-</span> <span class='fu'>haven</span><span class='fu'>::</span><span class='fu'><a href='https://haven.tidyverse.org/reference/read_dta.html'>read_dta</a></span><span class='op'>(</span><span class='st'>"Model_panel_cleaned.dta"</span><span class='op'>)</span>
+
+<span class='co'># Clean and process</span>
+<span class='va'>df</span><span class='op'>&lt;-</span> <span class='va'>df_raw</span> <span class='op'>%&gt;%</span> 
+  <span class='fu'>select</span><span class='op'>(</span><span class='op'>-</span><span class='fu'><a href='https://tidyselect.r-lib.org/reference/starts_with.html'>starts_with</a></span><span class='op'>(</span><span class='st'>"I_"</span><span class='op'>)</span>,<span class='op'>-</span><span class='va'>count_trim</span>,<span class='op'>-</span><span class='va'>Model_id</span>,<span class='op'>-</span><span class='va'>MY_id</span>,
+         <span class='op'>-</span><span class='va'>nationality1</span>,<span class='op'>-</span><span class='va'>nationality2</span>,
+         <span class='op'>-</span><span class='va'>korea</span>,<span class='op'>-</span><span class='va'>mexico</span>,<span class='op'>-</span><span class='va'>netherlands</span>,<span class='op'>-</span><span class='va'>spain</span>,<span class='op'>-</span><span class='va'>italy</span>,<span class='op'>-</span><span class='va'>germany</span>,
+         <span class='op'>-</span><span class='va'>france</span>,<span class='op'>-</span><span class='va'>uk</span>,<span class='op'>-</span><span class='va'>sweden</span>,<span class='op'>-</span><span class='va'>japan</span>,<span class='op'>-</span><span class='va'>indian</span>,<span class='op'>-</span><span class='va'>china</span>,<span class='op'>-</span><span class='va'>canada</span>,
+         <span class='op'>-</span><span class='fu'><a href='https://tidyselect.r-lib.org/reference/starts_with.html'>starts_with</a></span><span class='op'>(</span><span class='st'>"income_"</span><span class='op'>)</span>,<span class='op'>-</span><span class='va'>gas_nominal</span>,<span class='op'>-</span><span class='va'>gas_real</span>,
+         <span class='op'>-</span><span class='va'>car_size</span>,<span class='op'>-</span><span class='va'>car_volume</span>,<span class='op'>-</span><span class='va'>hp_to_cyl</span>,<span class='op'>-</span><span class='va'>hp_to_weight</span>,
+         <span class='op'>-</span><span class='va'>transmission_id</span>,<span class='op'>-</span><span class='va'>drivetype_id</span>,<span class='op'>-</span><span class='va'>body_original</span>,
+         <span class='op'>-</span><span class='va'>model_age</span>,<span class='op'>-</span><span class='va'>engine_hp</span>,<span class='op'>-</span><span class='va'>mpg_combined</span>,<span class='op'>-</span><span class='va'>dpm_combined</span>,
+         <span class='op'>-</span><span class='va'>curb_weight_lbs</span>,<span class='op'>-</span><span class='va'>trim_name</span>,<span class='op'>-</span><span class='va'>cpi</span>,<span class='op'>-</span><span class='va'>log_mpg_combined</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>mutate</span><span class='op'>(</span>log_mpg_city<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/Log.html'>log</a></span><span class='op'>(</span><span class='va'>mpg_city</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>mutate</span><span class='op'>(</span>log_mpg_hwy<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/Log.html'>log</a></span><span class='op'>(</span><span class='va'>mpg_hwy</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>mutate</span><span class='op'>(</span>log_dpm_city<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/Log.html'>log</a></span><span class='op'>(</span><span class='va'>dpm_city</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>mutate</span><span class='op'>(</span>log_dpm_hwy<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/Log.html'>log</a></span><span class='op'>(</span><span class='va'>dpm_hwy</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>mutate</span><span class='op'>(</span>nationality<span class='op'>=</span><span class='fu'>case_when</span><span class='op'>(</span><span class='va'>nationality</span><span class='op'>%in%</span>
+                                 <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"Italy/US"</span>,<span class='st'>"Germany/US"</span><span class='op'>)</span> <span class='op'>~</span> <span class='st'>"US"</span>,
+                                  <span class='va'>nationality</span> <span class='op'>==</span> <span class='st'>""</span> <span class='op'>~</span> <span class='st'>"US"</span>,
+                                  <span class='cn'>TRUE</span> <span class='op'>~</span> <span class='va'>nationality</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>select</span><span class='op'>(</span><span class='op'>-</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='va'>mpg_city</span>,<span class='va'>mpg_hwy</span>,<span class='va'>dpm_city</span>,<span class='va'>dpm_hwy</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>mutate_if</span><span class='op'>(</span><span class='va'>is.character</span>,<span class='va'>as.factor</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>mutate</span><span class='op'>(</span>share<span class='op'>=</span><span class='va'>sales</span><span class='op'>/</span><span class='op'>(</span><span class='va'>nb_hh</span><span class='op'>*</span><span class='fl'>1000</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>group_by</span><span class='op'>(</span><span class='va'>Year</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>mutate</span><span class='op'>(</span>own_mkt_price_ratio<span class='op'>=</span><span class='va'>price</span><span class='op'>/</span><span class='op'>(</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span><span class='op'>(</span><span class='va'>price</span><span class='op'>)</span><span class='op'>-</span><span class='va'>price</span><span class='op'>)</span><span class='op'>/</span><span class='op'>(</span><span class='fu'>n</span><span class='op'>(</span><span class='op'>)</span><span class='op'>-</span><span class='fl'>1</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>group_by</span><span class='op'>(</span><span class='va'>class</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>mutate</span><span class='op'>(</span>own_class_price_ratio<span class='op'>=</span><span class='va'>price</span><span class='op'>/</span><span class='op'>(</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span><span class='op'>(</span><span class='va'>price</span><span class='op'>)</span><span class='op'>-</span><span class='va'>price</span><span class='op'>)</span><span class='op'>/</span><span class='op'>(</span><span class='fu'>n</span><span class='op'>(</span><span class='op'>)</span><span class='op'>-</span><span class='fl'>1</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='va'>ungroup</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>select</span><span class='op'>(</span><span class='op'>-</span><span class='va'>sales</span>,<span class='op'>-</span><span class='va'>nb_hh</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>drop_na</span><span class='op'>(</span><span class='op'>)</span>
+
+<span class='co'># Convert to data frame for better compatibility</span>
+<span class='va'>df</span><span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/as.data.frame.html'>as.data.frame</a></span><span class='op'>(</span><span class='va'>df</span><span class='op'>)</span>
+
+<span class='co'># Create dataframes with adjusted prices</span>
+<span class='va'>df_minus</span><span class='op'>&lt;-</span> <span class='va'>df</span> <span class='op'>%&gt;%</span> <span class='fu'>mutate</span><span class='op'>(</span>price<span class='op'>=</span><span class='va'>price</span><span class='op'>-</span><span class='fl'>500</span><span class='op'>)</span>
+<span class='va'>df_plus</span><span class='op'>&lt;-</span> <span class='va'>df</span> <span class='op'>%&gt;%</span> <span class='fu'>mutate</span><span class='op'>(</span>price<span class='op'>=</span><span class='va'>price</span><span class='op'>+</span><span class='fl'>500</span><span class='op'>)</span>
+<span class='co'># Original prices</span>
+<span class='va'>prices</span><span class='op'>&lt;-</span> <span class='va'>df</span><span class='op'>$</span><span class='va'>price</span>
+</code></pre>
+</div>
+</div>
+<p>Now we split into test and training sets, and created the cross-validation sets.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span><span class='op'>(</span><span class='fl'>123</span><span class='op'>)</span>
+<span class='va'>df_split</span> <span class='op'>&lt;-</span> <span class='fu'>initial_split</span><span class='op'>(</span><span class='va'>df</span>, strata <span class='op'>=</span> <span class='va'>share</span><span class='op'>)</span>
+<span class='va'>df_train</span> <span class='op'>&lt;-</span> <span class='fu'>training</span><span class='op'>(</span><span class='va'>df_split</span><span class='op'>)</span>
+<span class='va'>df_test</span> <span class='op'>&lt;-</span> <span class='fu'>testing</span><span class='op'>(</span><span class='va'>df_split</span><span class='op'>)</span>
+<span class='va'>df_folds</span> <span class='op'>&lt;-</span> <span class='fu'>vfold_cv</span><span class='op'>(</span><span class='va'>df_train</span>, strata <span class='op'>=</span> <span class='va'>share</span><span class='op'>)</span>
+</code></pre>
+</div>
+</div>
+<div class="layout-chunk" data-layout="l-body">
+
+</div>
+<p>And, we create a recipe to be used in the models.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>demand_recipe</span><span class='op'>&lt;-</span> <span class='fu'>recipe</span><span class='op'>(</span>formula<span class='op'>=</span> <span class='va'>share</span> <span class='op'>~</span><span class='va'>.</span>, data<span class='op'>=</span><span class='va'>df_train</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>update_role</span><span class='op'>(</span><span class='va'>Year</span>, new_role<span class='op'>=</span><span class='st'>"Market"</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>step_other</span><span class='op'>(</span><span class='va'>company</span>,threshold<span class='op'>=</span><span class='fl'>0.05</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>step_other</span><span class='op'>(</span><span class='va'>brand</span>,<span class='va'>nationality</span>,<span class='va'>suv_class</span>,threshold<span class='op'>=</span><span class='fl'>0.02</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>step_other</span><span class='op'>(</span><span class='va'>model</span>,threshold<span class='op'>=</span><span class='fl'>0.0045</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>step_dummy</span><span class='op'>(</span><span class='fu'>all_nominal</span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>
+</code></pre>
+</div>
+</div>
+<p>Now, we fit the LASSO model to the training data.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>glmnet_recipe</span> <span class='op'>&lt;-</span> 
+  <span class='fu'>recipe</span><span class='op'>(</span>formula<span class='op'>=</span> <span class='va'>share</span> <span class='op'>~</span><span class='va'>.</span>, data<span class='op'>=</span><span class='va'>df_train</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>update_role</span><span class='op'>(</span><span class='va'>Year</span>, new_role<span class='op'>=</span><span class='st'>"Market"</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>step_other</span><span class='op'>(</span><span class='va'>company</span>,threshold<span class='op'>=</span><span class='fl'>0.05</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>step_other</span><span class='op'>(</span><span class='va'>brand</span>,<span class='va'>nationality</span>,<span class='va'>suv_class</span>,threshold<span class='op'>=</span><span class='fl'>0.02</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>step_other</span><span class='op'>(</span><span class='va'>model</span>,threshold<span class='op'>=</span><span class='fl'>0.0045</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>step_normalize</span><span class='op'>(</span><span class='fu'>all_predictors</span><span class='op'>(</span><span class='op'>)</span>, <span class='op'>-</span><span class='fu'>all_nominal</span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>step_dummy</span><span class='op'>(</span><span class='fu'>all_nominal</span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>
+
+<span class='va'>glmnet_prep</span><span class='op'>&lt;-</span> <span class='fu'>prep</span><span class='op'>(</span><span class='va'>glmnet_recipe</span><span class='op'>)</span>
+<span class='va'>glmnet_bake_minus</span><span class='op'>&lt;-</span> <span class='fu'>bake</span><span class='op'>(</span><span class='va'>glmnet_prep</span>,new_data<span class='op'>=</span><span class='va'>df_minus</span><span class='op'>)</span>
+<span class='va'>glmnet_bake_plus</span><span class='op'>&lt;-</span> <span class='fu'>bake</span><span class='op'>(</span><span class='va'>glmnet_prep</span>,new_data<span class='op'>=</span><span class='va'>df_plus</span><span class='op'>)</span>
+<span class='va'>glmnet_bake</span><span class='op'>&lt;-</span> <span class='fu'>bake</span><span class='op'>(</span><span class='va'>glmnet_prep</span>,new_data<span class='op'>=</span><span class='va'>df</span><span class='op'>)</span>
+
+<span class='va'>glmnet_spec</span> <span class='op'>&lt;-</span> 
+  <span class='fu'>linear_reg</span><span class='op'>(</span>penalty <span class='op'>=</span> <span class='fl'>2.037462e-10</span>, mixture <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span> <span class='op'>%&gt;%</span> 
+  <span class='fu'>set_mode</span><span class='op'>(</span><span class='st'>"regression"</span><span class='op'>)</span> <span class='op'>%&gt;%</span> 
+  <span class='fu'>set_engine</span><span class='op'>(</span><span class='st'>"glmnet"</span><span class='op'>)</span> 
+
+<span class='va'>glmnet_workflow</span> <span class='op'>&lt;-</span> 
+  <span class='fu'>workflow</span><span class='op'>(</span><span class='op'>)</span> <span class='op'>%&gt;%</span> 
+  <span class='fu'>add_recipe</span><span class='op'>(</span><span class='va'>glmnet_recipe</span><span class='op'>)</span> <span class='op'>%&gt;%</span> 
+  <span class='fu'>add_model</span><span class='op'>(</span><span class='va'>glmnet_spec</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>fit</span><span class='op'>(</span><span class='va'>df_train</span><span class='op'>)</span>
+</code></pre>
+</div>
+</div>
+<p>We’re not quite done. In order to calculate the elasticities, we run the fitted model on the original data, and on the data with altered prices. Then we calculate the approximation formula, and take medians for each model across markets.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>glmnet_predictions_minus</span><span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/predict.html'>predict</a></span><span class='op'>(</span><span class='va'>glmnet_workflow</span><span class='op'>$</span><span class='va'>fit</span><span class='op'>$</span><span class='va'>fit</span>,<span class='va'>glmnet_bake_minus</span><span class='op'>)</span>
+<span class='va'>glmnet_predictions_plus</span><span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/predict.html'>predict</a></span><span class='op'>(</span><span class='va'>glmnet_workflow</span><span class='op'>$</span><span class='va'>fit</span><span class='op'>$</span><span class='va'>fit</span>,<span class='va'>glmnet_bake_plus</span><span class='op'>)</span>
+<span class='va'>glmnet_predictions</span><span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/predict.html'>predict</a></span><span class='op'>(</span><span class='va'>glmnet_workflow</span><span class='op'>$</span><span class='va'>fit</span><span class='op'>$</span><span class='va'>fit</span>,<span class='va'>glmnet_bake</span><span class='op'>)</span>
+
+<span class='va'>glmnet_elasticities</span><span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>company<span class='op'>=</span><span class='va'>df</span><span class='op'>$</span><span class='va'>company</span>,brand<span class='op'>=</span><span class='va'>df</span><span class='op'>$</span><span class='va'>brand</span>,
+                                 model<span class='op'>=</span><span class='va'>df</span><span class='op'>$</span><span class='va'>model</span>,Year<span class='op'>=</span><span class='va'>df</span><span class='op'>$</span><span class='va'>Year</span>,
+                                 elasticity<span class='op'>=</span><span class='op'>(</span><span class='op'>(</span><span class='va'>glmnet_predictions_plus</span><span class='op'>[[</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>]</span><span class='op'>-</span>
+                                                <span class='va'>glmnet_predictions_minus</span><span class='op'>[[</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>]</span><span class='op'>)</span><span class='op'>/</span><span class='fl'>1000</span><span class='op'>)</span><span class='op'>*</span>
+                                   <span class='op'>(</span><span class='va'>prices</span><span class='op'>/</span><span class='va'>glmnet_predictions</span><span class='op'>[[</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>]</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>%&gt;%</span> 
+  <span class='fu'>group_by</span><span class='op'>(</span><span class='va'>company</span>, <span class='va'>brand</span>, <span class='va'>model</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>summarize</span><span class='op'>(</span>elasticity<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/stats/median.html'>median</a></span><span class='op'>(</span><span class='va'>elasticity</span><span class='op'>)</span><span class='op'>)</span>
+</code></pre>
+</div>
+</div>
+<p>Let’s take a look at the results.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>glmnet_elasticities</span> <span class='op'>%&gt;%</span> <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>x<span class='op'>=</span><span class='va'>company</span>,y<span class='op'>=</span><span class='va'>elasticity</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span> <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_boxplot.html'>geom_boxplot</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/labs.html'>xlab</a></span><span class='op'>(</span><span class='st'>"Company"</span><span class='op'>)</span> <span class='op'>+</span> <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/labs.html'>ylab</a></span><span class='op'>(</span><span class='st'>"Median Elasticity"</span><span class='op'>)</span> <span class='op'>+</span> <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/lims.html'>ylim</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>25</span>,<span class='fl'>25</span><span class='op'>)</span><span class='op'>+</span>
+  <span class='fu'><a href='https://rdrr.io/pkg/viridis/man/scale_viridis.html'>scale_color_viridis</a></span><span class='op'>(</span>discrete<span class='op'>=</span><span class='cn'>T</span>,guide<span class='op'>=</span><span class='cn'>F</span><span class='op'>)</span> <span class='op'>+</span> <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/coord_flip.html'>coord_flip</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>+</span> <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggtheme.html'>theme_minimal</a></span><span class='op'>(</span><span class='op'>)</span>
+</code></pre>
+</div>
+<p><img src="jonathan-sheng-algorithmic-demand-estimation-causal_files/figure-html5/unnamed-chunk-4-1.png" width="624" /></p>
+</div>
+<p>These results are, to put it bluntly, pretty bad. Most of the own-price elasticities coming from LASSO are positive, which is not what we should expect from economic theory. In addition, there is quite a wide spread, in both the positive and negative directions - and we even excluded some of the larger values!</p>
+<p>In short, the LASSO regression approach does not seem to produce very reasonable results for statistical inference in this problem. Reasons for this could be simultaneity issues or other endogeneity problems with the price coefficient.</p>
+<h1 id="cart">CART</h1>
+<p>Let’s try this same type of analysis on CART. We’ll fit the CART model to the training data first (code echoing is suppressed because the procedure is mostly the same as before).</p>
+<div class="layout-chunk" data-layout="l-body">
+
+</div>
+<p>Then, we calculate the resulting elasticities. We plot them in the same way below:</p>
+<div class="layout-chunk" data-layout="l-body">
+<p><img src="jonathan-sheng-algorithmic-demand-estimation-causal_files/figure-html5/unnamed-chunk-5-1.png" width="624" /></p>
+</div>
+<p>This is in some ways even worse than LASSO, but shouldn’t be unexpected. CART will have the most piecewise-constant functional form out of all the models, and so even with a price shift of 1000 dollars, it isn’t enough to change the predicted share for most of the vehicles in the data. For those that have a non-zero elasticity, the elasticity is negative, which is better than what we saw from LASSO.</p>
+<h1 id="random-forest">Random Forest</h1>
+<p>Now we repeat the same process for random forest: fit the model to the training data, and evaluate it on all the data and the price-shifted data, and calculate the resulting elasticities.</p>
+<div class="layout-chunk" data-layout="l-body">
+
+</div>
+<p>We plot the results below.</p>
+<div class="layout-chunk" data-layout="l-body">
+<p><img src="jonathan-sheng-algorithmic-demand-estimation-causal_files/figure-html5/unnamed-chunk-6-1.png" width="624" /></p>
+</div>
+<p>The results are quite impressive: almost all the elasticities fall within the -2 to 0 range. There are a few outlying positive estimates, but they are relatively uncommon. The only major issue with these results is that the implication is that most firms are pricing on the inelastic portion of the demand curve. We would expect instead that such firms would want to increase their prices and thus increase profits. So it may be the case the while the Random Forest elasticities are better than the others, they are biased towards zero; some sort of shrinkage is happening. It may be still due to the piecewise-constant functional form of regression tree models, or it could be more econometric issues with endogeneity.</p>
+<h1 id="xgboost">XGBoost</h1>
+<p>Finally, we repeat the procedure on the XGBoost model.</p>
+<div class="layout-chunk" data-layout="l-body">
+
+</div>
+<p>Below, we plot the results.</p>
+<div class="layout-chunk" data-layout="l-body">
+<p><img src="jonathan-sheng-algorithmic-demand-estimation-causal_files/figure-html5/unnamed-chunk-7-1.png" width="624" /></p>
+</div>
+<p>XGBoost also produces much more reasonable estimates than LASSO and CART, and almost all of them are negative. However, XGBoost does seem to suffer from a shrinkage issue slightly more than Random Forest does. If we look at the data underlying the above plot, we do see indeed that many estimates are simply zero, corresponding to flat portions of the estimated demand function.</p>
+<p>What’s important to note here is that the two models that perform the best predictively also seem to perform the best in terms of statistical inference. Perhaps the two are not altogether disconnected, but we will see in the next section how these impressively accurate algorithmic models compare with some data models in terms of statistical inference.</p>
+<h2 id="structural-models-of-demand">Structural Models of Demand</h2>
+<h1 id="the-logit-model">The Logit Model</h1>
+<p>For the logit model, we assume that consumers <span class="math inline">\(i\)</span> choose among products <span class="math inline">\(j\)</span> in market <span class="math inline">\(t\)</span> to maximize the following utility function: <span class="math display">\[\begin{align*}
+u_{ijt} = X_{jt} \beta + \alpha p_{jt} + \xi_{jt} + \epsilon_{ijt}
+\end{align*}\]</span> where <span class="math inline">\(X_{jt}\)</span> is a vector of product-specific covariates, <span class="math inline">\(\xi_{jt}\)</span> captures unobserved heterogeneity at the product level, and <span class="math inline">\(\epsilon_{ijt}\)</span> is an individual and product-specific shock. In the logit model, we assume that the <span class="math inline">\(\epsilon_{ijt}\)</span> shocks are Type 1 extreme value so that we can use the convenient logit form of the conditional choice probabilities.</p>
+<p>Now we will write <span class="math inline">\(\delta_{jt} = X_{jt} \beta + \alpha p_{jt} + \xi_{jt}\)</span>, the mean utility from product <span class="math inline">\(j\)</span> in market <span class="math inline">\(t\)</span>. Note that the mean utility for the outside good, <span class="math inline">\(j=0\)</span>, is normalized to 0. Thus, the form for the utility function becomes <span class="math inline">\(u_{ijt} = \delta_{jt} + \epsilon_{ijt}\)</span>, and we can easily apply the logit choice probability formula to obtain: <span class="math display">\[\begin{align*}
+s_{jt} = \frac{e^{\delta_{jt}}}{1+\sum_{k&gt;0} e^{\delta_{kt}}}
+\end{align*}\]</span> The outside good share is: <span class="math display">\[\begin{align*}
+s_{0t} = \frac{1}{1+\sum_{k&gt;0} e^{\delta_{kt}}}
+\end{align*}\]</span> Taking logs: <span class="math display">\[\begin{align*}
+\log s_{jt} &amp;= \delta_{jt}- \log(1+\sum_{k&gt;0} e^{\delta_{kt}}) \\
+\log s_{0t} &amp;= -\log(1+\sum_{k&gt;0} e^{\delta_{kt}})
+\end{align*}\]</span> Thus, we can subtract the two equations and substitute in the functional form of <span class="math inline">\(\delta_{jt}\)</span> to find: <span class="math display">\[\begin{align*}
+\log s_{jt} - \log s_{0t} = X_{jt} \beta + \alpha p_{jt} + \xi_{jt}
+\end{align*}\]</span> This last equation is something we can estimate quite easily using OLS.</p>
+<p>Finally, we need to know what this model predicts for elasticities. It can be easily derived that the own-price elasticity of demand for product <span class="math inline">\(j\)</span> in market <span class="math inline">\(t\)</span> resulting from this model is as follows: <span class="math display">\[\begin{align*}
+\varepsilon_{jt} = \frac{p_{jt}}{s_{jt}} (\alpha s_{jt}(1-s_{jt}))
+\end{align*}\]</span></p>
+<p>Now for the estimation procedure. First, we clean the data slightly differently relative to the algorithmic models. We scale price by 1000 to put it into more friendly units, and add in the dummy variables for all categorical predictors.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>df_struct</span><span class='op'>&lt;-</span> <span class='va'>df_raw</span> <span class='op'>%&gt;%</span> 
+  <span class='fu'>select</span><span class='op'>(</span><span class='op'>-</span><span class='va'>trim_name</span>,<span class='op'>-</span><span class='fu'><a href='https://tidyselect.r-lib.org/reference/starts_with.html'>starts_with</a></span><span class='op'>(</span><span class='st'>"log_"</span><span class='op'>)</span>,
+         <span class='op'>-</span><span class='va'>model_age</span>,<span class='op'>-</span><span class='va'>body_original</span>,<span class='op'>-</span><span class='va'>transmission_id</span>,<span class='op'>-</span><span class='va'>drivetype_id</span>,
+         <span class='op'>-</span><span class='fu'><a href='https://tidyselect.r-lib.org/reference/starts_with.html'>starts_with</a></span><span class='op'>(</span><span class='st'>"income_"</span><span class='op'>)</span>, <span class='op'>-</span><span class='va'>cpi</span>,<span class='op'>-</span><span class='va'>gas_nominal</span>,<span class='op'>-</span><span class='va'>gas_real</span>,
+         <span class='op'>-</span><span class='va'>korea</span>,<span class='op'>-</span><span class='va'>mexico</span>,<span class='op'>-</span><span class='va'>netherlands</span>,<span class='op'>-</span><span class='va'>spain</span>,<span class='op'>-</span><span class='va'>italy</span>,<span class='op'>-</span><span class='va'>germany</span>,
+         <span class='op'>-</span><span class='va'>france</span>,<span class='op'>-</span><span class='va'>uk</span>,<span class='op'>-</span><span class='va'>sweden</span>,<span class='op'>-</span><span class='va'>japan</span>,<span class='op'>-</span><span class='va'>indian</span>,<span class='op'>-</span><span class='va'>china</span>,<span class='op'>-</span><span class='va'>canada</span>,
+         <span class='op'>-</span><span class='va'>nationality1</span>,<span class='op'>-</span><span class='va'>nationality2</span>,<span class='op'>-</span><span class='va'>MY_id</span>,<span class='op'>-</span><span class='va'>Model_id</span>,<span class='op'>-</span><span class='va'>count_trim</span>,
+         <span class='op'>-</span><span class='fu'><a href='https://tidyselect.r-lib.org/reference/starts_with.html'>starts_with</a></span><span class='op'>(</span><span class='st'>"I_"</span><span class='op'>)</span>,<span class='op'>-</span><span class='va'>suv_class</span>,<span class='op'>-</span><span class='va'>nb_bodystyle</span>,<span class='op'>-</span><span class='va'>mpg_city</span>,<span class='op'>-</span><span class='va'>mpg_hwy</span>,
+         <span class='op'>-</span><span class='va'>dpm_city</span>,<span class='op'>-</span><span class='va'>dpm_hwy</span>
+         <span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>mutate</span><span class='op'>(</span>nationality<span class='op'>=</span><span class='fu'>case_when</span><span class='op'>(</span><span class='va'>nationality</span><span class='op'>%in%</span>
+                                 <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"Italy/US"</span>,<span class='st'>"Germany/US"</span><span class='op'>)</span> <span class='op'>~</span> <span class='st'>"US"</span>,
+                                  <span class='va'>nationality</span> <span class='op'>==</span> <span class='st'>""</span> <span class='op'>~</span> <span class='st'>"US"</span>,
+                                  <span class='cn'>TRUE</span> <span class='op'>~</span> <span class='va'>nationality</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>mutate_if</span><span class='op'>(</span><span class='va'>is.character</span>,<span class='va'>as.factor</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>mutate</span><span class='op'>(</span>share<span class='op'>=</span><span class='va'>sales</span><span class='op'>/</span><span class='op'>(</span><span class='va'>nb_hh</span><span class='op'>*</span><span class='fl'>1000</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>select</span><span class='op'>(</span><span class='op'>-</span><span class='va'>sales</span>,<span class='op'>-</span><span class='va'>nb_hh</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='co'>#get price into scale consistent with BLP</span>
+  <span class='fu'>mutate</span><span class='op'>(</span>price <span class='op'>=</span> <span class='va'>price</span><span class='op'>/</span><span class='fl'>1000</span><span class='op'>)</span> <span class='op'>%&gt;%</span> 
+  <span class='fu'>drop_na</span><span class='op'>(</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'><a href='https://jacobkap.github.io/fastDummies/reference/dummy_cols.html'>dummy_cols</a></span><span class='op'>(</span>select_columns<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"engine_fuel"</span>,<span class='st'>"nationality"</span>,<span class='st'>"drivetype"</span>,
+                              <span class='st'>"transmission"</span>,<span class='st'>"class"</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>select</span><span class='op'>(</span><span class='op'>-</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='va'>engine_fuel</span>,<span class='va'>engine_fuel_Gas</span>,<span class='va'>nationality</span>,
+            <span class='va'>nationality_US</span>,<span class='va'>drivetype</span>,<span class='va'>drivetype_FWD</span>,
+            <span class='va'>transmission</span>,<span class='va'>transmission_A</span>,<span class='va'>class</span>, <span class='va'>class_Sedan</span><span class='op'>)</span><span class='op'>)</span>
+
+<span class='kw'>for</span> <span class='op'>(</span><span class='va'>i</span> <span class='kw'>in</span> <span class='fl'>1</span><span class='op'>:</span><span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>ncol</a></span><span class='op'>(</span><span class='va'>df_struct</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>{</span>
+  <span class='fu'><a href='https://rdrr.io/r/base/attr.html'>attr</a></span><span class='op'>(</span><span class='va'>df_struct</span><span class='op'>[[</span><span class='va'>i</span><span class='op'>]</span><span class='op'>]</span>,<span class='st'>"label"</span><span class='op'>)</span><span class='op'>&lt;-</span> <span class='cn'>NULL</span>
+  <span class='fu'><a href='https://rdrr.io/r/base/attr.html'>attr</a></span><span class='op'>(</span><span class='va'>df_struct</span><span class='op'>[[</span><span class='va'>i</span><span class='op'>]</span><span class='op'>]</span>,<span class='st'>"format.stata"</span><span class='op'>)</span><span class='op'>&lt;-</span> <span class='cn'>NULL</span>
+<span class='op'>}</span>
+</code></pre>
+</div>
+</div>
+<p>Then, we need to calculate the differences between the log shares and the log of the outside share.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>df_struct</span><span class='op'>&lt;-</span> <span class='va'>df_struct</span> <span class='op'>%&gt;%</span> 
+  <span class='fu'>group_by</span><span class='op'>(</span><span class='va'>Year</span><span class='op'>)</span> <span class='op'>%&gt;%</span> 
+  <span class='fu'>mutate</span><span class='op'>(</span>outside_share<span class='op'>=</span><span class='fl'>1</span><span class='op'>-</span><span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span><span class='op'>(</span><span class='va'>share</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>%&gt;%</span> 
+  <span class='va'>ungroup</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>mutate</span><span class='op'>(</span>log_share<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/Log.html'>log</a></span><span class='op'>(</span><span class='va'>share</span><span class='op'>)</span><span class='op'>-</span><span class='fu'><a href='https://rdrr.io/r/base/Log.html'>log</a></span><span class='op'>(</span><span class='va'>outside_share</span><span class='op'>)</span><span class='op'>)</span>
+</code></pre>
+</div>
+</div>
+<p>Now we’re ready to estimate the model. We actually estimate three models: one with no product or brand dummies, a second with brand dummies, and a third with model dummies. This will give us an idea of how unobserved heterogeneity at the brand and model levels affects the estimates of price and other coefficients.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>logit_model_ols</span><span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/lm.html'>lm</a></span><span class='op'>(</span><span class='va'>log_share</span><span class='op'>~</span><span class='va'>price</span><span class='op'>+</span><span class='va'>engine_nbcylinder</span> <span class='op'>+</span>
+                       <span class='va'>wheelbase_ins</span><span class='op'>+</span><span class='va'>size_length_ins</span><span class='op'>+</span>
+                       <span class='va'>size_width_ins</span><span class='op'>+</span><span class='va'>size_height_ins</span><span class='op'>+</span>
+                       <span class='va'>curb_weight_lbs</span><span class='op'>+</span><span class='va'>mpg_combined</span><span class='op'>+</span>
+                       <span class='va'>engine_hp</span><span class='op'>+</span><span class='va'>engine_hp_rpm</span><span class='op'>+</span>
+                       <span class='va'>nb_doors</span><span class='op'>+</span><span class='va'>hp_to_weight</span><span class='op'>+</span>
+                       <span class='va'>hp_to_cyl</span><span class='op'>+</span><span class='va'>car_size</span><span class='op'>+</span><span class='va'>car_volume</span><span class='op'>+</span>
+                       <span class='va'>dpm_combined</span><span class='op'>+</span><span class='va'>engine_fuel_Diesel</span><span class='op'>+</span>
+                       <span class='va'>engine_fuel_Elec</span><span class='op'>+</span><span class='va'>nationality_China</span><span class='op'>+</span>
+                       <span class='va'>nationality_France</span><span class='op'>+</span><span class='va'>nationality_Germany</span><span class='op'>+</span>
+                       <span class='va'>nationality_Indian</span><span class='op'>+</span><span class='va'>nationality_Japan</span><span class='op'>+</span>
+                       <span class='va'>nationality_Korea</span><span class='op'>+</span><span class='va'>nationality_Netherlands</span><span class='op'>+</span>
+                       <span class='va'>nationality_Sweden</span><span class='op'>+</span><span class='va'>nationality_UK</span><span class='op'>+</span>
+                       <span class='va'>drivetype_AWD</span><span class='op'>+</span><span class='va'>drivetype_RWD</span><span class='op'>+</span>
+                       <span class='va'>transmission_M</span><span class='op'>+</span><span class='va'>`class_Cargo Van`</span> <span class='op'>+</span>
+                       <span class='va'>class_Coupe</span><span class='op'>+</span><span class='va'>class_Hatchback</span><span class='op'>+</span><span class='va'>class_Minivan</span><span class='op'>+</span>
+                       <span class='va'>class_Pickup</span><span class='op'>+</span><span class='va'>class_Suv</span><span class='op'>+</span><span class='va'>class_Wagon</span>,data<span class='op'>=</span><span class='va'>df_struct</span><span class='op'>)</span>
+
+<span class='va'>logit_model_ols_brand</span><span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/lm.html'>lm</a></span><span class='op'>(</span><span class='va'>log_share</span><span class='op'>~</span><span class='va'>price</span><span class='op'>+</span><span class='va'>brand</span><span class='op'>+</span><span class='va'>engine_nbcylinder</span> <span class='op'>+</span>
+                       <span class='va'>wheelbase_ins</span><span class='op'>+</span><span class='va'>size_length_ins</span><span class='op'>+</span>
+                       <span class='va'>size_width_ins</span><span class='op'>+</span><span class='va'>size_height_ins</span><span class='op'>+</span>
+                       <span class='va'>curb_weight_lbs</span><span class='op'>+</span><span class='va'>mpg_combined</span><span class='op'>+</span>
+                       <span class='va'>engine_hp</span><span class='op'>+</span><span class='va'>engine_hp_rpm</span><span class='op'>+</span>
+                       <span class='va'>nb_doors</span><span class='op'>+</span><span class='va'>hp_to_weight</span><span class='op'>+</span>
+                       <span class='va'>hp_to_cyl</span><span class='op'>+</span><span class='va'>car_size</span><span class='op'>+</span><span class='va'>car_volume</span><span class='op'>+</span>
+                       <span class='va'>dpm_combined</span><span class='op'>+</span><span class='va'>engine_fuel_Diesel</span><span class='op'>+</span>
+                       <span class='va'>engine_fuel_Elec</span><span class='op'>+</span><span class='va'>nationality_China</span><span class='op'>+</span>
+                       <span class='va'>nationality_France</span><span class='op'>+</span><span class='va'>nationality_Germany</span><span class='op'>+</span>
+                       <span class='va'>nationality_Indian</span><span class='op'>+</span><span class='va'>nationality_Japan</span><span class='op'>+</span>
+                       <span class='va'>nationality_Korea</span><span class='op'>+</span><span class='va'>nationality_Netherlands</span><span class='op'>+</span>
+                       <span class='va'>nationality_Sweden</span><span class='op'>+</span><span class='va'>nationality_UK</span><span class='op'>+</span>
+                       <span class='va'>drivetype_AWD</span><span class='op'>+</span><span class='va'>drivetype_RWD</span><span class='op'>+</span>
+                       <span class='va'>transmission_M</span><span class='op'>+</span><span class='va'>`class_Cargo Van`</span> <span class='op'>+</span>
+                       <span class='va'>class_Coupe</span><span class='op'>+</span><span class='va'>class_Hatchback</span><span class='op'>+</span><span class='va'>class_Minivan</span><span class='op'>+</span>
+                       <span class='va'>class_Pickup</span><span class='op'>+</span><span class='va'>class_Suv</span><span class='op'>+</span><span class='va'>class_Wagon</span>,data<span class='op'>=</span><span class='va'>df_struct</span><span class='op'>)</span>
+
+<span class='va'>logit_model_ols_product</span><span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/lm.html'>lm</a></span><span class='op'>(</span><span class='va'>log_share</span><span class='op'>~</span><span class='va'>price</span><span class='op'>+</span><span class='va'>model</span><span class='op'>+</span><span class='va'>engine_nbcylinder</span> <span class='op'>+</span>
+                       <span class='va'>wheelbase_ins</span><span class='op'>+</span><span class='va'>size_length_ins</span><span class='op'>+</span>
+                       <span class='va'>size_width_ins</span><span class='op'>+</span><span class='va'>size_height_ins</span><span class='op'>+</span>
+                       <span class='va'>curb_weight_lbs</span><span class='op'>+</span><span class='va'>mpg_combined</span><span class='op'>+</span>
+                       <span class='va'>engine_hp</span><span class='op'>+</span><span class='va'>engine_hp_rpm</span><span class='op'>+</span>
+                       <span class='va'>nb_doors</span><span class='op'>+</span><span class='va'>hp_to_weight</span><span class='op'>+</span>
+                       <span class='va'>hp_to_cyl</span><span class='op'>+</span><span class='va'>car_size</span><span class='op'>+</span><span class='va'>car_volume</span><span class='op'>+</span>
+                       <span class='va'>dpm_combined</span><span class='op'>+</span><span class='va'>engine_fuel_Diesel</span><span class='op'>+</span>
+                       <span class='va'>engine_fuel_Elec</span><span class='op'>+</span><span class='va'>nationality_China</span><span class='op'>+</span>
+                       <span class='va'>nationality_France</span><span class='op'>+</span><span class='va'>nationality_Germany</span><span class='op'>+</span>
+                       <span class='va'>nationality_Indian</span><span class='op'>+</span><span class='va'>nationality_Japan</span><span class='op'>+</span>
+                       <span class='va'>nationality_Korea</span><span class='op'>+</span><span class='va'>nationality_Netherlands</span><span class='op'>+</span>
+                       <span class='va'>nationality_Sweden</span><span class='op'>+</span><span class='va'>nationality_UK</span><span class='op'>+</span>
+                       <span class='va'>drivetype_AWD</span><span class='op'>+</span><span class='va'>drivetype_RWD</span><span class='op'>+</span>
+                       <span class='va'>transmission_M</span><span class='op'>+</span><span class='va'>`class_Cargo Van`</span> <span class='op'>+</span>
+                       <span class='va'>class_Coupe</span><span class='op'>+</span><span class='va'>class_Hatchback</span><span class='op'>+</span><span class='va'>class_Minivan</span><span class='op'>+</span>
+                       <span class='va'>class_Pickup</span><span class='op'>+</span><span class='va'>class_Suv</span><span class='op'>+</span><span class='va'>class_Wagon</span>,data<span class='op'>=</span><span class='va'>df_struct</span><span class='op'>)</span>
+</code></pre>
+</div>
+</div>
+<div class="layout-chunk" data-layout="l-body">
+<table style="text-align:center">
+<caption>
+<strong>Logit Model OLS Estimates</strong>
+</caption>
+<tr>
+<td colspan="4" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td colspan="3">
+<em>Dependent variable:</em>
+</td>
+</tr>
+<tr>
+<td>
+</td>
+<td colspan="3" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td colspan="3">
+Market Share
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+No Dummies
+</td>
+<td>
+Brand Dummmies
+</td>
+<td>
+Model Dummies
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(1)
+</td>
+<td>
+(2)
+</td>
+<td>
+(3)
+</td>
+</tr>
+<tr>
+<td colspan="4" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+price
+</td>
+<td>
+-0.061<sup>***</sup>
+</td>
+<td>
+-0.057<sup>***</sup>
+</td>
+<td>
+-0.014<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.003)
+</td>
+<td>
+(0.003)
+</td>
+<td>
+(0.004)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+mpg_combined
+</td>
+<td>
+-0.008<sup>***</sup>
+</td>
+<td>
+-0.017<sup>***</sup>
+</td>
+<td>
+0.006<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.003)
+</td>
+<td>
+(0.002)
+</td>
+<td>
+(0.002)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+engine_hp
+</td>
+<td>
+0.006<sup>***</sup>
+</td>
+<td>
+0.005<sup>***</sup>
+</td>
+<td>
+0.004<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.001)
+</td>
+<td>
+(0.001)
+</td>
+<td>
+(0.001)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+hp_to_weight
+</td>
+<td>
+-21.407<sup>***</sup>
+</td>
+<td>
+-20.351<sup>***</sup>
+</td>
+<td>
+-21.517<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(4.949)
+</td>
+<td>
+(4.561)
+</td>
+<td>
+(4.598)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+car_size
+</td>
+<td>
+-0.224<sup>***</sup>
+</td>
+<td>
+-0.064
+</td>
+<td>
+0.031
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.065)
+</td>
+<td>
+(0.061)
+</td>
+<td>
+(0.068)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+dpm_combined
+</td>
+<td>
+-15.308<sup>***</sup>
+</td>
+<td>
+-16.264<sup>***</sup>
+</td>
+<td>
+-4.960<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(1.261)
+</td>
+<td>
+(1.118)
+</td>
+<td>
+(0.778)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Constant
+</td>
+<td>
+-18.072<sup>***</sup>
+</td>
+<td>
+-15.709<sup>***</sup>
+</td>
+<td>
+-10.599<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(2.479)
+</td>
+<td>
+(2.338)
+</td>
+<td>
+(2.583)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td colspan="4" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Observations
+</td>
+<td>
+6,875
+</td>
+<td>
+6,875
+</td>
+<td>
+6,875
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+R<sup>2</sup>
+</td>
+<td>
+0.502
+</td>
+<td>
+0.632
+</td>
+<td>
+0.884
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Adjusted R<sup>2</sup>
+</td>
+<td>
+0.499
+</td>
+<td>
+0.627
+</td>
+<td>
+0.871
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Residual Std. Error
+</td>
+<td>
+1.026 (df = 6837)
+</td>
+<td>
+0.885 (df = 6790)
+</td>
+<td>
+0.521 (df = 6170)
+</td>
+</tr>
+<tr>
+<td colspan="4" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+<em>Note:</em>
+</td>
+<td colspan="3" style="text-align:right">
+<sup><em></sup>p&lt;0.1; <sup><strong></sup>p&lt;0.05; <sup></strong></em></sup>p&lt;0.01
+</td>
+</tr>
+</table>
+</div>
+<p>The results are provided in the table above, for a few select variables.</p>
+<p>Interestingly, the addition of the model and brand dummies actually decreases the price coefficient (in absolute value), though it remains negative. Generally, we would expect that once unobserved heterogeneity at the model or brand level is accounted for, consumers would become more sensitive to price; however, this appears to not be the case here.</p>
+<p>What are the resulting elasticities? We calculate and plot them below.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='co'># Elasticities, no dummies</span>
+<span class='va'>ols_elasticities</span><span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>company<span class='op'>=</span><span class='va'>df_struct</span><span class='op'>$</span><span class='va'>company</span>,brand<span class='op'>=</span><span class='va'>df_struct</span><span class='op'>$</span><span class='va'>brand</span>,
+                              model<span class='op'>=</span><span class='va'>df_struct</span><span class='op'>$</span><span class='va'>model</span>,Year<span class='op'>=</span><span class='va'>df_struct</span><span class='op'>$</span><span class='va'>Year</span>,
+                              elasticity<span class='op'>=</span><span class='op'>(</span><span class='va'>df_struct</span><span class='op'>$</span><span class='va'>price</span><span class='op'>/</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/Log.html'>exp</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/stats/predict.lm.html'>predict.lm</a></span><span class='op'>(</span><span class='va'>logit_model_ols</span>,<span class='va'>df_struct</span><span class='op'>)</span><span class='op'>+</span>
+                      <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>log</a></span><span class='op'>(</span><span class='va'>df_struct</span><span class='op'>$</span><span class='va'>outside_share</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span><span class='op'>*</span>
+                        <span class='op'>(</span><span class='va'>logit_model_ols</span><span class='op'>$</span><span class='va'>coefficients</span><span class='op'>[</span><span class='st'>"price"</span><span class='op'>]</span><span class='op'>*</span>
+                           <span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/Log.html'>exp</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/stats/predict.lm.html'>predict.lm</a></span><span class='op'>(</span><span class='va'>logit_model_ols</span>,<span class='va'>df_struct</span><span class='op'>)</span><span class='op'>+</span>
+                                                                      <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>log</a></span><span class='op'>(</span><span class='va'>df_struct</span><span class='op'>$</span><span class='va'>outside_share</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span><span class='op'>*</span>
+                           <span class='op'>(</span><span class='fl'>1</span><span class='op'>-</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/Log.html'>exp</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/stats/predict.lm.html'>predict.lm</a></span><span class='op'>(</span><span class='va'>logit_model_ols</span>,<span class='va'>df_struct</span><span class='op'>)</span><span class='op'>+</span>
+                                                                                                               <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>log</a></span><span class='op'>(</span><span class='va'>df_struct</span><span class='op'>$</span><span class='va'>outside_share</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>%&gt;%</span> 
+  <span class='fu'>group_by</span><span class='op'>(</span><span class='va'>company</span>, <span class='va'>brand</span>, <span class='va'>model</span><span class='op'>)</span> <span class='op'>%&gt;%</span> 
+  <span class='fu'>summarize</span><span class='op'>(</span>elasticity<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/stats/median.html'>median</a></span><span class='op'>(</span><span class='va'>elasticity</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>%&gt;%</span> 
+  <span class='fu'>mutate</span><span class='op'>(</span>dummies<span class='op'>=</span><span class='st'>"none"</span><span class='op'>)</span>
+
+<span class='co'># Elasticities, brand dummies</span>
+<span class='va'>ols_elasticities_brand</span><span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>company<span class='op'>=</span><span class='va'>df_struct</span><span class='op'>$</span><span class='va'>company</span>,brand<span class='op'>=</span><span class='va'>df_struct</span><span class='op'>$</span><span class='va'>brand</span>,
+                              model<span class='op'>=</span><span class='va'>df_struct</span><span class='op'>$</span><span class='va'>model</span>,Year<span class='op'>=</span><span class='va'>df_struct</span><span class='op'>$</span><span class='va'>Year</span>,
+                              elasticity<span class='op'>=</span><span class='op'>(</span><span class='va'>df_struct</span><span class='op'>$</span><span class='va'>price</span><span class='op'>/</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/Log.html'>exp</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/stats/predict.lm.html'>predict.lm</a></span><span class='op'>(</span><span class='va'>logit_model_ols_brand</span>,<span class='va'>df_struct</span><span class='op'>)</span><span class='op'>+</span>
+                      <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>log</a></span><span class='op'>(</span><span class='va'>df_struct</span><span class='op'>$</span><span class='va'>outside_share</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span><span class='op'>*</span>
+                        <span class='op'>(</span><span class='va'>logit_model_ols_brand</span><span class='op'>$</span><span class='va'>coefficients</span><span class='op'>[</span><span class='st'>"price"</span><span class='op'>]</span><span class='op'>*</span>
+                           <span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/Log.html'>exp</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/stats/predict.lm.html'>predict.lm</a></span><span class='op'>(</span><span class='va'>logit_model_ols_brand</span>,<span class='va'>df_struct</span><span class='op'>)</span><span class='op'>+</span>
+                                                                      <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>log</a></span><span class='op'>(</span><span class='va'>df_struct</span><span class='op'>$</span><span class='va'>outside_share</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span><span class='op'>*</span>
+                           <span class='op'>(</span><span class='fl'>1</span><span class='op'>-</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/Log.html'>exp</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/stats/predict.lm.html'>predict.lm</a></span><span class='op'>(</span><span class='va'>logit_model_ols_brand</span>,<span class='va'>df_struct</span><span class='op'>)</span><span class='op'>+</span>
+                                                                                                               <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>log</a></span><span class='op'>(</span><span class='va'>df_struct</span><span class='op'>$</span><span class='va'>outside_share</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>%&gt;%</span> 
+  <span class='fu'>group_by</span><span class='op'>(</span><span class='va'>company</span>, <span class='va'>brand</span>, <span class='va'>model</span><span class='op'>)</span> <span class='op'>%&gt;%</span> 
+  <span class='fu'>summarize</span><span class='op'>(</span>elasticity<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/stats/median.html'>median</a></span><span class='op'>(</span><span class='va'>elasticity</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>%&gt;%</span> 
+  <span class='fu'>mutate</span><span class='op'>(</span>dummies<span class='op'>=</span><span class='st'>"brand"</span><span class='op'>)</span>
+
+<span class='co'># Elasticities, model dummies</span>
+<span class='va'>ols_elasticities_model</span><span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>company<span class='op'>=</span><span class='va'>df_struct</span><span class='op'>$</span><span class='va'>company</span>,brand<span class='op'>=</span><span class='va'>df_struct</span><span class='op'>$</span><span class='va'>brand</span>,
+                              model<span class='op'>=</span><span class='va'>df_struct</span><span class='op'>$</span><span class='va'>model</span>,Year<span class='op'>=</span><span class='va'>df_struct</span><span class='op'>$</span><span class='va'>Year</span>,
+                              elasticity<span class='op'>=</span><span class='op'>(</span><span class='va'>df_struct</span><span class='op'>$</span><span class='va'>price</span><span class='op'>/</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/Log.html'>exp</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/stats/predict.lm.html'>predict.lm</a></span><span class='op'>(</span><span class='va'>logit_model_ols_product</span>,<span class='va'>df_struct</span><span class='op'>)</span><span class='op'>+</span>
+                      <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>log</a></span><span class='op'>(</span><span class='va'>df_struct</span><span class='op'>$</span><span class='va'>outside_share</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span><span class='op'>*</span>
+                        <span class='op'>(</span><span class='va'>logit_model_ols_product</span><span class='op'>$</span><span class='va'>coefficients</span><span class='op'>[</span><span class='st'>"price"</span><span class='op'>]</span><span class='op'>*</span>
+                           <span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/Log.html'>exp</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/stats/predict.lm.html'>predict.lm</a></span><span class='op'>(</span><span class='va'>logit_model_ols_product</span>,<span class='va'>df_struct</span><span class='op'>)</span><span class='op'>+</span>
+                                                                      <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>log</a></span><span class='op'>(</span><span class='va'>df_struct</span><span class='op'>$</span><span class='va'>outside_share</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span><span class='op'>*</span>
+                           <span class='op'>(</span><span class='fl'>1</span><span class='op'>-</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/Log.html'>exp</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/stats/predict.lm.html'>predict.lm</a></span><span class='op'>(</span><span class='va'>logit_model_ols_product</span>,<span class='va'>df_struct</span><span class='op'>)</span><span class='op'>+</span>
+                                                                                                               <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>log</a></span><span class='op'>(</span><span class='va'>df_struct</span><span class='op'>$</span><span class='va'>outside_share</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>%&gt;%</span> 
+  <span class='fu'>group_by</span><span class='op'>(</span><span class='va'>company</span>, <span class='va'>brand</span>, <span class='va'>model</span><span class='op'>)</span> <span class='op'>%&gt;%</span> 
+  <span class='fu'>summarize</span><span class='op'>(</span>elasticity<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/stats/median.html'>median</a></span><span class='op'>(</span><span class='va'>elasticity</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>mutate</span><span class='op'>(</span>dummies<span class='op'>=</span><span class='st'>"model"</span><span class='op'>)</span>
+
+<span class='co'># Combining</span>
+<span class='va'>ols_elasticities_all</span><span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>rbind</a></span><span class='op'>(</span><span class='va'>ols_elasticities</span>,
+                             <span class='va'>ols_elasticities_brand</span>,
+                             <span class='va'>ols_elasticities_model</span><span class='op'>)</span>
+
+<span class='va'>ols_elasticities_all</span><span class='op'>$</span><span class='va'>dummies</span><span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/factor.html'>factor</a></span><span class='op'>(</span><span class='va'>ols_elasticities_all</span><span class='op'>$</span><span class='va'>dummies</span>, levels<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"none"</span>,<span class='st'>"brand"</span>,<span class='st'>"model"</span><span class='op'>)</span><span class='op'>)</span>
+
+<span class='co'># Plotting</span>
+<span class='va'>ols_elasticities_all</span> <span class='op'>%&gt;%</span> <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>x<span class='op'>=</span><span class='va'>company</span>,y<span class='op'>=</span><span class='va'>elasticity</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span> 
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_boxplot.html'>geom_boxplot</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>+</span> <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/labs.html'>xlab</a></span><span class='op'>(</span><span class='st'>"Company"</span><span class='op'>)</span> <span class='op'>+</span> <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/labs.html'>ylab</a></span><span class='op'>(</span><span class='st'>"Median Elasticity"</span><span class='op'>)</span> <span class='op'>+</span> 
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/lims.html'>ylim</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>5</span>,<span class='fl'>0</span><span class='op'>)</span><span class='op'>+</span> <span class='fu'><a href='https://rdrr.io/pkg/viridis/man/scale_viridis.html'>scale_color_viridis</a></span><span class='op'>(</span>discrete<span class='op'>=</span><span class='cn'>T</span>,guide<span class='op'>=</span><span class='cn'>F</span><span class='op'>)</span> <span class='op'>+</span> 
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/coord_flip.html'>coord_flip</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>+</span> <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggtheme.html'>theme_minimal</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>+</span> <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/facet_wrap.html'>facet_wrap</a></span><span class='op'>(</span><span class='op'>~</span><span class='va'>dummies</span><span class='op'>)</span>
+</code></pre>
+</div>
+<p><img src="jonathan-sheng-algorithmic-demand-estimation-causal_files/figure-html5/unnamed-chunk-11-1.png" width="624" /></p>
+</div>
+<p>As we might expect, the elasticities for the estimates with model dummies are smallest, and those without dummies are the largest (in absolute value). This is no coincidence, since the elasticities are determined by the <span class="math inline">\(\alpha\)</span> price coefficient. However, while they are negative by construction, many of them still fall between -1 and 0, implying that the firms are pricing on the inelastic portion of the demand curve. We see elasticities that are not all that different from those from the algorithmic models, with the notable exception of some of the smaller companies like Porsche and Daimler. These may be accounted for by the high prices of these vehicles in the sample, which feed into the elasticity formula.</p>
+<h1 id="the-iv-logit-model">The IV Logit Model</h1>
+<p>When estimating the logit model by OLS, we may be concerned with endogeneity of the price coefficient due to correlation between prices and unobserved model heterogeneity. In order to circumvent this, the linear regression formulation of the logit model allows for an intuitive use of instrumental variables estimation. For instruments, we use sums of product characteristics for products in the same company and products in the same market: the so-called “BLP instruments.” In addition, we have one more instrument up our sleeve: the exchange rate of the country in which the car’s manufacturer is located. This may be correlated with certain cost-side factors, but is unlikely to be correlated with the market share.</p>
+<p>First, we calculate the BLP instruments:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>blp_instruments</span> <span class='op'>&lt;-</span> 
+  <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"mpg_combined"</span>,<span class='st'>"engine_hp"</span>,<span class='st'>"hp_to_weight"</span>,<span class='st'>"car_size"</span>,<span class='st'>"dpm_combined"</span><span class='op'>)</span>
+
+<span class='va'>df_struct</span><span class='op'>&lt;-</span> <span class='va'>df_struct</span> <span class='op'>%&gt;%</span> 
+  <span class='fu'>group_by</span><span class='op'>(</span><span class='va'>Year</span>,<span class='va'>company</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>mutate</span><span class='op'>(</span><span class='fu'>across</span><span class='op'>(</span><span class='fu'>all_of</span><span class='op'>(</span><span class='va'>blp_instruments</span><span class='op'>)</span>, <span class='op'>~</span><span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span><span class='op'>(</span><span class='va'>.x</span><span class='op'>)</span><span class='op'>-</span><span class='va'>.x</span>,.names<span class='op'>=</span><span class='st'>"BLP2_{.col}"</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='va'>ungroup</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>group_by</span><span class='op'>(</span><span class='va'>Year</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>mutate</span><span class='op'>(</span>BLP3_car_size <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span><span class='op'>(</span><span class='va'>car_size</span><span class='op'>)</span> <span class='op'>-</span> <span class='va'>car_size</span> <span class='op'>-</span> <span class='va'>BLP2_car_size</span>,
+         BLP3_mpg_combined <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span><span class='op'>(</span><span class='va'>mpg_combined</span><span class='op'>)</span> <span class='op'>-</span> <span class='va'>mpg_combined</span> <span class='op'>-</span> <span class='va'>BLP2_mpg_combined</span>,
+         BLP3_dpm_combined <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span><span class='op'>(</span><span class='va'>dpm_combined</span><span class='op'>)</span> <span class='op'>-</span> <span class='va'>dpm_combined</span> <span class='op'>-</span> <span class='va'>BLP2_dpm_combined</span>,
+         BLP3_engine_hp <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span><span class='op'>(</span><span class='va'>engine_hp</span><span class='op'>)</span> <span class='op'>-</span> <span class='va'>engine_hp</span> <span class='op'>-</span> <span class='va'>BLP2_engine_hp</span>,
+         BLP3_hp_to_weight <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span><span class='op'>(</span><span class='va'>hp_to_weight</span><span class='op'>)</span> <span class='op'>-</span> <span class='va'>hp_to_weight</span> <span class='op'>-</span> <span class='va'>BLP2_hp_to_weight</span>
+  <span class='op'>)</span> <span class='op'>%&gt;%</span> 
+  <span class='va'>ungroup</span>
+</code></pre>
+</div>
+</div>
+<p>Next, we estimate the models using the same dummies formulation as before.</p>
+<div class="layout-chunk" data-layout="l-body">
+
+</div>
+<div class="layout-chunk" data-layout="l-body">
+<table style="text-align:center">
+<caption>
+<strong>Logit Model IV Estimates</strong>
+</caption>
+<tr>
+<td colspan="4" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td colspan="3">
+<em>Dependent variable:</em>
+</td>
+</tr>
+<tr>
+<td>
+</td>
+<td colspan="3" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td colspan="3">
+Market Share
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+No Dummies
+</td>
+<td>
+Brand Dummmies
+</td>
+<td>
+Model Dummies
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(1)
+</td>
+<td>
+(2)
+</td>
+<td>
+(3)
+</td>
+</tr>
+<tr>
+<td colspan="4" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+price
+</td>
+<td>
+-0.054<sup>***</sup>
+</td>
+<td>
+-0.030<sup>***</sup>
+</td>
+<td>
+-0.031<sup>*</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.009)
+</td>
+<td>
+(0.009)
+</td>
+<td>
+(0.018)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+mpg_combined
+</td>
+<td>
+-0.008<sup>***</sup>
+</td>
+<td>
+-0.014<sup>***</sup>
+</td>
+<td>
+0.005<sup>**</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.003)
+</td>
+<td>
+(0.003)
+</td>
+<td>
+(0.002)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+engine_hp
+</td>
+<td>
+0.006<sup>***</sup>
+</td>
+<td>
+0.004<sup>***</sup>
+</td>
+<td>
+0.004<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.001)
+</td>
+<td>
+(0.001)
+</td>
+<td>
+(0.001)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+hp_to_weight
+</td>
+<td>
+-21.892<sup>***</sup>
+</td>
+<td>
+-21.031<sup>***</sup>
+</td>
+<td>
+-21.168<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(4.978)
+</td>
+<td>
+(4.596)
+</td>
+<td>
+(4.620)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+car_size
+</td>
+<td>
+-0.221<sup>***</sup>
+</td>
+<td>
+-0.057
+</td>
+<td>
+0.010
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.065)
+</td>
+<td>
+(0.062)
+</td>
+<td>
+(0.072)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+dpm_combined
+</td>
+<td>
+-14.718<sup>***</sup>
+</td>
+<td>
+-14.219<sup>***</sup>
+</td>
+<td>
+-5.889<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(1.409)
+</td>
+<td>
+(1.288)
+</td>
+<td>
+(1.251)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Constant
+</td>
+<td>
+-18.321<sup>***</sup>
+</td>
+<td>
+-16.470<sup>***</sup>
+</td>
+<td>
+-10.426<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(2.494)
+</td>
+<td>
+(2.365)
+</td>
+<td>
+(2.594)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td colspan="4" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Observations
+</td>
+<td>
+6,875
+</td>
+<td>
+6,875
+</td>
+<td>
+6,875
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+R<sup>2</sup>
+</td>
+<td>
+0.501
+</td>
+<td>
+0.627
+</td>
+<td>
+0.884
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Adjusted R<sup>2</sup>
+</td>
+<td>
+0.499
+</td>
+<td>
+0.622
+</td>
+<td>
+0.870
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Residual Std. Error
+</td>
+<td>
+1.026 (df = 6837)
+</td>
+<td>
+0.891 (df = 6790)
+</td>
+<td>
+0.522 (df = 6170)
+</td>
+</tr>
+<tr>
+<td colspan="4" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+<em>Note:</em>
+</td>
+<td colspan="3" style="text-align:right">
+<sup><em></sup>p&lt;0.1; <sup><strong></sup>p&lt;0.05; <sup></strong></em></sup>p&lt;0.01
+</td>
+</tr>
+</table>
+</div>
+<p>Results are tabulated above.</p>
+<p>The instruments don’t actually do much for us in terms of altering the price coefficient, except in the model dummies formulation. Thus, we shouldn’t expect the elasticities to be radically different:</p>
+<div class="layout-chunk" data-layout="l-body">
+<p><img src="jonathan-sheng-algorithmic-demand-estimation-causal_files/figure-html5/unnamed-chunk-14-1.png" width="624" /></p>
+</div>
+<p>The instrumental variables regression doesn’t greatly change the elasticities, and simply homogenizes them slightly across the different models. Another reason the IV logit model isn’t sufficient to estimate demand is that it doesn’t account for the varying substitution patterns between the products. We won’t focus on that in this post, but this problem mainly has to do with the cross-price elasticities.</p>
+<h1 id="the-random-coefficients-logit-model">The Random Coefficients Logit Model</h1>
+<p>The random coefficients model builds on the Logit model by allowing some of the coefficients, including the price coefficient <span class="math inline">\(\alpha\)</span>, to vary across individuals. However, since we don’t observe data at the individual level, we assume a parametric distribution for the coefficients and estimate the parameters of this distribution. Estimation of this model is quite a bit more complicated. For simplicity, in this post, we will ignore the observed demographic distribution we have, and estimate with only unobserved heterogeneity at the individual level. We will allow four coefficients to vary among individuals: the intercept, the price coefficient, miles per gallon, and horsepower to weight ratio. We will use the same instruments as in the previous portion.</p>
+<div class="layout-chunk" data-layout="l-body">
+
+</div>
+<p>In order to do the estimation, we use the BLPestimatoR package, which implements the calculation of the objective function in C++ for speed. Normally, calculating this function is very slow, as it requires repeated use of a contraction mapping that needs to converge to a very high degree of accuracy. Thus, implementing this portion of the estimation process in C++ allows estimation to take place in a reasonable amount of time.</p>
+<p>First, we create the model:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='co'># formula is as follows: linear | exogenous | random coefficients | IVs</span>
+  
+<span class='va'>blp_model</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/formula.html'>as.formula</a></span><span class='op'>(</span><span class='st'>[2410 chars quoted with '"']</span><span class='op'>)</span> 
+
+<span class='va'>rc</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"(Intercept)"</span>,<span class='st'>"price"</span>,<span class='st'>"mpg_combined"</span>,<span class='st'>"hp_to_weight"</span><span class='op'>)</span>
+
+<span class='va'>blp_instruments</span> <span class='op'>&lt;-</span> 
+  <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"car_size"</span>, <span class='st'>"mpg_combined"</span>, <span class='st'>"dpm_combined"</span>, <span class='st'>"engine_hp"</span>, <span class='st'>"hp_to_weight"</span><span class='op'>)</span>
+</code></pre>
+</div>
+</div>
+<p>Then, we provide the necessary information to estimate, and run the estimation:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>blp_basic_data</span> <span class='op'>&lt;-</span>  <span class='fu'><a href='https://rdrr.io/pkg/BLPestimatoR/man/BLP_data.html'>BLP_data</a></span><span class='op'>(</span>
+  model <span class='op'>=</span> <span class='va'>blp_model</span>,
+  market_identifier <span class='op'>=</span> <span class='st'>"Year"</span>,
+  product_identifier <span class='op'>=</span> <span class='st'>"Model_id"</span>,
+  productData <span class='op'>=</span> <span class='va'>df_struct</span>,
+  blp_inner_tol <span class='op'>=</span> <span class='fl'>1e-9</span>, blp_inner_maxit <span class='op'>=</span> <span class='fl'>5000</span>,
+  integration_method <span class='op'>=</span> <span class='st'>"MLHS"</span>,
+  integration_accuracy <span class='op'>=</span> <span class='fl'>40</span>,
+  integration_seed <span class='op'>=</span> <span class='fl'>1</span>
+  <span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>Mean utility (variable name: `delta`) is initialized with 0 because of missing or invalid par_delta argument.</code></pre>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>blp_basic_est</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/BLPestimatoR/man/estimateBLP.html'>estimateBLP</a></span><span class='op'>(</span>
+  blp_data <span class='op'>=</span> <span class='va'>blp_basic_data</span>,
+  solver_method <span class='op'>=</span> <span class='st'>"BFGS"</span>, solver_maxit <span class='op'>=</span> <span class='fl'>1000</span>, solver_reltol <span class='op'>=</span> <span class='fl'>1e-9</span>,
+  standardError <span class='op'>=</span> <span class='st'>"heteroskedastic"</span>,
+  extremumCheck <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  printLevel <span class='op'>=</span> <span class='fl'>0</span>
+<span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>blp_data were prepared with the following arguments:
+BLP_data(model = blp_model, market_identifier = &quot;Year&quot;, product_identifier = &quot;Model_id&quot;, 
+    productData = df_struct, integration_accuracy = 40, integration_method = &quot;MLHS&quot;, 
+    integration_seed = 1, blp_inner_tol = 1e-09, blp_inner_maxit = 5000)
+------------------------------------------ 
+Solver message: Successful convergence 
+------------------------------------------ 
+Final GMM evaluation at optimal parameters: 
+gmm objective: 110.3596
+     theta (RC): -0.32 -0.06 -0.05 56.41 
+     theta (demogr.):  
+     inner iterations: 42 
+     gradient: 0.0386 -0.145 -0.3041 1e-04 
+Using the heteroskedastic asymptotic variance-covariance matrix... </code></pre>
+</div>
+<p>Results are tabulated below:</p>
+<table style="text-align:center">
+<caption>
+<strong>RC Logit Model Estimates</strong>
+</caption>
+<tr>
+<td colspan="3" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td colspan="2">
+<em>Dependent variable:</em>
+</td>
+</tr>
+<tr>
+<td>
+</td>
+<td colspan="2" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td colspan="2">
+Market Share
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+Mean Effect
+</td>
+<td>
+Std. Dev.
+</td>
+<tr>
+<tr>
+<td colspan="3" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+price
+</td>
+<td>
+-0.188<sup>***</sup>
+</td>
+<td>
+0.061<sup>**</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.053)
+</td>
+<td>
+(0.024)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+mpg_combined
+</td>
+<td>
+-0.085<sup>**</sup>
+</td>
+<td>
+0.05<sup>**</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.039)
+</td>
+<td>
+(0.02)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+engine_hp
+</td>
+<td>
+0.012<sup>***</sup>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.003)
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+hp_to_weight
+</td>
+<td>
+-115.9<sup>***</sup>
+</td>
+<td>
+56.41<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(31.27)
+</td>
+<td>
+(16.5)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+car_size
+</td>
+<td>
+-0.285<sup>***</sup>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.083)
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+dpm_combined
+</td>
+<td>
+-33.26<sup>***</sup>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(5.717)
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Constant
+</td>
+<td>
+-14.85<sup>***</sup>
+</td>
+<td>
+0.324
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(3.303)
+</td>
+<td>
+(0.44)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td colspan="3" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Observations
+</td>
+<td>
+6,875
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td colspan="4" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+<em>Note:</em>
+</td>
+<td colspan="3" style="text-align:right">
+<sup><em></sup>p&lt;0.1; <sup><strong></sup>p&lt;0.05; <sup></strong></em></sup>p&lt;0.01
+</td>
+</tr>
+</table>
+<p>Here we finally see a meaningful increase in the size of the price coefficient relative to the original OLS estimates, along with a statistically significant (though not very large) degree of individual heterogeneity in price sensitivity. Let’s have a look at the resulting elasticities:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='co'># Plotting</span>
+<span class='va'>elasticity_data</span> <span class='op'>%&gt;%</span> <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>x<span class='op'>=</span><span class='va'>company</span>,y<span class='op'>=</span><span class='va'>elasticity</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span> 
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_boxplot.html'>geom_boxplot</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>+</span> <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/labs.html'>xlab</a></span><span class='op'>(</span><span class='st'>"Company"</span><span class='op'>)</span> <span class='op'>+</span> <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/labs.html'>ylab</a></span><span class='op'>(</span><span class='st'>"Median Elasticity"</span><span class='op'>)</span> <span class='op'>+</span> 
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/lims.html'>ylim</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>5</span>,<span class='fl'>0</span><span class='op'>)</span><span class='op'>+</span> <span class='fu'><a href='https://rdrr.io/pkg/viridis/man/scale_viridis.html'>scale_color_viridis</a></span><span class='op'>(</span>discrete<span class='op'>=</span><span class='cn'>T</span>,guide<span class='op'>=</span><span class='cn'>F</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/coord_flip.html'>coord_flip</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>+</span> <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggtheme.html'>theme_minimal</a></span><span class='op'>(</span><span class='op'>)</span> 
+</code></pre>
+</div>
+<p><img src="jonathan-sheng-algorithmic-demand-estimation-causal_files/figure-html5/unnamed-chunk-17-1.png" width="624" /></p>
+</div>
+<p>Now we see more reasonable results: almost all elasticities greater than 1 in absolute value, and all are negative. This is the result of the desirable features of the random coefficients logit model: accounting for unobserved individual taste heterogeneity, and allowing for more sophisticated substitution patterns between products.</p>
+<p>What do we learn from this plot? Well, we notice that luxury brands like Jaguar Land Rover and Porsche seem to have higher elasticities, whereas mainstream brands like Ford and General Motors tend to have lower elasticities for their vehicles. Practically, this makes a fair bit of sense: companies like Porsche tend to have vehicles with very high prices and very low market shares, and thus slight changes in market share look comparatively large relative to slight changes in price.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>While algorithmic models like Random Forest and XGBoost deliver fantastic results for prediction, they do still fall short when attempting to perform statistical inference with them. We see significant shrinkage of own-price elasticities of demand in our example from both Random Forest and XGBoost, with XGBoost suffering slighlty more from this problem. In addition, the elasticities have a significant spread, some spilling over onto the positive side of the axis.</p>
+<p>On the other hand, the logit model of demand delivers elasticity estimates that are more reliably negative, but not significantly better than those from the Random Forest. Adding in instrumental variables to the estimation doesn’t help much. To solve this problem, we use the random coefficients logit model of demand. It delivers very reasonable estimates for own-price elasticities that accord with economic theory. They are all negative, and generally are greater than 1 in absolute value. Vehicles with high prices and low market shares tend to have higher elasticities, while those in the opposite camp tend to have lower elasticities.</p>
+<p>Our future posts will hopefully explore the reasons for these differences, and see if there are any ways to overcome the shrinkage problem that the algorithmic models seem to suffer from. We will also see if there is a way to estimate a matrix of cross-price elasticities using the algorithmic models, and how the substitution patterns compare to the benchmark random coefficients logit model. Finally, we will compare the predictive performance of the logit models to that of the algorithmic models.</p>
+<div class="layout-chunk" data-layout="l-body">
+
+</div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<!--radix_placeholder_article_footer-->
+<!--/radix_placeholder_article_footer-->
+</div>
+
+<div class="d-appendix">
+</div>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+<!--radix_placeholder_site_after_body-->
+<!--/radix_placeholder_site_after_body-->
+<!--radix_placeholder_appendices-->
+<div class="appendix-bottom"></div>
+<!--/radix_placeholder_appendices-->
+<!--radix_placeholder_navigation_after_body-->
+<!--/radix_placeholder_navigation_after_body-->
+
+</body>
+
+</html>

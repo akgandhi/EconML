@@ -1,0 +1,656 @@
+\documentclass{beamer}
+%[handout,notes=show]
+%\note{}
+
+
+
+\usetheme{Montpellier}
+%\usecolortheme{whale}
+
+
+
+%\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{mathrsfs}
+\usepackage{bibentry} 
+\usepackage{natbib}
+%\usepackage[pdftex]{color,graphicx}
+
+
+
+%￼￼￼\usepackage{hyperref}
+\usepackage{verbatim}
+\usepackage{natbib} 
+\usepackage{setspace} 
+\usepackage{listings}
+\lstset{language=Matlab} 
+
+
+\usepackage{mathptmx}
+\usepackage[scaled=0.9]{helvet}
+%\usepackage{courier}
+\usepackage{soul}
+
+\newtheorem{hyp}{Hypothesis}
+\newtheorem{as}{Assumption}
+\newtheorem{lem}{Lemma}
+\newtheorem{defi}{Definition}
+\newtheorem{prop}{Proposition}
+\newtheorem{corr}{Corollary}
+\newtheorem{theo}{Theorem}
+\newtheorem{exl}{Example}
+\newtheorem{h0}{H0}
+\newtheorem{conj}{Conjecture}
+
+
+\DeclareMathOperator*{\argmax}{argmax\;} 
+\DeclareMathOperator*{\argmin}{argmin\;} 
+\DeclareMathOperator{\sign}{sign}
+\DeclareMathOperator{\Cov}{Cov}
+\DeclareMathOperator{\Corr}{Corr}
+\DeclareMathOperator{\Var}{Var}
+\DeclareMathOperator{\supp}{supp}
+\DeclareMathOperator{\tr}{tr}
+\DeclareMathOperator{\diag}{diag}
+
+
+\def\newblock{\hskip .11em plus .33em minus .07em}
+ 
+ 
+ \newcommand{\bs}{\boldsymbol}
+ 
+\makeatletter
+\def\th@mystyle{%
+    \normalfont % body font
+    \setbeamercolor{block title example}{bg=green,fg=white}
+    \setbeamercolor{block body example}{bg=green!20,fg=black}
+    \def\inserttheoremblockenv{exampleblock}
+  }
+  
+  
+  
+\makeatother
+\theoremstyle{mystyle}
+\newtheorem*{practice}{Practice problem} 
+\newtheorem*{application}{Application} 
+ 
+\beamertemplatenavigationsymbolsempty
+\setbeamertemplate{footline}[frame number]
+ 
+\author[Maximilian Kasy]{Maximilian Kasy}
+\institute[Harvard]{Department of Economics, Harvard University}
+
+\title[Bandits]{Econ 2148, spring 2019\\
+Multi-armed bandits}
+\date{}
+
+
+
+
+\begin{document}
+
+
+
+\nobibliography*
+
+
+
+\frame{\titlepage }
+
+
+
+
+\frame{
+\frametitle{Agenda}
+\begin{itemize}
+\item Thus far: ``Supervised machine learning'' -- data are given.\\
+Next: ``Active learning'' -- experimentation.
+\item Setup: The multi-armed bandit problem.\\
+Adaptive experiment with exploration / exploitation trade-off.
+\item Two popular approximate algorithms:
+\begin{enumerate}
+\item Thompson sampling
+\item Upper Confidence Bound algorithm
+\end{enumerate}
+\item Characterizing regret.
+\item Characterizing an exact solution: Gittins Index.
+\item Extension to settings with covariates (contextual bandits).
+\end{itemize}
+}
+
+\frame{
+\frametitle{Takeaways for this part of class}
+\begin{itemize}
+\item When experimental units arrive over time, and we can adapt our treatment choices, we can learn optimal treatment quickly.
+\item Treatment choice: Trade-off between 
+\begin{enumerate}
+\item choosing good treatments now (exploitation), 
+\item and learning for future treatment choices (exploration).
+\end{enumerate}
+
+\item Optimal solutions are hard, but good heuristics are available.
+\item We will derive a bound on the regret of one heuristic.
+\begin{itemize}
+\item Bounding the number of times a sub-optimal treatment is chosen,
+\item using large deviations bounds (cf. testing!).
+\end{itemize}
+
+\item We will also derive a characterization of the optimal solution in the infinite-horizon case. This relies on a separate index for each arm.
+\end{itemize}
+
+}
+
+\section{The multi-armed bandit}
+
+
+
+\frame{
+\frametitle{The multi-armed bandit}
+\framesubtitle{Setup}
+
+\begin{itemize}
+\item Treatments $D_t \in 1,\ldots, k$
+\item Experimental units come in sequentially over time.\\
+One unit per time period $t = 1, 2, \ldots$
+\item Potential outcomes: i.i.d. over time, $Y_t = Y^{D_t}_t$,
+\begin{align*}
+Y^d_t & \sim F^d &
+E[Y^d_t] &= \theta^d
+\end{align*}
+\item Treatment assignment can depend on past treatments and outcomes,
+$$D_{t+1} = d_t(D_1, \ldots, D_{t}, Y_1, \ldots, Y_{t}).$$
+\end{itemize}
+
+}
+
+\frame{
+\frametitle{The multi-armed bandit}
+\framesubtitle{Setup continued}
+
+\begin{itemize}
+\item Optimal treatment:
+\begin{align*}
+d^* &=\argmax_d \theta^d &
+\theta^* &= \max_d \theta^d = \theta^{d^*}
+\end{align*}
+\item Expected regret for treatment $d$:
+$$\Delta^d = E\left [Y^{d^*} - Y^d\right ] = \theta^{d^*} - \theta^d.$$
+
+\item Finite horizon objective: Average outcome,
+$$U_T= \tfrac{1}{T} \sum_{1 \leq t\leq T}  Y_t.$$
+\item Infinite horizon objective: Discounted average outcome,
+$$U_\infty=\sum_{t\geq 1} \beta^t Y_t$$
+
+\end{itemize}
+
+}
+
+
+\frame{
+\frametitle{The multi-armed bandit}
+\framesubtitle{Expectations of objectives}
+
+\begin{itemize}
+\item Expected finite horizon objective:
+$$E[U_T] = E\left [\tfrac{1}{T} \sum_{1 \leq t\leq T} \theta^{D_t}\right ]  $$
+
+\item Expected infinite horizon objective:
+$$E[U_\infty] = E\left [\sum_{t\geq 1} \beta^t \theta^{D_t}\right ]  $$
+
+\item Expected finite horizon regret:\\
+Compare to always assigning optimal treatment $d^*$.
+$$R_T = E\left [\tfrac{1}{T} \sum_{1 \leq t\leq T} \left (Y_t^{d^*} - Y_t  \right )  \right ]=
+ E\left [\tfrac{1}{T} \sum_{1 \leq t\leq T} \Delta^{D_t} \right ]$$
+
+
+
+\end{itemize}
+
+
+}
+
+
+\frame{
+
+
+\begin{practice}
+\begin{itemize}
+\item Show that these equalities hold.
+\item Interpret these objectives.
+\item Relate them to our decision theory terminology.
+\end{itemize}
+\end{practice}
+
+
+}
+
+
+
+
+
+\section{Two popular algorithms}
+
+\frame{
+\frametitle{Two popular algorithms}
+\framesubtitle{Upper Confidence Bound (UCB) algorithm}
+
+\begin{itemize}
+\item Define
+\begin{align*}
+\bar Y^d_t &= \tfrac{1}{T^d_t} \sum_{1 \leq s\leq t} \bs 1(D_s = d) \cdot Y_s, \\
+T^d_t &= \sum_{1 \leq s\leq t} \bs 1(D_s = d)\\
+B^d_t &= B(T^d_t).
+%(\psi^*)^{-1} \left (\frac{\alpha \log(t)}{T^d_t}   \right ).
+\end{align*}
+\item $B(\cdot)$ is a decreasing function, giving the width of the ``confidence interval.'' We will specify this function later.
+\item At time $t+1$, choose
+$$D_{t+1} = \argmax_d \bar Y^d_t + B^d_t.$$
+\item ``Optimism in the face of uncertainty.''
+\end{itemize}
+
+}
+
+
+\frame{
+\frametitle{Two popular algorithms}
+\framesubtitle{Thompson sampling}
+
+\begin{itemize}
+\item Start with a Bayesian prior for $\bs \theta$.
+\item Assign each treatment with probability equal to the posterior probability that it is optimal.
+\item Put differently, obtain one draw $\hat{\bs \theta}_{t+1}$ from the posterior given $(D_1, \ldots, D_{t}, Y_1, \ldots, Y_{t})$, and choose
+$$D_{t+1} = \argmax_d \hat{\theta}^d_{t+1}.$$
+\item Easily extendable to more complicated dynamic decision problems, complicated priors, etc.!
+\end{itemize}
+
+}
+
+
+\frame{
+\frametitle{Two popular algorithms}
+\framesubtitle{Thompson sampling - the binomial case}
+
+\begin{itemize}
+\item Assume that $Y \in \{0,1\}$, $Y^d_t \sim Ber(\theta^d)$.
+\item Start with a uniform prior for $\theta$ on $[0,1]^k$.
+\item Then the posterior for $\theta^d$ at time $t+1$ is a $Beta$ distribution with parameters
+\begin{align*}
+\alpha^d_t &= 1 + T^d_t \cdot \bar Y^d_t,\\
+\beta^d_t &=  1 + T^d_t \cdot (1-\bar Y^d_t).
+\end{align*}
+
+\item Thus
+$$D_t = \argmax_d  \hat\theta_t.$$
+where
+$$\hat\theta_t^d \sim Beta(\alpha^d_t, \beta^d_t)$$
+is a random draw from the posterior.
+\end{itemize}
+
+}
+
+
+\section{Regret bounds}
+
+
+\frame{
+\frametitle{Regret bounds}
+
+\begin{itemize}
+\item Back to the general case.
+\item  Recall expected finite horizon regret,
+$$R_T = E\left [\tfrac{1}{T} \sum_{1 \leq t\leq T} \left (Y_t^{d^*} - Y_t  \right )  \right ]=
+ E\left [\tfrac{1}{T} \sum_{1 \leq t\leq T} \Delta^{D_t} \right ].$$
+
+\item Thus,
+$$T\cdot R_T = \sum_d E[T^d_T] \cdot \Delta^d.$$ 
+
+\item Good algorithms will have  $E[T^d_T]$ small when $\Delta^d >0$.
+
+\item We will next derive upper bounds on  $E[T^d_T]$ for the UCB algorithm.
+
+\item We will then state that for large $T$ similar upper bounds hold for Thompson sampling.
+\item There is also a lower bound on regret across all possible algorithms which is the same, up to a constant.
+\end{itemize}
+
+}
+
+
+
+
+
+\frame{
+\frametitle{Probability theory preliminary}
+\framesubtitle{Large deviations}
+
+\begin{itemize}
+\item Suppose that
+$$ E[\exp(\lambda \cdot (Y-E[Y]))]  \leq \exp(\psi(\lambda)).$$
+\item Let $\bar Y_T = \tfrac{1}{T} \sum_{1 \leq t\leq T} Y_t $ for i.i.d. $Y_t$.\\
+Then, by Markov's inequality and independence across $t$,
+\begin{align*}
+P(\bar Y_T - E[Y] >\epsilon)
+&\leq \frac{E[\exp(\lambda \cdot (\bar Y_T-E[Y]))]}{\exp(\lambda \cdot \epsilon)}\\
+&= \frac{\prod_{1 \leq t\leq T}
+E[\exp((\lambda/T) \cdot (Y_t-E[Y]))]}{\exp(\lambda \cdot \epsilon)}\\
+&\leq \exp(T \psi(\lambda/T) - \lambda \cdot \epsilon).
+\end{align*}
+
+
+\end{itemize}
+
+
+}
+
+\frame{
+\frametitle{Large deviations continued}
+
+\begin{itemize}
+\item Define the Legendre-transformation of $\psi$ as
+$$\psi^*(\epsilon) = \sup_{\lambda \geq 0}\left [
+\lambda \cdot \epsilon - \psi(\lambda)\right ].$$
+
+\item Taking the $\inf$ over $\lambda$ in the previous slide implies
+$$
+P(\bar Y_T - E[Y] >\epsilon)\leq \exp(-T \cdot \psi^*(\epsilon)).
+$$
+
+
+\item For distributions bounded by $[0,1]$:\\
+ $\psi(\lambda) = \lambda^2 / 8$ and $\psi^*(\epsilon) = 2 \epsilon^2$.
+\item For normal distributions:\\
+ $\psi(\lambda) = \lambda^2 \sigma^2 / 2$ and $\psi^*(\epsilon) = \epsilon^2 / (2 \sigma^2)$.
+
+
+\end{itemize}
+
+}
+
+
+
+\frame{
+\frametitle{Applied to the Bandit setting}
+
+\begin{itemize}
+\item Suppose that for all $d$
+\begin{align*}
+E[\exp(\lambda \cdot (Y^d-\theta^d))]  &\leq \exp(\psi(\lambda))\\
+E[\exp(-\lambda \cdot (Y^d-\theta^d))]  &\leq \exp(\psi(\lambda)).
+\end{align*}
+
+
+
+\item Recall / define
+\begin{align*}
+\bar Y^d_t &= \tfrac{1}{T^d_t} \sum_{1 \leq s\leq t} \bs 1(D_s = d)\cdot Y_s, \\
+B^d_t &= (\psi^*)^{-1} \left (\frac{\alpha \log(t)}{T^d_t}   \right ).
+\end{align*}
+ 
+
+\item Then we get
+\begin{align*}
+P(\bar Y^d_t - \theta^d > B^d_t )
+&\leq \exp(- T^d_t \cdot \psi^*(B^d_t))\\
+&= \exp(- \alpha \log(t)) = t^{-\alpha}\\
+ P(\bar Y^d_t - \theta^d < - B^d_t )
+&\leq  t^{-\alpha}.
+\end{align*}
+ 
+
+\end{itemize}
+
+}
+
+
+\frame{
+\frametitle{Why this choice of $B(\cdot)$?}
+
+\begin{itemize}
+\item A smaller $B(\cdot)$ is better for exploitation.
+\item A larger $B(\cdot)$ is better for exploration.
+\item Special cases:
+\begin{itemize}
+\item Distributions bounded by $[0,1]$: 
+$$B^d_t = \sqrt{ \frac{\alpha \log(t)}{2 T^d_t}}.$$
+\item Normal distributions: 
+$$B^d_t = \sqrt{ 2 \sigma^2 \frac{\alpha \log(t)}{ T^d_t} }.$$
+\end{itemize}
+\item The $\alpha \log(t)$ term ensures that coverage goes to $1$, but slow enough to not waste too much in terms of exploitation.
+\end{itemize}
+
+}
+
+\frame{
+\frametitle{When $d$ is chosen by the UCB algorithm}
+
+\begin{itemize}
+\item By definition of UCB, at least one of these three events has to hold when $d$ is chosen at time $t+1$:
+\begin{align}
+\bar Y^{d^*}_t + B^{d^*}_t &\leq \theta^*\\
+\bar Y^d_t - B^d_t& > \theta^d\\
+ B^d_t & > 2 \Delta^d.
+\end{align}
+
+\item 1 and 2 have low probability. By previous slide,
+\begin{align*}
+P\left (\bar Y^{d^*}_t + B^{d^*}_t \leq \theta^*\right ) &\leq  t^{-\alpha}, &
+P\left (\bar Y^d_t - B^d_t > \theta^d\right ) &\leq  t^{-\alpha}.
+\end{align*}
+
+\item 3 only happens when $T^d_t$ is small. By definition of $B^d_t$, 3 happens iff
+$$T^d_t < \frac{\alpha \log(t)}{\psi^* (\Delta^d / 2)}.$$
+
+\end{itemize}
+
+}
+
+\frame{
+\begin{practice}
+Show that at least one of the statements 1, 2, or 3 has to be true whenever $D_{t+1} =d$, for the UCB algorithm.
+\end{practice}
+}
+
+
+\frame{
+\frametitle{Bounding $E[T^d_t]$}
+
+\begin{itemize}
+\item Let 
+$$\tilde T^d_T = \left \lfloor \frac{\alpha \log(T)}{\psi^* (\Delta^d / 2)} \right \rfloor.$$
+\item Forcing the algorithm to pick $d$ the first $\tilde T^d_T$ periods\\
+ can only increase $T^d_T$.
+
+\item  We can collect our results to get
+\footnotesize
+\begin{align*}
+E[T^d_T] &= \sum_{1\leq t \leq T} \bs 1(D_t =d)
+ \leq \tilde T^d_T  + \sum_{\tilde T^d_T < t \leq T} E[\bs 1(D_t =d)]\\
+& \leq \tilde T^d_T  + \sum_{\tilde T^d_T < t \leq T} E[\bs 1(\text{(1) or (2) is true at } t)]\\
+& \leq \tilde T^d_T  + \sum_{\tilde T^d_T < t \leq T} E[\bs 1(\text{(1)is true at } t)] + E[\bs 1(\text{(2) is true at }t)]\\
+& \leq \tilde T^d_T  + \sum_{\tilde T^d_T < t \leq T} 2 t^{-\alpha+1}
+ %\leq \tilde T^d_T  + 2 \sum_{1\leq t \leq T} t^{-\alpha}
+ \leq \tilde T^d_T  + \frac{\alpha}{\alpha-2}.
+\end{align*}
+\end{itemize}
+
+}
+
+\frame{
+\frametitle{Upper bound on expected regret for UCB}
+
+\begin{itemize}
+\item We thus get:
+
+\begin{align*}
+E[T^d_T] &\leq \frac{\alpha \log(T)}{\psi^* (\Delta^d / 2)} + \frac{\alpha}{\alpha-2},\\
+R_T &\leq \tfrac{1}{T}\sum_d \left ( \frac{\alpha \log(T)}{\psi^* (\Delta^d / 2)} + \frac{\alpha}{\alpha-2}\right ) \cdot \Delta^d.
+\end{align*}
+
+\item Expected regret (difference to optimal policy) goes to $0$ at a rate of $O(\log(T) / T)$ -- pretty fast!
+
+\item While the cost of ``getting treatment wrong'' is $\Delta^d$, the difficulty of figuring out the right treatment is of order $1/\psi^* (\Delta^d / 2)$.
+Typically, this is of order $(1/\Delta^{d})^2$.
+\end{itemize}
+
+}
+
+
+\frame{
+\frametitle{Related bounds - rate optimality}
+
+\begin{itemize}
+\item \textbf{Lower bound}: 
+Consider the Bandit problem with binary outcomes and any algorithm such that $E[T^d_t] = o(t^a)$ for all $a>0$.
+Then
+$$\liminf_{t\rightarrow \infty}  \tfrac{T}{\log(T)} \bar R_T \geq \sum_d \frac{\Delta^d}{kl(\theta^d, \theta^*)},$$
+where $kl(p, q) = p \cdot\log(p/q) + (1-p) \cdot \log ((1-p)/(1-q))$.
+
+\item \textbf{Upper bound for Thompson sampling}: In the binary outcome setting, Thompson sampling achieves this bound, i.e.,
+$$\liminf_{t\rightarrow \infty}  \tfrac{T}{\log(T)} \bar R_T = \sum_d \frac{\Delta^d}{kl(\theta^d, \theta^*)}.$$
+
+\end{itemize}
+
+}
+
+\section{Gittins index}
+
+
+\frame{
+\frametitle{Gittins index}
+\framesubtitle{Setup}
+
+\begin{itemize}
+\item Consider now the discounted infinite-horizon objective,
+$E[U_\infty] = E\left [\sum_{t\geq 1} \beta^t \theta^{D_t}\right ],  $
+averaged over independent (!) priors across the components of $\theta$.
+\item We will characterize the optimal strategy for maximizing this objective.
+\item To do so consider the following, simpler decision problem:
+\begin{itemize}
+\item You can only assign treatment $d$.
+\item You have to pay a charge of $\gamma^d$ each period in order to continue playing.
+\item You may stop at any time, then the game ends.
+\end{itemize}
+\item Define $\gamma^d_t$ as the charge which would make you indifferent between playing or not, given the period $t$ posterior.
+\end{itemize}
+
+}
+
+
+\frame{
+\frametitle{Gittins index}
+\framesubtitle{Formal definition}
+
+\begin{itemize}
+\item Denote by $\pi_t$ the posterior in period $t$, by $\tau(\cdot)$ an arbitrary stopping rule.
+\item Define
+\begin{align*}
+\gamma^d_t &=
+\sup \left \{ 
+\gamma: \sup_{\tau(\cdot)} E_{\pi_t}\left [
+\sum_{1\leq s \leq \tau} \beta^s \left (\theta^d - \gamma\right )
+\right ] \geq 0
+\right \}\\
+&= \sup_{\tau(\cdot)} \frac{E_{\pi_t}\left [
+\sum_{1\leq s \leq \tau} \beta^s \theta^d\right ]}{E_{\pi_t}\left [
+\sum_{1\leq s \leq \tau} \beta^s \right ]}
+\end{align*}
+
+\item Gittins and Jones (1974) prove: The optimal policy in the bandit problem always chooses
+$$D_t = \argmax_d \gamma^d_t.$$
+\end{itemize}
+
+}
+
+
+
+\frame{
+\frametitle{Heuristic proof (sketch)}
+
+\begin{itemize}
+\item Imagine a per-period charge for each treatment is set initially  equal to $\gamma^d_1$.
+\begin{itemize}
+\item Start playing the arm with the highest charge, continue until it is optimal to stop.
+\item At that point, the charge is reduced to $\gamma^d_t$.
+\item Repeat. 
+\end{itemize}
+
+\item This is the optimal policy, since:
+\begin{enumerate}
+\item It maximizes the amount of charges paid.
+\item Total expected benefits are equal to total expected charges.
+\item There is no other policy that would achieve expected benefits bigger than expected charges.
+\end{enumerate}
+\end{itemize}
+
+}
+
+\section{Contextual bandits}
+
+\frame{
+\frametitle{Contextual bandits}
+
+\begin{itemize}
+\item A more general bandit problem:
+\begin{itemize}
+\item For each unit (period), we observe covariates $X_t$.
+\item Treatment may condition on $X_t$.
+\item Outcomes are drawn from a distribution $F^{x,d}$, with mean $\theta^{x,d}$.
+\end{itemize}
+\item In this setting Gittins' theorem fails when the prior distribution of $\theta^{x,d}$ is not independent across $x$ or across $d$.
+\item But Thompson sampling is easily generalized.\\
+For instance to a hierarchical Bayes model:
+\begin{align*}
+Y^d| X=x, \bs \theta, \bs \alpha, \bs \beta &\sim Ber(\theta^{x,d})\\
+\theta^{x,d} | \bs \alpha, \bs \beta &\sim Beta(\alpha^d, \beta^d)\\
+(\alpha^d, \beta^d) &\sim \pi.
+\end{align*}
+\item This model updates the prior for $\theta^{x,d}$ not only based on observations with $D=d, X=x$, but also based on observations with $D=d$ but different values for $X$.
+
+\end{itemize}
+
+}
+
+
+\section{References}
+
+\frame{
+\frametitle{References}
+\begin{itemize}
+\item  
+
+\begin{verse}
+\bibentry{RegretBandit2012}.
+\end{verse} 
+
+
+\item  
+
+\begin{verse}
+\bibentry{Thompson2018}.
+\end{verse} 
+
+\item 
+\begin{verse}
+\bibentry{weber1992gittins}.
+\end{verse} 
+
+\end{itemize}
+
+}
+
+
+
+\bibliographystyle{apalike}
+\nobibliography{../../../../../research/library}
+
+
+
+
+\end{document}
+
+
+
+
+
+ 
