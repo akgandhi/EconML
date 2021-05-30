@@ -1,0 +1,143 @@
+---
+title: "Pricing Strategies of Retailers"
+description: |
+  Application of Reinforcement Learning
+author:
+  - name: Zhongtian Chen
+  - name: Yihao Yuan
+    url: https://github.com/yihao-yuan
+    affiliation: The University of Pennsylvania
+date: "`r Sys.Date()`"
+header-includes:
+  - \usepackage{dcolumn}  
+output: 
+  distill::distill_article
+toc: false
+categories: Zhongtian and Yihao's project
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(tidyverse)
+library(lubridate)
+library(janitor)
+library(dplyr)
+library(tidyr)
+library(jmuOutlier)
+library(Hmisc)
+library(car)
+library(TTR)
+
+library(knitr)
+knitr::opts_chunk$set(tidy=FALSE, 
+               fig.width=10,
+               fig.height=5,
+               fig.align='left',
+               warning=FALSE,
+               message=FALSE,
+               echo=TRUE)
+options(width = 120)
+library(ggplot2)
+library(colorspace)
+library(gridExtra)
+library(plm)
+library(lmtest)
+library(sandwich)
+library(lfe)
+library(DescTools)
+library(stargazer)
+library(ReinforcementLearning)
+```
+  
+## A Reinforcement Learning Model
+
+```{r, include = FALSE, echo = FALSE, message = FALSE, warning=FALSE, preview=TRUE}
+df <- read.csv('https://www.dropbox.com/s/8kk3nab4s8133z9/assortment_matched.csv?dl=1', header = TRUE, sep = ",")
+df$discount <- ifelse(df$price_promotion<df$price_regular & df$price_promotion!=0, 1, 0)
+df$price <- df$discount*df$price_promotion + (1-df$discount)*df$price_regular
+df$discount_rate <- 1 - df$price/df$price_regular
+df$margin = (df$price - df$cost)/df$price
+df <- subset(df, section_name=="Beverage" & cost>0 & price_regular>=cost)
+
+# Generate lagged discount variables
+df <- df %>%
+  group_by(store_key, item_key) %>%
+  mutate(discount_rate_lead = dplyr::lead(discount_rate , n=1, order_by = timestamp),
+         max_sales = max(sales_quantity))
+
+df$state <- cut(df$discount_rate, breaks=c(-Inf, 0.001, 0.2, 0.4, 0.6, 0.8, Inf), labels=c(0,1,2,3,4,5))
+df$nextstate <- cut(df$discount_rate_lead, breaks=c(-Inf, 0.001, 0.2, 0.4, 0.6, 0.8, Inf), labels=c(0,1,2,3,4,5))
+df$state <- as.numeric(as.character(df$state))
+df$nextstate <- as.numeric(as.character(df$nextstate))
+df$action <- ifelse(df$state > df$nextstate, 1, 2)
+df$action <- df$action + ifelse(df$state < df$nextstate, 0, 1)
+
+df$statediff <- df$state-df$nextstate
+df$action <- cut(df$statediff, breaks=c(-Inf,-0.5,0.5,Inf), labels=c("Price Decrease","No change","Price Increase"))
+# Standardize by regular price times maximum sales
+df$rewards1 <- df$sales_quantity*(df$price-df$cost)
+# Standardize by regular price times maximum sales, and look at the profits
+df$rewards2 <- df$sales_quantity/df$max_sales*(df$price-df$cost)/df$price_regular
+
+df$state <- as.character(df$state)
+df$nextstate <- as.character(df$nextstate)
+df$action <- as.character(df$action)
+df <- subset(df, nextstate!="NA" & max_sales>0)
+
+control <- list(gamma = 0.05, alpha = 0.1, epsilon = 0.1)
+```
+
+Suppose each store maximizes forward-looking profits from each product without considering any cross-product effects. Assume the products have label prices that are exogenous, and the managers in a store $m$ can only change discount rates $d_{imt}$ for each product $i$ at day $t$ by taking action $a_{imt} \in \mathcal{A}$. For simplicy, the state space is discretized into six states: $\mathcal{S}=\{0,1,2,3,4,5\}$, where
+$$
+s_{imt} = \left\{
+             \begin{array}{lr}
+             0, \text{ if } d_{imt}=0  \\
+             1, \text{ if } d_{imt} \in (0,0.2)  \\
+             2, \text{ if } d_{imt} \in [0.2,0.4)  \\
+             3, \text{ if } d_{imt} \in [0.4,0.6)  \\
+             4, \text{ if } d_{imt} \in [0.6,0.8)  \\
+             5, \text{ if } d_{imt} \in [0.8, 1] 
+             \end{array}
+\right..
+$$
+Let $\mathcal{A} = \{ \text{Price Increase, No Change, Price Decrease}\}$, where
+$$
+s_{imt} = \left\{
+             \begin{array}{lr}
+             \text{Price Increase}, &\text{ if } s_{imt} > s_{im,t+1}\\
+             \text{No Change}, &\text{ if } s_{imt} = s_{im,t+1}  \\
+             \text{Price Decrease}, &\text{ if } s_{imt} < s_{im,t+1} 
+             \end{array}
+\right..
+$$
+A concern is that any discount changes within state category will be ignored after discretization. Luckily, among the 3.67 million observations used in the final sample, there are only 7 within-state-category discount changes. Therefore, discretization should not significantly affect the results.
+
+The value function can be written as
+$$ V(s_{imt}) = r(s_{imt}) + \beta E\{V(s_{im,t+1})\mid s_{imt}, a_{imt}\},$$
+where $\beta = 0.95$ is the discount factor, the reward function $r$ is the profit (the product of margin and sales quantity). Notice that because $a_{imt}$ is not related to current period's margin or sales, $r$ is only a function of $s_{imt}$, not $a_{imt}$.
+
+The final sample used includes all observations on beverage products in all stores from January 2017 to December 2018. There are 3,671,518 observations in the data. The table below is a summary of the number of observations at each state. We found that more than 99% of the observations are at state 0.
+
+```{r, echo = FALSE, message = FALSE, warning=FALSE, preview=TRUE}
+df %>% group_by(state) %>% summarise(state_sum = n())
+```
+
+### Model 1
+
+To solve the optimal policy function, we used *reinforcementlearning* package from R. $\epsilon$-greedy exploration is applied, where $\epsilon = 0.1$. The estimated Q-function is as below. It shows that the only state where stores can earn a positive profit is 0, i.e., when there is no discount. This is not surprising, given our previous descriptive analyses that about two thirds of the margins of discounted products were negative. The policy function 
+
+```{r, echo = FALSE, message = FALSE, warning=FALSE, preview=TRUE}
+model <- ReinforcementLearning(data = df, s="state", a="action", r="rewards1", s_new="nextstate", control = control)
+print(model)
+```
+
+### Model 2
+
+A limitation in our model above is that the state space is too small. There are many other factors that can affect the value functions, e.g., demand functions, store characteristics, and cross-product effects. These effects are heterogeneous across $i$ can should be included in the state space, but adding them all into the model will significantly increase computation time. 
+
+To alleviate the concern, we standardized the reward function by dividing profit over the $(\text{Regular Price} - \text{Cost})\times \text{Sales} /\text{Max Sales}$. The results change slightly from Model 1. It shows that discounts below 40% may not be good choices; a higher price and lower discount rate may increase profitability. The policy function for $s\geq 3$ still seems strange. This might be because there are only very few observations with deep discounts in the data (14,703, 0.40%), such that the estimations are not very credible.
+
+```{r, echo = FALSE, message = FALSE, warning=FALSE, preview=TRUE}
+model2 <- ReinforcementLearning(data = df, s="state", a="action", r="rewards2", s_new="nextstate", control = control)
+print(model2)
+```
